@@ -61,7 +61,6 @@ e2_include_init()
 do
 	local list = file.Find("entities/gmod_wire_expression2/core/custom/vgui_elements/server/*.lua", "LUA")
 	for _, filename in pairs(list) do
-		print("loading server")
 		e2_include("custom/vgui_elements/server/" .. filename)
 	end
 end
