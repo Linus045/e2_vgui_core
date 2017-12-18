@@ -42,6 +42,50 @@ net.Receive("E2Vgui.CreatePanel",function()
 end)
 
 
+
+net.Receive("E2Vgui.ModifyPanel",function()
+	local modifiedSuccess = nil
+	local createSuccessful = nil
+	local pnlType = net.ReadString()
+	local uniqueID = net.ReadInt(32)
+	local e2EntityID = net.ReadInt(32)
+	local pnlData = net.ReadTable()
+
+	if E2VguiPanels["vgui_elements"]["functions"][pnlType] != nil and E2VguiPanels["vgui_elements"]["functions"][pnlType]["modifyFunc"] != nil then
+
+		if E2VguiPanels["panels"][e2EntityID] == nil then
+			E2VguiPanels["panels"][e2EntityID] = {}
+		end
+
+		if E2VguiPanels["panels"][e2EntityID][uniqueID] then
+			local modifyFunc = E2VguiPanels["vgui_elements"]["functions"][pnlType]["modifyFunc"]
+			modifiedSuccess = modifyFunc(uniqueID,pnlData,e2EntityID)
+		elseif !E2VguiPanels["panels"][e2EntityID][uniqueID] then
+			local createFunc = E2VguiPanels["vgui_elements"]["functions"][pnlType]["createFunc"]
+			createSuccessful = createFunc(uniqueID,pnlData,e2EntityID)
+		end
+	end
+	if createSuccessful ~= nil then
+		net.Start("E2Vgui.ConfirmCreation")
+			net.WriteInt(uniqueID,32)
+			net.WriteInt(e2EntityID,32)
+			net.WriteBool(createSuccessful)
+			net.WriteTable(pnlData)
+		net.SendToServer()
+	end
+	--TODO:only send changes 
+	if modifiedSuccess ~= nil then
+		net.Start("E2Vgui.ConfirmModification")
+			net.WriteString(uniqueID)
+			net.WriteInt(e2EntityID,32)
+			net.WriteBool(modifiedSuccess)
+			net.WriteTable(pnlData)
+		net.SendToServer()
+	end
+end)
+
+
+
 net.Receive("E2Vgui.ClosePanels",function()
 	-- -2 : none -1: all of e2 / 0 : multiple / 1 : all
 	local mode = net.ReadInt(2)

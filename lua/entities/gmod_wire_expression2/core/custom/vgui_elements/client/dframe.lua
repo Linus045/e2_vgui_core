@@ -43,6 +43,31 @@ E2VguiPanels["vgui_elements"]["functions"]["DFrame"]["createFunc"] = function(un
 	return true
 end
 
+
+E2VguiPanels["vgui_elements"]["functions"]["DFrame"]["modifyFunc"] = function(uniqueID, pnlData, e2EntityID)
+	local panel = E2VguiPanels["panels"][e2EntityID][uniqueID]
+	panel:SetSize(pnlData["width"],pnlData["height"])
+	panel:SetPos(pnlData["posX"],pnlData["posY"])
+	panel:SetTitle(pnlData["title"])
+	if pnlData["putCenter"] then
+		panel:Center()
+	end
+	panel:SetSizable(pnlData["sizable"])
+	panel:ShowCloseButton(pnlData["showCloseButton"])
+	panel:MakePopup()
+
+	if pnlData["color"] ~= nil then
+		function panel:Paint(w,h)
+			surface.SetDrawColor(pnlData["color"])
+			surface.DrawRect(0,0,w,h)
+		end
+	end
+
+	panel["uniqueID"] = uniqueID
+	panel["pnlData"] = pnlData
+	return true
+end
+
 --[[-------------------------------------------------------------------------
 	HELPER FUNCTIONS 
 ---------------------------------------------------------------------------]]

@@ -5,6 +5,8 @@ util.AddNetworkString("E2Vgui.CreatePanel")
 util.AddNetworkString("E2Vgui.NotifyPanelRemove")
 util.AddNetworkString("E2Vgui.ConfirmCreation")
 util.AddNetworkString("E2Vgui.ClosePanels")
+util.AddNetworkString("E2Vgui.ModifyPanel")
+util.AddNetworkString("E2Vgui.ConfirmModification")
 
 local sbox_E2_Vgui_maxVgui 			= CreateConVar("wire_expression2_vgui_maxPanels",100,{FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE},"Sets the max amount of panels you can create with E2")
 local sbox_E2_Vgui_maxVguiPerSecond 	= CreateConVar("wire_expression2_vgui_maxPanelsPerSecond",20,{FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE},"Sets the max amount of panels you can create/modify/update with E2 (All these send netmessages and too many would crash the client [Client overflow])")
@@ -169,6 +171,47 @@ function E2VguiCore.CreatePanel(e2self, players, paneldata, pnlType)
 end
 
 
+function E2VguiCore.ModifyPanel(e2self, players, paneldata, pnlType)
+	if !istable(e2self) or !istable(players) or !istable(paneldata) then return end
+	e2EntityID = e2self.entity:EntIndex()
+	local uniqueID = paneldata["uniqueID"]
+	if uniqueID == nil or players == nil then return end
+	if e2EntityID == nil or e2EntityID <= 0 then return end
+
+	if pnlType == nil or !E2VguiCore.vgui_types[pnlType] then
+		error("[E2VguiCore] Paneltype is invalid or not registered! type: ".. tostring(pnlType))
+		return
+	end
+
+	if !E2VguiCore.CanUpdateVgui(e2self.player) then return end
+	e2self.player.e2vgui_tempPanels = e2self.player.e2vgui_tempPanels + 1
+
+	players = E2VguiCore.FilterPlayers(players) //remove redundant names and not-player entries
+	--TODO: Implement this
+	--players = E2VguiCore.FilterBlocklist(players,e2self.player) //has anyone e2self.player in their block list ?
+	--players = E2VguiCore.FilterPermission(players,e2self.player) //check if e2self.player is allowed to use vguicore
+	if table.Count(players) == 0 then return end //there are no players to create the panel for therefore return
+
+	local panel = {
+		["type"] = pnlType,
+		["players"] = players,
+		["paneldata"] = paneldata
+	}
+
+	for k,ply in pairs(players) do
+		ply.e2_vgui_core = ply.e2_vgui_core or {}
+		ply.e2_vgui_core[e2EntityID] = ply.e2_vgui_core[e2EntityID] or {}
+		ply.e2_vgui_core[e2EntityID][uniqueID] = panel
+	end
+	net.Start("E2Vgui.ModifyPanel")
+		net.WriteString(pnlType)
+		net.WriteInt(uniqueID,32)
+		net.WriteInt(e2EntityID,32)
+		net.WriteTable(paneldata)
+	net.Send(players)
+	return panel
+end
+
 --[[-------------------------------------------------------------------------
 						UTILITY STUFF
 ---------------------------------------------------------------------------]]
@@ -240,6 +283,24 @@ function E2VguiCore.RemoveAllPanelsOfE2(e2EntityID)
 			v.e2_vgui_core[e2EntityID] = nil
 			end
 		end
+end
+
+
+function E2VguiCore.RemovePanel(e2EntityID,uniqueID,ply)
+	if e2EntityID == nil or uniqueID == nil or ply == nil or !ply:IsPlayer()then return end
+	if ply.e2_vgui_core[e2EntityID] == nil then return end
+
+	local panels = {uniqueID}
+	net.Start("E2Vgui.ClosePanels")
+		net.WriteInt(0,2)
+		net.WriteInt(e2EntityID,32)
+		net.WriteTable(panels)
+	net.Send(ply)
+
+	ply.e2_vgui_core[e2EntityID][uniqueID] = nil
+	if table.Count(ply.e2_vgui_core[e2EntityID]) ==  0 then
+		ply.e2_vgui_core[e2EntityID] = nil
+	end
 end
 
 --[[-------------------------------------------------------------------------

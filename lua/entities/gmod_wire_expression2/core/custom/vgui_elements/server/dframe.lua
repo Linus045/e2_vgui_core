@@ -99,6 +99,12 @@ e2function dframe dframe(number uniqueID)
 	}
 end
 
+e2function void dframe:addPlayer(entity ply)
+	if ply:IsPlayer() then 
+		table.insert(this["players"],ply)
+	end
+end
+
 e2function dframe dframe:setPos(number posX,number posY)
 	this["paneldata"]["posX"] = posX
 	this["paneldata"]["posY"] = posY
@@ -139,6 +145,17 @@ end
 e2function void dframe:create()
 	local pnl = E2VguiCore.CreatePanel(self,this["players"],this["paneldata"],"DFrame")
 end
+
+e2function dframe dframe:modify()
+	local pnl = E2VguiCore.ModifyPanel(self,this["players"],this["paneldata"],"DFrame")
+	return pnl
+end
+
+e2function void dframe:remove()
+	for _,ply in pairs(this["players"]) do
+		E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
+	end
+end
 --[[
 e2function void dframe:update() --make usable for an array of frames
 e2function void dframe:modify() --make usable for an array of frames
@@ -147,6 +164,8 @@ e2function void array:modify() --make usable for an array of frames
 e2function void array:modify() --make usable for an array of frames
 
 or make it update it child panels when the parent is updated/modified
+
+
 ]]
 
 
