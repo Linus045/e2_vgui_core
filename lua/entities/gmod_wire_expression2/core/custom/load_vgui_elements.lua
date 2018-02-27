@@ -58,12 +58,17 @@ end
 e2_include_init()
 --e2_include()
 -- Load serverside files here, they need additional parsing
+
+print("/########################################\\")
+print("| Including vgui elements from /custom/vgui_elements/server/")
 do
 	local list = file.Find("entities/gmod_wire_expression2/core/custom/vgui_elements/server/*.lua", "LUA")
 	for _, filename in pairs(list) do
 		e2_include("custom/vgui_elements/server/" .. filename)
+		print("| " .. filename)
 	end
 end
+print("\\########################################/")
 
 e2_include_finalize()
 --wire_expression2_CallHook("postinit")

@@ -1,5 +1,11 @@
 E2VguiCore = {
-	["vgui_types"] = {}
+	["vgui_types"] = {},
+	["Trigger"] = {},
+	["DefaultPanel"] = {
+		["type"] = "",
+		["players"] = {},
+		["paneldata"] = {}
+	}
 }
 util.AddNetworkString("E2Vgui.CreatePanel")
 util.AddNetworkString("E2Vgui.NotifyPanelRemove")
@@ -7,6 +13,7 @@ util.AddNetworkString("E2Vgui.ConfirmCreation")
 util.AddNetworkString("E2Vgui.ClosePanels")
 util.AddNetworkString("E2Vgui.ModifyPanel")
 util.AddNetworkString("E2Vgui.ConfirmModification")
+util.AddNetworkString("E2Vgui.TriggerE2")
 
 local sbox_E2_Vgui_maxVgui 			= CreateConVar("wire_expression2_vgui_maxPanels",100,{FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE},"Sets the max amount of panels you can create with E2")
 local sbox_E2_Vgui_maxVguiPerSecond 	= CreateConVar("wire_expression2_vgui_maxPanelsPerSecond",20,{FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE},"Sets the max amount of panels you can create/modify/update with E2 (All these send netmessages and too many would crash the client [Client overflow])")
@@ -355,5 +362,38 @@ end)
 
 
 
+net.Receive("E2Vgui.TriggerE2",function(len,ply)
+	local e2EntityID = net.ReadInt(32)
+	local uniqueID = net.ReadInt(32)
+	local panelType = net.ReadString()
+	if panelType == "DButton" then
+		local text = net.ReadString()
+		E2VguiCore.TriggerE2(e2EntityID,uniqueID, ply, text)
+	end
+end)
 
 
+--TODO: Refine this function.
+function E2VguiCore.TriggerE2(e2EntityID,uniqueID, triggerPly, value)
+	if E2VguiCore.Trigger[e2EntityID] == nil then
+		E2VguiCore.Trigger[e2EntityID] = {}
+	end
+	if E2VguiCore.Trigger[e2EntityID].RunOnDerma == nil or E2VguiCore.Trigger[e2EntityID].RunOnDerma == false then return end
+	if triggerPly == nil or !triggerPly:IsPlayer() then return end
+	local e2Entity = ents.GetByIndex(e2EntityID)
+	if !IsValid(e2Entity) then return end
+	if e2Entity:GetClass() != "gmod_wire_expression2" then return end
+
+	local value = value and tostring(value) or ""
+	E2VguiCore.Trigger[e2EntityID].triggeredByClient = triggerPly
+	E2VguiCore.Trigger[e2EntityID].triggerValue = value
+	E2VguiCore.Trigger[e2EntityID].triggerUniqueID = uniqueID
+	E2VguiCore.Trigger[e2EntityID].run = true
+
+	e2Entity:Execute()
+
+	E2VguiCore.Trigger[e2EntityID].triggeredByClient = NULL
+	E2VguiCore.Trigger[e2EntityID].triggerValue = -1
+	E2VguiCore.Trigger[e2EntityID].triggerUniqueID = -1
+	E2VguiCore.Trigger[e2EntityID].run = false
+end
