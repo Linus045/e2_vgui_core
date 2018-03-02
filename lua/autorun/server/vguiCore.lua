@@ -14,6 +14,7 @@ util.AddNetworkString("E2Vgui.ClosePanels")
 util.AddNetworkString("E2Vgui.ModifyPanel")
 util.AddNetworkString("E2Vgui.ConfirmModification")
 util.AddNetworkString("E2Vgui.TriggerE2")
+util.AddNetworkString("E2Vgui.SetPanelVisibility")
 
 local sbox_E2_Vgui_maxVgui 			= CreateConVar("wire_expression2_vgui_maxPanels",100,{FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE},"Sets the max amount of panels you can create with E2")
 local sbox_E2_Vgui_maxVguiPerSecond 	= CreateConVar("wire_expression2_vgui_maxPanelsPerSecond",20,{FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE},"Sets the max amount of panels you can create/modify/update with E2 (All these send netmessages and too many would crash the client [Client overflow])")
@@ -327,7 +328,24 @@ function E2VguiCore.RemovePanel(e2EntityID,uniqueID,ply)
 	end
 end
 
-
+function E2VguiCore.SetPanelVisibility(e2EntityID,uniqueID,players,visible)
+	local panel = nil
+	local targets = {}
+	for k,v in pairs(players) do
+		panel = E2VguiCore.GetPanelByID(v,e2EntityID, uniqueID)
+		//TODO: Check why this IsValid returns false 
+		if !IsValid(panel) and not type(panel) == "table" then 
+			continue
+		end
+		table.insert(targets,v)
+	end
+	net.Start("E2Vgui.SetPanelVisibility")
+		net.WriteInt(uniqueID,32)
+		net.WriteInt(e2EntityID,32)
+		visible = visible and 1 or 0
+		net.WriteInt(visible,2) //TODO:Check why writeBool doesn't work
+	net.Send(targets)
+end
 
 --[[-------------------------------------------------------------------------
 							HOOKS

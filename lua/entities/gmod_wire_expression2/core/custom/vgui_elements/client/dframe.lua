@@ -8,14 +8,13 @@ E2VguiPanels["vgui_elements"]["functions"]["DFrame"]["createFunc"] = function(un
 		panel:Center()
 	end
 	panel:SetDeleteOnClose(pnlData["deleteOnClose"])
-	panel:SetVisible(pnlData["visible"])
 	panel:SetSizable(pnlData["sizable"])
 	panel:ShowCloseButton(pnlData["showCloseButton"])
 	panel:MakePopup()
 
 
 	--notify server of removal and also update client table
-	function panel:OnClose()
+	function panel:OnRemove()
 		if not panel:GetDeleteOnClose() then return end
 		local name = self["uniqueID"]
 		local pnlData = self["pnlData"]
@@ -58,7 +57,6 @@ E2VguiPanels["vgui_elements"]["functions"]["DFrame"]["modifyFunc"] = function(un
 		panel:Center()
 	end
 	panel:SetDeleteOnClose(pnlData["deleteOnClose"])
-	panel:SetVisible(pnlData["visible"])
 	panel:SetSizable(pnlData["sizable"])
 	panel:ShowCloseButton(pnlData["showCloseButton"])
 	panel:MakePopup()

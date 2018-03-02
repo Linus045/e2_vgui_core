@@ -5,7 +5,6 @@ E2VguiPanels["vgui_elements"]["functions"]["DButton"]["createFunc"] = function(u
 	panel:SetSize(pnlData["width"],pnlData["height"])
 	panel:SetPos(pnlData["posX"],pnlData["posY"])
 	panel:SetText(pnlData["text"])
-	panel:SetVisible(pnlData["visible"])
 
 	--notify server of removal and also update client table
 	function panel:OnRemove()
@@ -58,7 +57,6 @@ E2VguiPanels["vgui_elements"]["functions"]["DButton"]["modifyFunc"] = function(u
 	panel:SetSize(pnlData["width"],pnlData["height"])
 	panel:SetPos(pnlData["posX"],pnlData["posY"])
 	panel:SetText(pnlData["text"])
-	panel:SetVisible(pnlData["visible"])
 
 	if pnlData["color"] ~= nil then
 		function panel:Paint(w,h)

@@ -41,7 +41,15 @@ net.Receive("E2Vgui.CreatePanel",function()
 	net.SendToServer()
 end)
 
-
+net.Receive("E2Vgui.SetPanelVisibility",function()
+	local uniqueID = net.ReadInt(32)
+	local e2EntityID = net.ReadInt(32)
+	local visible = net.ReadInt(2) //TODO: Check why readBool doesn't work
+	visible = visible==1 and true or false
+	local panel = E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
+	if panel == nil or !IsValid(panel) then return end
+	panel:SetVisible(visible)
+end)
 
 net.Receive("E2Vgui.ModifyPanel",function()
 	local modifiedSuccess = nil
@@ -95,8 +103,9 @@ net.Receive("E2Vgui.ClosePanels",function()
 		local e2Index = net.ReadInt(32)
 		if e2Index == 0 then return end
 		if E2VguiPanels["panels"][e2Index] == nil then return end
-		for _,pnl in pairs(E2VguiPanels["panels"][e2Index]) do
+		for id,pnl in pairs(E2VguiPanels["panels"][e2Index]) do
 			pnl:Remove()
+			E2VguiPanels["panels"][e2Index][id] = nil
 		end
 	elseif mode == 0 then
 		local e2Index = net.ReadInt(32)
@@ -110,6 +119,7 @@ net.Receive("E2Vgui.ClosePanels",function()
 			for panelName,panel in pairs(e2Panels) do
 				if panelName == id then
 					panel:Remove()
+					E2VguiPanels["panels"][e2Index][id] = nil
 				end
 			end
 		end
@@ -119,8 +129,8 @@ net.Receive("E2Vgui.ClosePanels",function()
 				pnl:Remove()
 			end
 		end
+		E2VguiPanels["panels"][e2Index] = nil
 	end
-
 end)
 
 

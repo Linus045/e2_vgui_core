@@ -102,7 +102,7 @@ e2function dframe dframe(number uniqueID)
 end
 
 e2function void dframe:setDeleteOnClose(number delete)
-	this["paneldata"]["deleteOnClose"] = delete > 0 and true or false
+	this["paneldata"]["deleteOnClose"] = delete > 0
 	return this
 end
 
@@ -111,7 +111,9 @@ e2function void dframe:getDeleteOnClose()
 end
 
 e2function void dframe:setVisible(number visible)
-	this["paneldata"]["visible"] = visible > 0 and true or false
+	local vis = visible > 0
+	this["paneldata"]["visible"] = vis
+	E2VguiCore.SetPanelVisibility(self.entity:EntIndex(),this["paneldata"]["uniqueID"],this["players"],vis)
 	return this
 end
 
@@ -169,7 +171,7 @@ e2function dframe dframe:setTitle(string title)
 end
 
 e2function dframe dframe:setSizable(number sizable)
-	this["paneldata"]["sizable"] = sizable > 0 and true or false
+	this["paneldata"]["sizable"] = sizable > 0
 	return this
 end
 
@@ -195,7 +197,7 @@ e2function dframe dframe:setColor(number red,number green,number blue,number alp
 end
 
 e2function dframe dframe:showCloseButton(number showCloseButton)
-	this["paneldata"]["showCloseButton"] = showCloseButton > 0 and true or false
+	this["paneldata"]["showCloseButton"] = showCloseButton > 0 
 	return this
 end
 

@@ -116,6 +116,17 @@ e2function dslider dslider(number uniqueID,number parentID)
 	}
 end
 
+e2function void dslider:setVisible(number visible)
+	local vis = visible > 0
+	this["paneldata"]["visible"] = vis
+	E2VguiCore.SetPanelVisibility(self.entity:EntIndex(),this["paneldata"]["uniqueID"],this["players"],vis)
+	return this
+end
+
+e2function number dslider:isVisible()
+	return this["paneldata"]["visible"] and 1 or 0
+end
+
 e2function void dslider:addPlayer(entity ply)
 	if ply != nil and ply:IsPlayer() then 
 		table.insert(this["players"],ply)

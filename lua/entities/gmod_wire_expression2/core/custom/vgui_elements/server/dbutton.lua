@@ -114,7 +114,9 @@ e2function dbutton dbutton(number uniqueID,number parentID)
 end
 
 e2function void dbutton:setVisible(number visible)
-	this["paneldata"]["visible"] = visible > 0 and true or false
+	local vis = visible > 0
+	this["paneldata"]["visible"] = vis
+	E2VguiCore.SetPanelVisibility(self.entity:EntIndex(),this["paneldata"]["uniqueID"],this["players"],vis)
 	return this
 end
 
