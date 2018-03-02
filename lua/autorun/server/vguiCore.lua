@@ -16,7 +16,7 @@ util.AddNetworkString("E2Vgui.ConfirmModification")
 util.AddNetworkString("E2Vgui.TriggerE2")
 util.AddNetworkString("E2Vgui.SetPanelVisibility")
 
-local sbox_E2_Vgui_maxVgui 			= CreateConVar("wire_expression2_vgui_maxPanels",100,{FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE},"Sets the max amount of panels you can create with E2")
+local sbox_E2_Vgui_maxVgui 				= CreateConVar("wire_expression2_vgui_maxPanels",100,{FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE},"Sets the max amount of panels you can create with E2")
 local sbox_E2_Vgui_maxVguiPerSecond 	= CreateConVar("wire_expression2_vgui_maxPanelsPerSecond",20,{FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE},"Sets the max amount of panels you can create/modify/update with E2 (All these send netmessages and too many would crash the client [Client overflow])")
 local sbox_E2_Vgui_permissionDefault 	= CreateConVar("wire_expression2_vgui_permissionDefault",-1,{FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE},
 	[[Sets the permission value that defines who can use the core.
@@ -155,7 +155,7 @@ function E2VguiCore.CreatePanel(e2self, players, paneldata, pnlType)
 	if !E2VguiCore.CanUpdateVgui(e2self.player) then return end
 	e2self.player.e2vgui_tempPanels = e2self.player.e2vgui_tempPanels + 1
 
-	players = E2VguiCore.FilterPlayers(players) //remove redundant names and not-player entries
+	local players = E2VguiCore.FilterPlayers(players) //remove redundant names and not-player entries
 	--TODO: Implement this
 	--players = E2VguiCore.FilterBlocklist(players,e2self.player) //has anyone e2self.player in their block list ?
 	--players = E2VguiCore.FilterPermission(players,e2self.player) //check if e2self.player is allowed to use vguicore
@@ -173,6 +173,7 @@ function E2VguiCore.CreatePanel(e2self, players, paneldata, pnlType)
 		ply.e2_vgui_core[e2EntityID] = ply.e2_vgui_core[e2EntityID] or {}
 		ply.e2_vgui_core[e2EntityID][uniqueID] = panel
 	end
+	
 	net.Start("E2Vgui.CreatePanel")
 		net.WriteString(pnlType)
 		net.WriteInt(uniqueID,32)

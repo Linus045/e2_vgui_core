@@ -13,13 +13,13 @@ e2function void vguiCloseOnPlayer(entity ply)
 end
 
 e2function void vguiDefaultPlayers(array players)
-	if self.player.e2_vgui_core_default_players == nil then
-		self.player.e2_vgui_core_default_players = {}
+	if self.entity.e2_vgui_core_default_players == nil then
+		self.entity.e2_vgui_core_default_players = {}
 	end
-	if self.player.e2_vgui_core_default_players[self.entity:EntIndex()] == nil then
-		self.player.e2_vgui_core_default_players[self.entity:EntIndex()] = {}
+	if self.entity.e2_vgui_core_default_players[self.entity:EntIndex()] == nil then
+		self.entity.e2_vgui_core_default_players[self.entity:EntIndex()] = {}
 	end
-	self.player.e2_vgui_core_default_players[self.entity:EntIndex()] = E2VguiCore.FilterPlayers(players)
+	self.entity.e2_vgui_core_default_players[self.entity:EntIndex()] = E2VguiCore.FilterPlayers(players)
 end
 
 --[[-------------------------------------------------------------------------
