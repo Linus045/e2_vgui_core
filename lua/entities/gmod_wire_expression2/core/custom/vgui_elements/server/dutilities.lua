@@ -3,6 +3,25 @@ e2function number vguiCanSend()
 	return (available==true) and 1 or 0
 end
 
+e2function void vguiCloseAll()
+	E2VguiCore.RemoveAllPanelsOfE2(self.entity:EntIndex())
+end
+
+e2function void vguiCloseOnPlayer(entity ply)
+	if ply == nil or !ply:IsPlayer() then return end
+	E2VguiCore.RemovePanelsOnPlayer(self.entity:EntIndex(),ply)
+end
+
+e2function void vguiDefaultPlayers(array players)
+	if self.player.e2_vgui_core_default_players == nil then
+		self.player.e2_vgui_core_default_players = {}
+	end
+	if self.player.e2_vgui_core_default_players[self.entity:EntIndex()] == nil then
+		self.player.e2_vgui_core_default_players[self.entity:EntIndex()] = {}
+	end
+	self.player.e2_vgui_core_default_players[self.entity:EntIndex()] = E2VguiCore.FilterPlayers(players)
+end
+
 --[[-------------------------------------------------------------------------
 	RunOnVGUI stuff, used for button clicks and similar
 ---------------------------------------------------------------------------]]

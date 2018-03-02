@@ -9,6 +9,8 @@ E2VguiLib = {}
 
 function E2VguiLib.RegisterNewPanel(e2EntityID ,uniqueID, pnl)
 	E2VguiPanels.panels[e2EntityID][uniqueID] = pnl
+--  TODO:Add hooks later ?
+--	hook.Run("E2VguiLib.RegisterNewPanel",LocalPlayer(),e2EntityID,pnl)
 end
 
 function E2VguiLib.GetPanelByID(uniqueID,e2EntityID)

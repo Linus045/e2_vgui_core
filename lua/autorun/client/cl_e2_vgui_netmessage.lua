@@ -60,11 +60,14 @@ net.Receive("E2Vgui.ModifyPanel",function()
 		if E2VguiPanels["panels"][e2EntityID][uniqueID] then
 			local modifyFunc = E2VguiPanels["vgui_elements"]["functions"][pnlType]["modifyFunc"]
 			modifiedSuccess = modifyFunc(uniqueID,pnlData,e2EntityID)
+--[[ Don't recreate the panel when the player closed it
 		elseif !E2VguiPanels["panels"][e2EntityID][uniqueID] then
 			local createFunc = E2VguiPanels["vgui_elements"]["functions"][pnlType]["createFunc"]
 			createSuccessful = createFunc(uniqueID,pnlData,e2EntityID)
+]]
 		end
 	end
+--[[ read above
 	if createSuccessful ~= nil then
 		net.Start("E2Vgui.ConfirmCreation")
 			net.WriteInt(uniqueID,32)
@@ -73,6 +76,7 @@ net.Receive("E2Vgui.ModifyPanel",function()
 			net.WriteTable(pnlData)
 		net.SendToServer()
 	end
+]]
 	--TODO:only send changes 
 	if modifiedSuccess ~= nil then
 		net.Start("E2Vgui.ConfirmModification")
@@ -83,8 +87,6 @@ net.Receive("E2Vgui.ModifyPanel",function()
 		net.SendToServer()
 	end
 end)
-
-
 
 net.Receive("E2Vgui.ClosePanels",function()
 	-- -2 : none -1: all of e2 / 0 : multiple / 1 : all

@@ -5,6 +5,8 @@ E2VguiPanels["vgui_elements"]["functions"]["DButton"]["createFunc"] = function(u
 	panel:SetSize(pnlData["width"],pnlData["height"])
 	panel:SetPos(pnlData["posX"],pnlData["posY"])
 	panel:SetText(pnlData["text"])
+	panel:SetVisible(pnlData["visible"])
+
 	--notify server of removal and also update client table
 	function panel:OnRemove()
 		local name = self["uniqueID"]
@@ -52,10 +54,11 @@ end
 
 
 E2VguiPanels["vgui_elements"]["functions"]["DButton"]["modifyFunc"] = function(uniqueID, pnlData, e2EntityID)
-	local panel = E2VguiPanels["panels"][e2EntityID][uniqueID]
+	local panel = E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
 	panel:SetSize(pnlData["width"],pnlData["height"])
 	panel:SetPos(pnlData["posX"],pnlData["posY"])
 	panel:SetText(pnlData["text"])
+	panel:SetVisible(pnlData["visible"])
 
 	if pnlData["color"] ~= nil then
 		function panel:Paint(w,h)

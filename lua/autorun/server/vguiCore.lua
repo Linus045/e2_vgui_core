@@ -17,15 +17,17 @@ util.AddNetworkString("E2Vgui.TriggerE2")
 
 local sbox_E2_Vgui_maxVgui 			= CreateConVar("wire_expression2_vgui_maxPanels",100,{FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE},"Sets the max amount of panels you can create with E2")
 local sbox_E2_Vgui_maxVguiPerSecond 	= CreateConVar("wire_expression2_vgui_maxPanelsPerSecond",20,{FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE},"Sets the max amount of panels you can create/modify/update with E2 (All these send netmessages and too many would crash the client [Client overflow])")
-local sbox_E2_Vgui_permissionDefault 	= CreateConVar("wire_expression2_vgui_permissionDefault",0,{FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE},
+local sbox_E2_Vgui_permissionDefault 	= CreateConVar("wire_expression2_vgui_permissionDefault",-1,{FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE},
 	[[Sets the permission value that defines who can use the core.
-	(-1) - use ulx permissions (will use 0 if no ulx is installed).
+	(-1) - DEFAULT:use ulx permissions (will use 1 if no ulx is installed).
 	(0)  - all players can create on everyone.
 	(1)  - players can create only on their client.
 	(2)  - only admins and superadmins can use it (on everyone)]])
 
 if ULib ~= nil then
 	ULib.ucl.registerAccess("E2 Vgui Access", {"user","admin", "superadmin"}, "Give access to create vgui panels with e2 on all clients", "E2 Vgui")
+else
+	sbox_E2_Vgui_permissionDefault:SetInt(1)
 end
 
 local TimeStamp = 0
@@ -83,7 +85,7 @@ function E2VguiCore.HasAccess(ply,target)
 		if ULib ~= nil then
 			return ULib.ucl.query(ply, "E2 Vgui Access")
 		else
-			return true // will allow anyway even if ulx setting is used but ulx is not installed
+			return false //should default to 1 in this case, ulx is not installed
 		end
 	elseif setting == 0 then
 		return true
@@ -134,6 +136,8 @@ function E2VguiCore.EnableVguiElementType(vguiType,status)
 		end
 	end
 end
+
+
 
 function E2VguiCore.CreatePanel(e2self, players, paneldata, pnlType)
 	if !istable(e2self) or !istable(players) or !istable(paneldata) then return end
@@ -248,7 +252,6 @@ function E2VguiCore.GetPanelByID(ply,e2EntityID, uniqueID)
 	return ply.e2_vgui_core[e2EntityID][uniqueID]
 end
 
-
 --[[-------------------------------------------------------------------------
 						DERMA PANEL ADDING/MODIFY FOR SERVER SYNC
 ---------------------------------------------------------------------------]]
@@ -293,6 +296,20 @@ function E2VguiCore.RemoveAllPanelsOfE2(e2EntityID)
 end
 
 
+function E2VguiCore.RemovePanelsOnPlayer(e2EntityID,ply)
+	if e2EntityID == nil or ply == nil or !ply:IsPlayer()then return end
+	if ply.e2_vgui_core[e2EntityID] == nil then return end
+
+	local panels = {uniqueID}
+	net.Start("E2Vgui.ClosePanels")
+		net.WriteInt(-1,2)
+		net.WriteInt(e2EntityID,32)
+	net.Send(ply)
+
+	ply.e2_vgui_core[e2EntityID] = nil
+end
+
+
 function E2VguiCore.RemovePanel(e2EntityID,uniqueID,ply)
 	if e2EntityID == nil or uniqueID == nil or ply == nil or !ply:IsPlayer()then return end
 	if ply.e2_vgui_core[e2EntityID] == nil then return end
@@ -310,12 +327,17 @@ function E2VguiCore.RemovePanel(e2EntityID,uniqueID,ply)
 	end
 end
 
+
+
 --[[-------------------------------------------------------------------------
 							HOOKS
 ---------------------------------------------------------------------------]]
 hook.Add("EntityRemoved","E2VguiCheckDeletion",function(entity)
 	if entity:GetClass() == "gmod_wire_expression2" then
 		E2VguiCore.RemoveAllPanelsOfE2(entity:EntIndex())
+		if entity:GetOwner().e2_vgui_core_default_players != nil then
+			entity:GetOwner().e2_vgui_core_default_players[entity:EntIndex()] = nil
+		end
 	end
 end)
 
@@ -366,10 +388,8 @@ net.Receive("E2Vgui.TriggerE2",function(len,ply)
 	local e2EntityID = net.ReadInt(32)
 	local uniqueID = net.ReadInt(32)
 	local panelType = net.ReadString()
-	if panelType == "DButton" then
-		local text = net.ReadString()
-		E2VguiCore.TriggerE2(e2EntityID,uniqueID, ply, text)
-	end
+	local text = net.ReadString()
+	E2VguiCore.TriggerE2(e2EntityID,uniqueID, ply, text)
 end)
 
 

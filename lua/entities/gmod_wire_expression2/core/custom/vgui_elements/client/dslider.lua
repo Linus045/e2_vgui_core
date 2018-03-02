@@ -1,22 +1,17 @@
-E2VguiPanels["vgui_elements"]["functions"]["DFrame"] = {}
-E2VguiPanels["vgui_elements"]["functions"]["DFrame"]["createFunc"] = function(uniqueID, pnlData, e2EntityID)
-	local panel = vgui.Create("DFrame")
+E2VguiPanels["vgui_elements"]["functions"]["DSlider"] = {}
+E2VguiPanels["vgui_elements"]["functions"]["DSlider"]["createFunc"] = function(uniqueID, pnlData, e2EntityID)
+	local parent = E2VguiLib.GetPanelByID(pnlData["parentID"],e2EntityID)
+	local panel = vgui.Create("DNumSlider",parent)
 	panel:SetSize(pnlData["width"],pnlData["height"])
 	panel:SetPos(pnlData["posX"],pnlData["posY"])
-	panel:SetTitle(pnlData["title"])
-	if pnlData["putCenter"] then
-		panel:Center()
-	end
-	panel:SetDeleteOnClose(pnlData["deleteOnClose"])
-	panel:SetVisible(pnlData["visible"])
-	panel:SetSizable(pnlData["sizable"])
-	panel:ShowCloseButton(pnlData["showCloseButton"])
-	panel:MakePopup()
-
-
+	panel:SetText(pnlData["text"])
+	panel:SetDark(pnlData["dark"])
+	panel:SetDecimals(pnlData["decimals"])
+	panel:SetMax(pnlData["max"])
+	panel:SetMin(pnlData["min"])
+	panel:SetValue(pnlData["value"])
 	--notify server of removal and also update client table
-	function panel:OnClose()
-		if not panel:GetDeleteOnClose() then return end
+	function panel:OnRemove()
 		local name = self["uniqueID"]
 		local pnlData = self["pnlData"]
 		local panels = E2VguiLib.GetChildPanelIDs(name,e2EntityID)
@@ -32,7 +27,29 @@ E2VguiPanels["vgui_elements"]["functions"]["DFrame"]["createFunc"] = function(un
 			net.WriteTable(panels)
 		net.SendToServer()
 	end
+	panel["changed"] = true
+	
+	function panel:Think()
+		if panel["changed"] == false then
+			if self:IsEditing() == nil then //Returns nil instead of false if not editing
+				local uniqueID = self["uniqueID"]
+				if uniqueID != nil then
+					net.Start("E2Vgui.TriggerE2")
+						net.WriteInt(e2EntityID,32)
+						net.WriteInt(uniqueID,32)
+						net.WriteString("DSlider")
+						net.WriteString(tostring(math.Round(self:GetValue(),self:GetDecimals())))
+					net.SendToServer()
+				end
+				panel["changed"] = true
+			end
+		end
+	end
 
+	function panel:OnValueChanged(number)
+		panel["changed"] = false //set flag to false so it waits until you 
+								 //stopped editing before sending net-messages
+	end
 
 	if pnlData["color"] ~= nil then
 		function panel:Paint(w,h)
@@ -48,20 +65,16 @@ E2VguiPanels["vgui_elements"]["functions"]["DFrame"]["createFunc"] = function(un
 end
 
 
-E2VguiPanels["vgui_elements"]["functions"]["DFrame"]["modifyFunc"] = function(uniqueID, pnlData, e2EntityID)
+E2VguiPanels["vgui_elements"]["functions"]["DSlider"]["modifyFunc"] = function(uniqueID, pnlData, e2EntityID)
 	local panel = E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
-	if panel == nil or !IsValid(panel)  then return end
 	panel:SetSize(pnlData["width"],pnlData["height"])
 	panel:SetPos(pnlData["posX"],pnlData["posY"])
-	panel:SetTitle(pnlData["title"])
-	if pnlData["putCenter"] then
-		panel:Center()
-	end
-	panel:SetDeleteOnClose(pnlData["deleteOnClose"])
-	panel:SetVisible(pnlData["visible"])
-	panel:SetSizable(pnlData["sizable"])
-	panel:ShowCloseButton(pnlData["showCloseButton"])
-	panel:MakePopup()
+	panel:SetText(pnlData["text"])
+	panel:SetDark(pnlData["dark"])
+	panel:SetDecimals(pnlData["decimals"])
+	panel:SetMax(pnlData["max"])
+	panel:SetMin(pnlData["min"])
+	panel:SetValue(pnlData["value"])
 
 	if pnlData["color"] ~= nil then
 		function panel:Paint(w,h)
@@ -78,7 +91,7 @@ end
 --[[-------------------------------------------------------------------------
 	HELPER FUNCTIONS 
 ---------------------------------------------------------------------------]]
-E2Helper.Descriptions["dframe"] = "Creates a DFrame."
+E2Helper.Descriptions["DSlider"] = "Creates a DSlider."
 E2Helper.Descriptions["xdf:setPos(nn)"] = "Sets the X and Y position of the panel."
 E2Helper.Descriptions["xdf:setSize(nn)"] = "Sets the width and height of the panel."
 E2Helper.Descriptions["xdf:center()"] = "Centers the panel in the middle of the screen."

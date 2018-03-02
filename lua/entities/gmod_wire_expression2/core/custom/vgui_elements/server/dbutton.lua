@@ -14,13 +14,15 @@ local pnl = {
 		["parentID"] = parentPnlID,
 		["posX"] = 0,
 		["posY"] = 0,
-		["width"] = 150,
-		["height"] = 150,
+		["width"] = 50,
+		["height"] = 22,
 		["text"] = "DButton",
+		["visible"] = true,
 		["color"] = nil
 	}
 return pnl
 end
+
 
 --6th argument type checker without return,
 --7th arguement type checker with return. False for valid type and True for invalid
@@ -32,7 +34,7 @@ registerType("dbutton", "xdb", {["players"] = {}, ["paneldata"] = {}},
 		if #retval ~= 2 then error("Return value does not have exactly 2 entries!",0) end
 	end,
 	function(v)
-		return !isValidDFrame()
+		return !isValidDFrame(v)
 	end
 )
 
@@ -53,28 +55,28 @@ end)
 --TODO: Check if the entire pnl data is valid
 -- if (B) 
 e2function number operator_is(xdb pnldata)
-	return isValidDFrame(pnldata) and  0 or 1
+	return isValidDFrame(pnldata) and  1 or 0
 end
 
 -- if (!B)
 e2function number operator!(xdb pnldata)
-	return isValidDFrame(pnldata) and  1 or 0
+	return isValidDFrame(pnldata) and  0 or 1
 end
 
 --- B == B --check if the names match
 --TODO: Check if the entire pnl data is equal
 e2function number operator==(xdb ldata, xdb rdata)
-	if isValidDFrame(ldata) then return 0 end
-	if isValidDFrame(rdata) then return 0 end
-	return ldata["paneldata"]["uniquename"] == rdata["paneldata"]["uniquename"] and 1 or 0
+	if !isValidDFrame(ldata) then return 0 end
+	if !isValidDFrame(rdata) then return 0 end
+	return ldata["paneldata"]["uniqueID"] == rdata["paneldata"]["uniqueID"] and 1 or 0
 end
 
 --- B != B
 --TODO: Check if the entire pnl data is equal
 e2function number operator!=(xdb ldata, xdb rdata)
-	if isValidDFrame(ldata) then return 1 end
-	if isValidDFrame(rdata) then return 1 end
-	return ldata["paneldata"]["uniquename"] == rdata["paneldata"]["uniquename"] and 0 or 1
+	if !isValidDFrame(ldata) then return 1 end
+	if !isValidDFrame(rdata) then return 1 end
+	return ldata["paneldata"]["uniqueID"] == rdata["paneldata"]["uniqueID"] and 0 or 1
 end
 
 
@@ -90,22 +92,48 @@ end
 	Return: dbutton
 ---------------------------------------------------------------------------]]
 e2function dbutton dbutton(number uniqueID)
+	local players = {self.player}
+	if self.player.e2_vgui_core_default_players != nil and self.player.e2_vgui_core_default_players[self.entity:EntIndex()] != nil then
+		players = self.player.e2_vgui_core_default_players[self.entity:EntIndex()]
+	end
 	return {
-		["players"] = {self.player},
+		["players"] =  players,
 		["paneldata"] = generateDefaultPanel(uniqueID)
 	}
 end
 
 e2function dbutton dbutton(number uniqueID,number parentID)
+	local players = {self.player}
+	if self.player.e2_vgui_core_default_players != nil and self.player.e2_vgui_core_default_players[self.entity:EntIndex()] != nil then
+		players = self.player.e2_vgui_core_default_players[self.entity:EntIndex()]
+	end
 	return {
-		["players"] = {self.player},
+		["players"] =  players,
 		["paneldata"] = generateDefaultPanel(uniqueID,parentID)
 	}
 end
 
+e2function void dbutton:setVisible(number visible)
+	this["paneldata"]["visible"] = visible > 0 and true or false
+	return this
+end
+
+e2function number dbutton:isVisible()
+	return this["paneldata"]["visible"] and 1 or 0
+end
+
+--TODO:Fix player table stuff, check dframe and dslider
 e2function void dbutton:addPlayer(entity ply)
-	if ply:IsPlayer() then 
+	if ply != nil and ply:IsPlayer() then 
 		table.insert(this["players"],ply)
+	end
+end
+
+e2function void dbutton:removePlayer(entity ply)
+	for k,v in pairs(this["players"]) do
+		if ply == v then
+			table.remove(this["players"],k)
+		end
 	end
 end
 
@@ -115,9 +143,21 @@ e2function dbutton dbutton:setPos(number posX,number posY)
 	return this
 end
 
+e2function dbutton dbutton:setPos(vector2 pos)
+	this["paneldata"]["posX"] = pos[1]
+	this["paneldata"]["posY"] = pos[2]
+	return this
+end
+
 e2function dbutton dbutton:setSize(number width,number height)
 	this["paneldata"]["width"] = width
 	this["paneldata"]["height"] = height
+	return this
+end
+
+e2function dbutton dbutton:setSize(vector2 pnlSize)
+	this["paneldata"]["width"] = pnlSize[1]
+	this["paneldata"]["height"] = pnlSize[2]
 	return this
 end
 
@@ -127,10 +167,32 @@ e2function dbutton dbutton:setText(string text)
 	return this
 end
 
+e2function dbutton dbutton:setColor(vector col)
+	this["paneldata"]["color"] = Color(col[1],col[2],col[3],255)
+	return this
+end
+
+e2function dbutton dbutton:setColor(vector col,number alpha)
+	this["paneldata"]["color"] = Color(col[1],col[2],col[3],alpha)
+	return this
+end
+
+e2function dbutton dbutton:setColor(vector4 col)
+	this["paneldata"]["color"] = Color(col[1],col[2],col[3],col[4])
+	return this
+end
+
+e2function dbutton dbutton:setColor(number red,number green,number blue)
+	this["paneldata"]["color"] = Color(red,green,blue,255)
+	return this
+end
+
 e2function dbutton dbutton:setColor(number red,number green,number blue,number alpha)
 	this["paneldata"]["color"] = Color(red,green,blue,alpha)
 	return this
 end
+
+
 
 e2function void dbutton:create()
 	local pnl = E2VguiCore.CreatePanel(self,this["players"],this["paneldata"],"DButton")
@@ -141,7 +203,7 @@ e2function dbutton dbutton:modify()
 	return pnl
 end
 
-e2function void dbutton:remove()
+e2function void dbutton:close()
 	for _,ply in pairs(this["players"]) do
 		E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
 	end
