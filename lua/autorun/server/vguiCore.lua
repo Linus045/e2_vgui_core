@@ -96,6 +96,10 @@ function E2VguiCore.HasAccess(ply,target)
 	if !ply:IsPlayer() or !target:IsPlayer() then return false end
 
 	local setting = sbox_E2_Vgui_permissionDefault:GetInt()
+	if setting < -1 or setting > 2 then
+		sbox_E2_Vgui_permissionDefault:SetInt(1)
+		setting = 1
+	end
 	if setting == -1 then
 		if ULib ~= nil then
 			return ULib.ucl.query(ply, "e2_vgui_access")
@@ -154,7 +158,7 @@ function E2VguiCore.BlockClient(ply,target)
 		E2VguiCore.BlockedPlayer[ply:SteamID()] = {}
 	end
 	E2VguiCore.BlockedPlayer[ply:SteamID()][target:SteamID()] = true
-	print("[E2VguiCore]" .. tostring(ply).." blocked "..tostring(target))
+//	print("[E2VguiCore]" .. tostring(ply).." blocked "..tostring(target))
 end
 
 
@@ -168,7 +172,7 @@ Args:
 Return: nil
 ---------------------------------------------------------------------------]]
 function E2VguiCore.UnblockClient(ply,target)
-	print("[E2VguiCore]" .. tostring(ply).." unblocked :"..tostring(target))
+//	print("[E2VguiCore]" .. tostring(ply).." unblocked :"..tostring(target))
 	if ply == nil or target == nil then return end
 	if !ply:IsPlayer() or !target:IsPlayer() then return end
 	if ply == target then return end
@@ -213,7 +217,6 @@ function E2VguiCore.EnableVguiElementType(vguiType,status)
 	if status == nil then return end
 	vguiType = vguiType
 	for k,v in pairs(E2VguiCore.vgui_types) do
-			print(vguiType)
 		if k == vguiType then
 			E2VguiCore.vgui_types[vguiType] = status
 		end

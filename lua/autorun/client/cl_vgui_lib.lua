@@ -83,17 +83,31 @@ end
 function E2VguiLib.GetBlockedPlayers()
 	local tbl = {}
 	for k,v in pairs(E2VguiLib.BlockedPlayers) do
-		print(k)
-		print(v)
-		print("------")
-		
+		table.insert(tbl,player.GetBySteamID(k))
 	end
+	return tbl
 end
 
 
 --[[-------------------------------------------------------------------------
 CONSOLE COMMANDS 
 ---------------------------------------------------------------------------]]
+concommand.Add( "wire_vgui_listblockedplayers", 
+function( ply, cmd, args )
+	local blockedPlayers = E2VguiLib.GetBlockedPlayers()
+	if #blockedPlayers <= 0 then 
+		print("No players blocked!")
+		return
+	end
+	print("Blocked Players:")
+	print("---------------------------------------")
+	for k,v in pairs(blockedPlayers) do
+		print("- "..v:Nick().." - "..v:SteamID())
+	end
+	print("---------------------------------------")
+end
+,nil,
+"Prints a list of all blocked players",0)
 
 concommand.Add( "wire_vgui_blockplayer", 
 function( ply, cmd, args )
