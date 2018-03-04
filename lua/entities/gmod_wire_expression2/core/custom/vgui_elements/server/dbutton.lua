@@ -93,8 +93,8 @@ end
 ---------------------------------------------------------------------------]]
 e2function dbutton dbutton(number uniqueID)
 	local players = {self.player}
-	if self.player.e2_vgui_core_default_players != nil and self.player.e2_vgui_core_default_players[self.entity:EntIndex()] != nil then
-		players = self.player.e2_vgui_core_default_players[self.entity:EntIndex()]
+	if self.entity.e2_vgui_core_default_players != nil and self.entity.e2_vgui_core_default_players[self.entity:EntIndex()] != nil then
+		players = self.entity.e2_vgui_core_default_players[self.entity:EntIndex()]
 	end
 	return {
 		["players"] =  players,
@@ -104,8 +104,8 @@ end
 
 e2function dbutton dbutton(number uniqueID,number parentID)
 	local players = {self.player}
-	if self.player.e2_vgui_core_default_players != nil and self.player.e2_vgui_core_default_players[self.entity:EntIndex()] != nil then
-		players = self.player.e2_vgui_core_default_players[self.entity:EntIndex()]
+	if self.entity.e2_vgui_core_default_players != nil and self.entity.e2_vgui_core_default_players[self.entity:EntIndex()] != nil then
+		players = self.entity.e2_vgui_core_default_players[self.entity:EntIndex()]
 	end
 	return {
 		["players"] =  players,

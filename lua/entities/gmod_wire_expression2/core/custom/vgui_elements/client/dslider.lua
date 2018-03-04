@@ -67,14 +67,39 @@ end
 
 E2VguiPanels["vgui_elements"]["functions"]["DSlider"]["modifyFunc"] = function(uniqueID, pnlData, e2EntityID)
 	local panel = E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
-	panel:SetSize(pnlData["width"],pnlData["height"])
-	panel:SetPos(pnlData["posX"],pnlData["posY"])
-	panel:SetText(pnlData["text"])
-	panel:SetDark(pnlData["dark"])
-	panel:SetDecimals(pnlData["decimals"])
-	panel:SetMax(pnlData["max"])
-	panel:SetMin(pnlData["min"])
-	panel:SetValue(pnlData["value"])
+	if panel["pnlData"]["width"] != pnlData["width"] then
+		panel:SetWidth(pnlData["width"])
+	end
+	if panel["pnlData"]["height"] != pnlData["height"] then
+		panel:SetHeight(pnlData["height"])
+	end
+
+	if panel["pnlData"]["posX"] != pnlData["posX"] or panel["pnlData"]["posY"] != pnlData["posY"] then
+		panel:SetPos(pnlData["posX"],pnlData["posY"])
+	end
+
+	if panel["pnlData"]["text"] != pnlData["text"] then
+		panel:SetText(pnlData["text"])
+	end
+
+	if panel["pnlData"]["dark"] != pnlData["dark"] then
+		panel:SetDark(pnlData["dark"])
+	end
+
+	if panel["pnlData"]["decimals"] != pnlData["decimals"] then
+		panel:SetDecimals(pnlData["decimals"])
+	end
+
+	if panel["pnlData"]["max"] != pnlData["max"] then
+		panel:SetMax(pnlData["max"])
+	end
+
+	if panel["pnlData"]["min"] != pnlData["min"] then
+		panel:SetMin(pnlData["min"])
+	end
+	if panel["pnlData"]["value"] != pnlData["value"] then
+		panel:SetValue(pnlData["value"])
+	end
 
 	if pnlData["color"] ~= nil then
 		function panel:Paint(w,h)
