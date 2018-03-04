@@ -1,4 +1,4 @@
-E2VguiCore.RegisterVguiElementType("DButton",true)
+E2VguiCore.RegisterVguiElementType("dbutton.lua",true)
 
 local function isValidDFrame(panel)
 	if !istable(panel) then return false end

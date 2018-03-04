@@ -1,4 +1,4 @@
-E2VguiCore.RegisterVguiElementType("DSlider",true)
+E2VguiCore.RegisterVguiElementType("dslider.lua",true)
 
 local function isValidDFrame(panel)
 	if !istable(panel) then return false end
