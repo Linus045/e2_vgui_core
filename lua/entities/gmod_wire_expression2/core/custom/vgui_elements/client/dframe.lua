@@ -10,12 +10,16 @@ E2VguiPanels["vgui_elements"]["functions"]["DFrame"]["createFunc"] = function(un
 	panel:SetDeleteOnClose(pnlData["deleteOnClose"])
 	panel:SetSizable(pnlData["sizable"])
 	panel:ShowCloseButton(pnlData["showCloseButton"])
-	panel:MakePopup()
+	if pnlData["makepopup"] == true then
+		panel:MakePopup()
+	end
+	panel:SetMouseInputEnabled(pnlData["mouseinput"])
+	panel:SetKeyboardInputEnabled(pnlData["keyboardinput"])
 
 
 	--notify server of removal and also update client table
 	function panel:OnRemove()
-		if not panel:GetDeleteOnClose() then return end
+//		if not panel:GetDeleteOnClose() then return end
 		local name = self["uniqueID"]
 		local pnlData = self["pnlData"]
 		local panels = E2VguiLib.GetChildPanelIDs(name,e2EntityID)
@@ -45,29 +49,54 @@ E2VguiPanels["vgui_elements"]["functions"]["DFrame"]["createFunc"] = function(un
 	E2VguiLib.RegisterNewPanel(e2EntityID ,uniqueID, panel)
 	return true
 end
-
-
 E2VguiPanels["vgui_elements"]["functions"]["DFrame"]["modifyFunc"] = function(uniqueID, pnlData, e2EntityID)
 	local panel = E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
 	if panel == nil or !IsValid(panel)  then return end
-	panel:SetSize(pnlData["width"],pnlData["height"])
-	panel:SetPos(pnlData["posX"],pnlData["posY"])
-	panel:SetTitle(pnlData["title"])
-	if pnlData["putCenter"] then
+
+	if panel["pnlData"]["width"] != pnlData["width"] then
+		panel:SetWidth(pnlData["width"])
+	end
+	if panel["pnlData"]["height"] != pnlData["height"] then
+		panel:SetHeight(pnlData["height"])
+	end
+
+	if panel["pnlData"]["posX"] != pnlData["posX"] or panel["pnlData"]["posY"] != pnlData["posY"] then
+		panel:SetPos(pnlData["posX"],pnlData["posY"])
+	end
+
+	if panel["pnlData"]["title"] != pnlData["title"] then
+		panel:SetTitle(pnlData["title"])
+	end
+
+	if panel["pnlData"]["deleteOnClose"] != pnlData["deleteOnClose"] then
+		panel:SetDeleteOnClose(pnlData["deleteOnClose"])
+	end
+	
+	if panel["pnlData"]["title"] != pnlData["title"] then
+		panel:SetSizable(pnlData["sizable"])
+	end
+
+	if panel["pnlData"]["showCloseButton"] != pnlData["showCloseButton"] then
+		panel:ShowCloseButton(pnlData["showCloseButton"])
+	end
+
+	if panel["pnlData"]["putCenter"] != pnlData["putCenter"] and pnlData["putCenter"] == true then
 		panel:Center()
 	end
-	panel:SetDeleteOnClose(pnlData["deleteOnClose"])
-	panel:SetSizable(pnlData["sizable"])
-	panel:ShowCloseButton(pnlData["showCloseButton"])
-	panel:MakePopup()
+	if panel["pnlData"]["makepopup"] != pnlData["makepopup"] and pnlData["makepopup"] == true then
+		panel:MakePopup()
+	end
+	panel:SetMouseInputEnabled(pnlData["mouseinput"])
+	panel:SetKeyboardInputEnabled(pnlData["keyboardinput"])
 
 	if pnlData["color"] ~= nil then
-		function panel:Paint(w,h)
-			surface.SetDrawColor(pnlData["color"])
-			surface.DrawRect(0,0,w,h)
+		if panel["pnlData"]["color"] != pnlData["color"] then
+			function panel:Paint(w,h)
+				surface.SetDrawColor(pnlData["color"])
+				surface.DrawRect(0,0,w,h)
+			end
 		end
 	end
-
 	panel["uniqueID"] = uniqueID
 	panel["pnlData"] = pnlData
 	return true

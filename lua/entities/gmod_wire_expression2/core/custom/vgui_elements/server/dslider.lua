@@ -85,10 +85,6 @@ end
 
 
 
-
-
-
-
 --[[-------------------------------------------------------------------------
 	Desc: Creates a DSlider element
 	Args: 
@@ -96,8 +92,8 @@ end
 ---------------------------------------------------------------------------]]
 e2function dslider dSlider(number uniqueID)
 	local players = {self.player}
-	if self.player.e2_vgui_core_default_players != nil and self.player.e2_vgui_core_default_players[self.entity:EntIndex()] != nil then
-		players = self.player.e2_vgui_core_default_players[self.entity:EntIndex()]
+	if self.entity.e2_vgui_core_default_players != nil and self.entity.e2_vgui_core_default_players[self.entity:EntIndex()] != nil then
+		players = self.entity.e2_vgui_core_default_players[self.entity:EntIndex()]
 	end
 	return {
 		["players"] =  players,
@@ -107,8 +103,8 @@ end
 
 e2function dslider dslider(number uniqueID,number parentID)
 	local players = {self.player}
-	if self.player.e2_vgui_core_default_players != nil and self.player.e2_vgui_core_default_players[self.entity:EntIndex()] != nil then
-		players = self.player.e2_vgui_core_default_players[self.entity:EntIndex()]
+	if self.entity.e2_vgui_core_default_players != nil and self.entity.e2_vgui_core_default_players[self.entity:EntIndex()] != nil then
+		players = self.entity.e2_vgui_core_default_players[self.entity:EntIndex()]
 	end
 	return {
 		["players"] =  players,
@@ -169,6 +165,26 @@ end
 e2function dslider dslider:setText(string text)
 	this["paneldata"]["text"] = text
 	return this
+end
+
+e2function void dslider:setMin(number min)
+	this["paneldata"]["min"] = min
+end
+
+e2function void dslider:setMax(number max)
+	this["paneldata"]["max"] = max
+end
+
+e2function void dslider:setDecimals(number decimals)
+	this["paneldata"]["decimals"] = decimals
+end
+
+e2function void dslider:setValue(number value)
+	this["paneldata"]["value"] = value
+end
+
+e2function void dslider:setDark(number dark)
+	this["paneldata"]["dark"] = dark>0 and true or false
 end
 
 e2function dslider dslider:setColor(vector col)

@@ -22,6 +22,9 @@ local pnl = {
 		["sizable"] = false,
 		["deleteOnClose"] = true,
 		["visible"] = true,
+		["makepopup"] = true,
+		["mouseinput"] = true,
+		["keyboardinput"] = true,
 		["showCloseButton"] = true
 	}
 return pnl
@@ -48,11 +51,11 @@ E2 Functions
 
 --- B = B
 registerOperator("ass", "xdf", "xdf", function(self, args)
-    local op1, op2, scope = args[2], args[3], args[4]
-    local      rv2 = op2[1](self, op2)
-    self.Scopes[scope][op1] = rv2
-    self.Scopes[scope].vclk[op1] = true
-    return rv2
+	local op1, op2, scope = args[2], args[3], args[4]
+	local      rv2 = op2[1](self, op2)
+	self.Scopes[scope][op1] = rv2
+	self.Scopes[scope].vclk[op1] = true
+	return rv2
 end)
 
 --TODO: Check if the entire pnl data is valid
@@ -67,7 +70,7 @@ e2function number operator!(xdf pnldata)
 end
 
 --- B == B --check if the names match
---TODO: Check if the entire pnl data is equal
+--TODO: Check if the entire pnl data is equal ?
 e2function number operator==(xdf ldata, xdf rdata)
 	if !isValidDFrame(ldata) then return 0 end
 	if !isValidDFrame(rdata) then return 0 end
@@ -76,7 +79,7 @@ e2function number operator==(xdf ldata, xdf rdata)
 end
 
 --- B != B
---TODO: Check if the entire pnl data is equal
+--TODO: Check if the entire pnl data is equal ?
 e2function number operator!=(xdf ldata, xdf rdata)
 	if !isValidDFrame(ldata) then return 1 end
 	if !isValidDFrame(rdata) then return 1 end
@@ -92,8 +95,8 @@ end
 ---------------------------------------------------------------------------]]
 e2function dframe dframe(number uniqueID)
 	local players = {self.player}
-	if self.player.e2_vgui_core_default_players != nil and self.player.e2_vgui_core_default_players[self.entity:EntIndex()] != nil then
-		players = self.player.e2_vgui_core_default_players[self.entity:EntIndex()]
+	if self.entity.e2_vgui_core_default_players != nil and self.entity.e2_vgui_core_default_players[self.entity:EntIndex()] != nil then
+		players = self.entity.e2_vgui_core_default_players[self.entity:EntIndex()]
 	end
 	return {
 		["players"] =  players,
@@ -114,7 +117,32 @@ e2function void dframe:setVisible(number visible)
 	local vis = visible > 0
 	this["paneldata"]["visible"] = vis
 	E2VguiCore.SetPanelVisibility(self.entity:EntIndex(),this["paneldata"]["uniqueID"],this["players"],vis)
-	return this
+end
+
+e2function void dframe:setVisible(number visible,entity ply)
+	if !IsValid(ply) or !ply:IsPlayer() then return end
+	local vis = visible > 0
+	this["paneldata"]["visible"] = vis
+	E2VguiCore.SetPanelVisibility(self.entity:EntIndex(),this["paneldata"]["uniqueID"],{ply},vis)
+end
+
+e2function void dframe:setVisible(number visible,array players)
+	local players = E2VguiCore.FilterPlayers(players)
+	local vis = visible > 0
+	this["paneldata"]["visible"] = vis
+	E2VguiCore.SetPanelVisibility(self.entity:EntIndex(),this["paneldata"]["uniqueID"],players,vis)
+end
+
+e2function void dframe:makePopup(number popup)
+	this["paneldata"]["makepopup"] = popup > 0
+end
+
+e2function void dframe:enableMouseInput(number mouseInput)
+	this["paneldata"]["mouseinput"] = mouseInput > 0
+end
+
+e2function void dframe:enableKeyboardInput(number keyboardInput)
+	this["paneldata"]["keyboardinput"] = keyboardInput > 0
 end
 
 e2function number dframe:isVisible()
@@ -175,6 +203,22 @@ e2function dframe dframe:setSizable(number sizable)
 	return this
 end
 
+e2function vector dframe:getColor()
+	local R = this["paneldata"]["color"]["r"]
+	local G = this["paneldata"]["color"]["g"]
+	local B = this["paneldata"]["color"]["b"]
+	return {R,G,B}
+end
+
+e2function vector4 dframe:getColor4()
+	local R = this["paneldata"]["color"]["r"]
+	local G = this["paneldata"]["color"]["g"]
+	local B = this["paneldata"]["color"]["b"]
+	local A = this["paneldata"]["color"]["b"]
+	return {R,G,B,A}
+end
+
+
 e2function dframe dframe:setColor(vector col)
 	this["paneldata"]["color"] = Color(col[1],col[2],col[3],255)
 	return this
@@ -210,12 +254,17 @@ e2function dframe dframe:modify()
 	return pnl
 end
 
-e2function void dframe:close()
-	for _,ply in pairs(this["players"]) do
+e2function void dframe:closePlayer(entity ply)
+	if IsValid(ply) and ply:IsPlayer() then
 		E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
 	end
 end
 
+e2function void dframe:closeAll()
+	for _,ply in pairs(this["players"]) do
+		E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
+	end
+end
 
 --[[
 e2function void dframe:update() --make usable for an array of frames

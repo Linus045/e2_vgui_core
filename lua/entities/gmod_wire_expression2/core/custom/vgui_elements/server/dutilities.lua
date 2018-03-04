@@ -13,6 +13,7 @@ e2function void vguiCloseOnPlayer(entity ply)
 end
 
 e2function void vguiDefaultPlayers(array players)
+	if #players > #player.GetAll() then return end
 	if self.entity.e2_vgui_core_default_players == nil then
 		self.entity.e2_vgui_core_default_players = {}
 	end
