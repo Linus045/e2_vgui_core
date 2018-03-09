@@ -16,7 +16,6 @@ E2VguiPanels["vgui_elements"]["functions"]["DFrame"]["createFunc"] = function(un
 	panel:SetMouseInputEnabled(pnlData["mouseinput"])
 	panel:SetKeyboardInputEnabled(pnlData["keyboardinput"])
 
-
 	--notify server of removal and also update client table
 	function panel:OnRemove()
 //		if not panel:GetDeleteOnClose() then return end
@@ -36,11 +35,17 @@ E2VguiPanels["vgui_elements"]["functions"]["DFrame"]["createFunc"] = function(un
 		net.SendToServer()
 	end
 
-
+	--TODO: optimize the contrast setting
 	if pnlData["color"] ~= nil then
 		function panel:Paint(w,h)
-			surface.SetDrawColor(pnlData["color"])
-			surface.DrawRect(0,0,w,h)
+			local col = pnlData["color"]
+			local col2 = Color(col.r*0.8%255,col.g*0.8%255,col.b*0.8%255)
+			local col3 = Color(col.r*0.4%255,col.g*0.4%255,col.b*0.4%255)
+
+			draw.RoundedBox(5,0,0,w,h,col3)
+
+			draw.RoundedBox(5,1,1,w-2,h-2,col)
+			draw.RoundedBoxEx(5,1,1,w-2,25-2,col2,true,true,false,false)
 		end
 	end
 
@@ -49,6 +54,8 @@ E2VguiPanels["vgui_elements"]["functions"]["DFrame"]["createFunc"] = function(un
 	E2VguiLib.RegisterNewPanel(e2EntityID ,uniqueID, panel)
 	return true
 end
+
+
 E2VguiPanels["vgui_elements"]["functions"]["DFrame"]["modifyFunc"] = function(uniqueID, pnlData, e2EntityID)
 	local panel = E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
 	if panel == nil or !IsValid(panel)  then return end
@@ -86,21 +93,32 @@ E2VguiPanels["vgui_elements"]["functions"]["DFrame"]["modifyFunc"] = function(un
 	if panel["pnlData"]["makepopup"] != pnlData["makepopup"] and pnlData["makepopup"] == true then
 		panel:MakePopup()
 	end
+	
 	panel:SetMouseInputEnabled(pnlData["mouseinput"])
 	panel:SetKeyboardInputEnabled(pnlData["keyboardinput"])
 
+	--TODO: optimize the contrast setting
 	if pnlData["color"] ~= nil then
 		if panel["pnlData"]["color"] != pnlData["color"] then
 			function panel:Paint(w,h)
-				surface.SetDrawColor(pnlData["color"])
-				surface.DrawRect(0,0,w,h)
+				local col = pnlData["color"]
+				local col2 = Color(col.r*0.8%255,col.g*0.8%255,col.b*0.8%255)
+				local col3 = Color(col.r*0.4%255,col.g*0.4%255,col.b*0.4%255)
+
+				draw.RoundedBox(5,0,0,w,h,col3)
+
+				draw.RoundedBox(5,1,1,w-2,h-2,col)
+				draw.RoundedBoxEx(5,1,1,w-2,25-2,col2,true,true,false,false)
 			end
 		end
 	end
+
 	panel["uniqueID"] = uniqueID
 	panel["pnlData"] = pnlData
+	
 	return true
 end
+
 
 --[[-------------------------------------------------------------------------
 	HELPER FUNCTIONS 

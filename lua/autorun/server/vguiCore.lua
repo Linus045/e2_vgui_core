@@ -46,7 +46,6 @@ end
 hook.Add("Think","E2VguiTempReset",E2VguiResetTemp)
 
 
-
 net.Receive("E2Vgui.BlockUnblockClient",function( len,ply )
 	local mode = net.ReadBool()
 	local target = net.ReadEntity()
@@ -56,6 +55,8 @@ net.Receive("E2Vgui.BlockUnblockClient",function( len,ply )
 		E2VguiCore.UnblockClient(ply,target)
 	end
 end)
+
+
 --[[-------------------------------------------------------------------------
 				E2VguiCore.CanUpdateVgui
 Desc: Returns if the player can create a new vgui element/update an existing vgui element
@@ -81,6 +82,7 @@ function E2VguiCore.CanUpdateVgui(ply) --vguiCanCreate
 	end
 	return true
 end
+
 
 --[[-------------------------------------------------------------------------
 				E2VguiCore.HasAccess
@@ -118,7 +120,6 @@ function E2VguiCore.HasAccess(ply,target)
 end
 
 
-
 --[[-------------------------------------------------------------------------
 				E2VguiCore.IsBlocked
 Desc: Returns if the player can create a dermapanel on the target. Blocklist of the target is checked. 
@@ -140,6 +141,7 @@ function E2VguiCore.IsBlocked(ply,target)
 	end
 	return false
 end
+
 
 --[[-------------------------------------------------------------------------
 				E2VguiCore.BlockClient
@@ -203,6 +205,7 @@ function E2VguiCore.GetCurrentPanelAmount(ply)
 	return count
 end
 
+
 function E2VguiCore.RegisterVguiElementType(vguiType,status)
 	if status == nil then return end
 	for k,v in pairs(E2VguiCore.vgui_types) do
@@ -211,7 +214,17 @@ function E2VguiCore.RegisterVguiElementType(vguiType,status)
 		end
 	end
 	E2VguiCore.vgui_types[vguiType] = status
+	
+	if true then
+		print(" ")
+		print("#####################")
+		print(vguiType.." , "..tostring(status))
+		print("#####################")
+		print(" ")
+	-- log Type Status
+	end
 end
+
 
 function E2VguiCore.EnableVguiElementType(vguiType,status)
 	if status == nil then return end
@@ -225,7 +238,6 @@ function E2VguiCore.EnableVguiElementType(vguiType,status)
 end
 
 
-
 function E2VguiCore.CreatePanel(e2self, players, paneldata, pnlType)
 	if !istable(e2self) or !istable(players) or !istable(paneldata) then return end
 	e2EntityID = e2self.entity:EntIndex()
@@ -235,8 +247,8 @@ function E2VguiCore.CreatePanel(e2self, players, paneldata, pnlType)
 
 	if pnlType == nil or !E2VguiCore.vgui_types[pnlType] then
 		//ErrorNoHalt("[E2VguiCore] Paneltype is invalid or not registered! type: ".. tostring(pnlType))
-//		e2self.player:ChatPrint("[E2VguiCore] Paneltype is invalid or not registered! type: ".. tostring(pnlType))
-//		return
+		//e2self.player:ChatPrint("[E2VguiCore] Paneltype is invalid or not registered! type: ".. tostring(pnlType))
+		//return
 	end
 
 	if !E2VguiCore.CanUpdateVgui(e2self.player) then return end
@@ -278,7 +290,7 @@ function E2VguiCore.ModifyPanel(e2self, players, paneldata, pnlType)
 	if e2EntityID == nil or e2EntityID <= 0 then return end
 
 	if pnlType == nil or !E2VguiCore.vgui_types[pnlType] then
-		error("[E2VguiCore] Paneltype is invalid or not registered! type: ".. tostring(pnlType))
+		error("[E2VguiCore] Paneltype is invalid or not registered! type: ".. tostring(pnlType)..", received value: "..tostring(E2VguiCore.vgui_types[pnlType]))
 		return
 	end
 
@@ -311,6 +323,7 @@ function E2VguiCore.ModifyPanel(e2self, players, paneldata, pnlType)
 	return panel
 end
 
+
 --[[-------------------------------------------------------------------------
 						UTILITY STUFF
 ---------------------------------------------------------------------------]]
@@ -332,6 +345,7 @@ function E2VguiCore.FilterPlayers(players)
 	return tbl
 end
 
+
 --[[-------------------------------------------------------------------------
 				E2VguiCore.FilterBlocklist
 Desc: Filters the given list to exclude all players the creator can't create panels on (if they blocked the creator)
@@ -350,6 +364,7 @@ function E2VguiCore.FilterBlocklist(targets,creator)
 	end
 	return allowedPlayers
 end
+
 
 --[[-------------------------------------------------------------------------
 				E2VguiCore.FilterPermission
@@ -379,6 +394,7 @@ function E2VguiCore.GetPanelByID(ply,e2EntityID, uniqueID)
 	return ply.e2_vgui_core[e2EntityID][uniqueID]
 end
 
+
 --[[-------------------------------------------------------------------------
 						DERMA PANEL ADDING/MODIFY FOR SERVER SYNC
 ---------------------------------------------------------------------------]]
@@ -402,6 +418,7 @@ function E2VguiCore.RemovePanelOnPlayerServer(e2EntityID,uniqueID,ply)
 		end
 	end
 end
+
 
 --[[-------------------------------------------------------------------------
 				E2VguiCore.RemoveAllPanelsOfE2
@@ -454,6 +471,7 @@ function E2VguiCore.RemovePanel(e2EntityID,uniqueID,ply)
 	end
 end
 
+
 function E2VguiCore.SetPanelVisibility(e2EntityID,uniqueID,players,visible)
 	local panel = nil
 	local targets = {}
@@ -473,6 +491,7 @@ function E2VguiCore.SetPanelVisibility(e2EntityID,uniqueID,players,visible)
 	net.Send(targets)
 end
 
+
 --[[-------------------------------------------------------------------------
 							HOOKS
 ---------------------------------------------------------------------------]]
@@ -484,6 +503,7 @@ hook.Add("EntityRemoved","E2VguiCheckDeletion",function(entity)
 		end
 	end
 end)
+
 
 --[[-------------------------------------------------------------------------
 						NETMESSAGES
@@ -525,7 +545,6 @@ net.Receive("E2Vgui.ConfirmCreation",function(len,ply)
 		E2VguiCore.RemovePanelOnPlayerServer(e2EntityID,uniqueID,ply)
 	end
 end)
-
 
 
 net.Receive("E2Vgui.TriggerE2",function(len,ply)
