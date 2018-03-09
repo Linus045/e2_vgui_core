@@ -1,0 +1,18 @@
+{
+	"title"		:	"[E2] Vgui Core",
+	"type"		:	"tool",
+	"tags"		:	[ "build", "fun" ],
+	"description":	"Addon for the Wiremod Expression2 Tool. Allows the player to create and use Gmod's Derma Panels",
+	"ignore"	:
+	[
+		"*.psd",
+		"*.vcproj",
+		"*.svn*",
+		"*.txt",
+		"*.xcf",
+		".git*",
+		".gitignore",
+		"LICENSE",
+		"README.md"
+	]
+}

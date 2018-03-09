@@ -1,5 +1,6 @@
 E2VguiCore.RegisterVguiElementType("DFrame",true)
 
+
 local function isValidDFrame(panel)
 	if !istable(panel) then return false end
 	if table.Count(panel) != 2 then return false end
@@ -7,6 +8,7 @@ local function isValidDFrame(panel)
 	if panel["paneldata"] == nil then return false end
 	return true
 end
+
 
 local function generateDefaultPanel(uniqueID,parentPnlID)
 local pnl = {
@@ -30,6 +32,7 @@ local pnl = {
 return pnl
 end
 
+
 --6th argument type checker without return,
 --7th arguement type checker with return. False for valid type and True for invalid
 registerType("dframe", "xdf", {["players"] = {}, ["paneldata"] = {}},
@@ -49,7 +52,8 @@ registerType("dframe", "xdf", {["players"] = {}, ["paneldata"] = {}},
 E2 Functions 
 ]]--------------------------------------------------------------
 
---- B = B
+
+-- B = B
 registerOperator("ass", "xdf", "xdf", function(self, args)
 	local op1, op2, scope = args[2], args[3], args[4]
 	local      rv2 = op2[1](self, op2)
@@ -58,16 +62,19 @@ registerOperator("ass", "xdf", "xdf", function(self, args)
 	return rv2
 end)
 
+
 --TODO: Check if the entire pnl data is valid
 -- if (B) 
 e2function number operator_is(xdf pnldata)
 	return isValidDFrame(pnldata) and  1 or 0
 end
 
+
 -- if (!B)
 e2function number operator!(xdf pnldata)
 	return isValidDFrame(pnldata) and  0 or 1
 end
+
 
 --- B == B --check if the names match
 --TODO: Check if the entire pnl data is equal ?
@@ -78,6 +85,7 @@ e2function number operator==(xdf ldata, xdf rdata)
 	return ldata["paneldata"]["uniqueID"] == rdata["paneldata"]["uniqueID"] and 1 or 0
 end
 
+
 --- B != B
 --TODO: Check if the entire pnl data is equal ?
 e2function number operator!=(xdf ldata, xdf rdata)
@@ -85,7 +93,6 @@ e2function number operator!=(xdf ldata, xdf rdata)
 	if !isValidDFrame(rdata) then return 1 end
 	return ldata["paneldata"]["uniqueID"] == rdata["paneldata"]["uniqueID"] and 0 or 1
 end
-
 
 
 --[[-------------------------------------------------------------------------
@@ -104,46 +111,21 @@ e2function dframe dframe(number uniqueID)
 	}
 end
 
-e2function void dframe:setDeleteOnClose(number delete)
-	this["paneldata"]["deleteOnClose"] = delete > 0
-	return this
-end
-
-e2function void dframe:getDeleteOnClose()
-	return this["paneldata"]["deleteOnClose"] and 1 or 0
-end
-
-e2function void dframe:setVisible(number visible)
-	local vis = visible > 0
-	this["paneldata"]["visible"] = vis
-	E2VguiCore.SetPanelVisibility(self.entity:EntIndex(),this["paneldata"]["uniqueID"],this["players"],vis)
-end
-
-e2function void dframe:setVisible(number visible,entity ply)
-	if !IsValid(ply) or !ply:IsPlayer() then return end
-	local vis = visible > 0
-	this["paneldata"]["visible"] = vis
-	E2VguiCore.SetPanelVisibility(self.entity:EntIndex(),this["paneldata"]["uniqueID"],{ply},vis)
-end
-
-e2function void dframe:setVisible(number visible,array players)
-	local players = E2VguiCore.FilterPlayers(players)
-	local vis = visible > 0
-	this["paneldata"]["visible"] = vis
-	E2VguiCore.SetPanelVisibility(self.entity:EntIndex(),this["paneldata"]["uniqueID"],players,vis)
-end
 
 e2function void dframe:makePopup(number popup)
 	this["paneldata"]["makepopup"] = popup > 0
 end
 
+
 e2function void dframe:enableMouseInput(number mouseInput)
 	this["paneldata"]["mouseinput"] = mouseInput > 0
 end
 
+
 e2function void dframe:enableKeyboardInput(number keyboardInput)
 	this["paneldata"]["keyboardinput"] = keyboardInput > 0
 end
+
 
 e2function number dframe:isVisible()
 	return this["paneldata"]["visible"] and 1 or 0
@@ -156,6 +138,7 @@ e2function void dframe:addPlayer(entity ply)
 	end
 end
 
+
 e2function void dframe:removePlayer(entity ply)
 	for k,v in pairs(this["players"]) do
 		if ply == v then
@@ -164,81 +147,135 @@ e2function void dframe:removePlayer(entity ply)
 	end
 end
 
-e2function dframe dframe:setPos(number posX,number posY)
-	this["paneldata"]["posX"] = posX
-	this["paneldata"]["posY"] = posY
-	return this
-end
-
-e2function dframe dframe:setPos(vector2 pos)
-	this["paneldata"]["posX"] = pos[1]
-	this["paneldata"]["posY"] = pos[2]
-	return this
-end
-
-e2function dframe dframe:setSize(number width,number height)
-	this["paneldata"]["width"] = width
-	this["paneldata"]["height"] = height
-	return this
-end
-
-e2function dframe dframe:setSize(vector2 pnlSize)
-	this["paneldata"]["width"] = pnlSize[1]
-	this["paneldata"]["height"] = pnlSize[2]
-	return this
-end
 
 e2function dframe dframe:center()
 	this["paneldata"]["putCenter"] = true
 	return this
 end
 
-e2function dframe dframe:setTitle(string title)
-	this["paneldata"]["title"] = title
-	return this
+
+do 
+	e2function dframe dframe:setPos(number posX,number posY)
+		this["paneldata"]["posX"] = posX
+		this["paneldata"]["posY"] = posY
+		return this
+	end
+
+
+	e2function dframe dframe:setPos(vector2 pos)
+		this["paneldata"]["posX"] = pos[1]
+		this["paneldata"]["posY"] = pos[2]
+		return this
+	end
+
+
+	e2function dframe dframe:setSize(number width,number height)
+		this["paneldata"]["width"] = width
+		this["paneldata"]["height"] = height
+		return this
+	end
+
+
+	e2function dframe dframe:setSize(vector2 pnlSize)
+		this["paneldata"]["width"] = pnlSize[1]
+		this["paneldata"]["height"] = pnlSize[2]
+		return this
+	end
+
+
+	e2function dframe dframe:setColor(vector col)
+		this["paneldata"]["color"] = Color(col[1],col[2],col[3],255)
+		return this
+	end
+
+
+	e2function dframe dframe:setColor(vector col,number alpha)
+		this["paneldata"]["color"] = Color(col[1],col[2],col[3],alpha)
+		return this
+	end
+
+
+	e2function dframe dframe:setColor(number red,number green,number blue)
+		this["paneldata"]["color"] = Color(red,green,blue,255)
+		return this
+	end
+
+
+	e2function dframe dframe:setColor(number red,number green,number blue,number alpha)
+		this["paneldata"]["color"] = Color(red,green,blue,alpha)
+		return this
+	end
+
+
+	e2function dframe dframe:setTitle(string title)
+		this["paneldata"]["title"] = title
+		return this
+	end
+
+
+	e2function dframe dframe:setSizable(number sizable)
+		this["paneldata"]["sizable"] = sizable > 0
+		return this
+	end
+
+
+	e2function void dframe:setVisible(number visible)
+		local vis = visible > 0
+		this["paneldata"]["visible"] = vis
+		E2VguiCore.SetPanelVisibility(self.entity:EntIndex(),this["paneldata"]["uniqueID"],this["players"],vis)
+	end
+
+
+	e2function void dframe:setVisible(number visible,entity ply)
+		if !IsValid(ply) or !ply:IsPlayer() then return end
+		local vis = visible > 0
+		this["paneldata"]["visible"] = vis
+		E2VguiCore.SetPanelVisibility(self.entity:EntIndex(),this["paneldata"]["uniqueID"],{ply},vis)
+	end
+
+
+	e2function void dframe:setVisible(number visible,array players)
+		local players = E2VguiCore.FilterPlayers(players)
+		local vis = visible > 0
+		this["paneldata"]["visible"] = vis
+		E2VguiCore.SetPanelVisibility(self.entity:EntIndex(),this["paneldata"]["uniqueID"],players,vis)
+	end	
+	
+
+	e2function void dframe:setDeleteOnClose(number delete)
+		this["paneldata"]["deleteOnClose"] = delete > 0
+		return this
+	end
+-- panel setter
 end
 
-e2function dframe dframe:setSizable(number sizable)
-	this["paneldata"]["sizable"] = sizable > 0
-	return this
-end
 
-e2function vector dframe:getColor()
-	local R = this["paneldata"]["color"]["r"]
-	local G = this["paneldata"]["color"]["g"]
-	local B = this["paneldata"]["color"]["b"]
-	return {R,G,B}
-end
+do 
+	e2function vector dframe:getColor()
+		local R = this["paneldata"]["color"]["r"]
+		local G = this["paneldata"]["color"]["g"]
+		local B = this["paneldata"]["color"]["b"]
+		return {R,G,B}
+	end
+	
 
-e2function vector4 dframe:getColor4()
-	local R = this["paneldata"]["color"]["r"]
-	local G = this["paneldata"]["color"]["g"]
-	local B = this["paneldata"]["color"]["b"]
-	local A = this["paneldata"]["color"]["b"]
-	return {R,G,B,A}
-end
+	e2function vector4 dframe:getColor4()
+		local R = this["paneldata"]["color"]["r"]
+		local G = this["paneldata"]["color"]["g"]
+		local B = this["paneldata"]["color"]["b"]
+		local A = this["paneldata"]["color"]["b"]
+		return {R,G,B,A}
+	end
+	
 
-
-e2function dframe dframe:setColor(vector col)
-	this["paneldata"]["color"] = Color(col[1],col[2],col[3],255)
-	return this
-end
-
-e2function dframe dframe:setColor(vector col,number alpha)
-	this["paneldata"]["color"] = Color(col[1],col[2],col[3],alpha)
-	return this
-end
+	e2function void dframe:getDeleteOnClose()
+		return this["paneldata"]["deleteOnClose"] and 1 or 0
+	end
+-- panel getter
+end 
 
 
-e2function dframe dframe:setColor(number red,number green,number blue)
-	this["paneldata"]["color"] = Color(red,green,blue,255)
-	return this
-end
 
-e2function dframe dframe:setColor(number red,number green,number blue,number alpha)
-	this["paneldata"]["color"] = Color(red,green,blue,alpha)
-	return this
-end
 
 e2function dframe dframe:showCloseButton(number showCloseButton)
 	this["paneldata"]["showCloseButton"] = showCloseButton > 0 

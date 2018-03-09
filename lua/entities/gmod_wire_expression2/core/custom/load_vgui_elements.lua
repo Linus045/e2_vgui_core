@@ -60,12 +60,16 @@ e2_include_init()
 -- Load serverside files here, they need additional parsing
 
 print("/###########################################################\\")
+print("| Reloading E2 Extensions")
 print("| Including vgui elements from /custom/vgui_elements/server/")
 do
 	local list = file.Find("entities/gmod_wire_expression2/core/custom/vgui_elements/server/*.lua", "LUA")
 	for _, filename in pairs(list) do
-		e2_include("custom/vgui_elements/server/" .. filename)
-		print("| +" .. filename)
+//		print("         Type:" .. filename.." Status:"..tostring(E2VguiCore.vgui_types[filename]))
+		if E2VguiCore.vgui_types[filename] != false then
+			e2_include("custom/vgui_elements/server/" .. filename)
+			print("| +" .. filename)
+		end
 	end
 end
 print("\\###########################################################/")
