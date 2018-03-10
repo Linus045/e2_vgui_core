@@ -57,20 +57,20 @@ end)
 
 --TODO: Check if the entire pnl data is valid
 -- if (B)
-e2function number operator_is(xdf pnldata)
+e2function number operator_is(xdp pnldata)
 	return isValidDFrame(pnldata) and  1 or 0
 end
 
 
 -- if (!B)
-e2function number operator!(xdf pnldata)
+e2function number operator!(xdp pnldata)
 	return isValidDFrame(pnldata) and  0 or 1
 end
 
 
 --- B == B --check if the names match
 --TODO: Check if the entire pnl data is equal ?
-e2function number operator==(xdf ldata, xdf rdata)
+e2function number operator==(xdp ldata, xdp rdata)
 	if !isValidDFrame(ldata) then return 0 end
 	if !isValidDFrame(rdata) then return 0 end
 
@@ -80,7 +80,7 @@ end
 
 --- B != B
 --TODO: Check if the entire pnl data is equal ?
-e2function number operator!=(xdf ldata, xdf rdata)
+e2function number operator!=(xdp ldata, xdp rdata)
 	if !isValidDFrame(ldata) then return 1 end
 	if !isValidDFrame(rdata) then return 1 end
 	return ldata["paneldata"]["uniqueID"] == rdata["paneldata"]["uniqueID"] and 0 or 1
@@ -183,7 +183,7 @@ do--[[setter]]--
 
 
 	e2function void dpanel:sizeToContents(number sizeToContents)
-		this:SizeToContents(sizeToContents>0) 
+
 	end
 -- setter
 end
@@ -214,6 +214,7 @@ do--[[getter]]--
 	e2function number dpanel:isVisible()
 		return this["paneldata"]["visible"] and 1 or 0
 	end
+
 -- getter
 end
 

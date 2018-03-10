@@ -75,17 +75,7 @@ net.Receive("E2Vgui.ModifyPanel",function()
 ]]
 		end
 	end
---[[ read above
-	if createSuccessful ~= nil then
-		net.Start("E2Vgui.ConfirmCreation")
-			net.WriteInt(uniqueID,32)
-			net.WriteInt(e2EntityID,32)
-			net.WriteBool(createSuccessful)
-			net.WriteTable(pnlData)
-		net.SendToServer()
-	end
-]]
-	--TODO:only send changes 
+
 	if modifiedSuccess ~= nil then
 		net.Start("E2Vgui.ConfirmModification")
 			net.WriteString(uniqueID)
