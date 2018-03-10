@@ -178,6 +178,7 @@ do--[[setter]]--
 	end
 
 
+	--THINK: do we need a getter for that ? 
 	e2function void dslider:setDecimals(number decimals)
 		this["paneldata"]["decimals"] = decimals
 	end
@@ -196,20 +197,44 @@ end
 
 
 do--[[getter]]--
-	e2function vector dslider:getColor()
-		local col = this["paneldata"]["color"]
+	e2function vector2 dslider:getPos()
+		return {this["paneldata"]["posX"],this["paneldata"]["posY"]}
+	end
+
+
+	e2function vector2 dslider:getSize()
+		return {this["paneldata"]["width"],this["paneldata"]["height"]}
+	end
+
+
+	--TODO: look up catch color
+	e2function vector dbutton:getColor()
+		local col = this["paneldata"]["color"] != nil and this["paneldata"]["color"] or {["r"]=100,["g"]=100,["b"]=100}
 		return {col.r,col.g,col.b}
 	end
 
-	e2function vector4 dslider:getColor4()
-		local col = this["paneldata"]["color"]
+	e2function vector4 dbutton:getColor4()
+		local col = this["paneldata"]["color"] != nil and this["paneldata"]["color"] or {["r"]=100,["g"]=100,["b"]=100,["a"]=255}
 		return {col.r,col.g,col.b,col.a}
 	end
 
 
 	e2function number dslider:isVisible()
 		return this["paneldata"]["visible"] and 1 or 0
-	end	
+	end
+
+
+	e2function number dslider:setValue()
+		return this["paneldata"]["value"]
+	end
+
+	e2function number dslider:getMin()
+		return this["paneldata"]["min"]
+	end
+
+	e2function number dslider:getMax()
+		return this["paneldata"]["max"]
+	end
 -- getter
 end
 

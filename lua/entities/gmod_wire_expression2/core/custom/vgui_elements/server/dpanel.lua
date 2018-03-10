@@ -160,6 +160,7 @@ do--[[setter]]--
 		return this
 	end
 
+
 	e2function void dpanel:setVisible(number visible)
 		local vis = visible > 0
 		this["paneldata"]["visible"] = vis
@@ -179,18 +180,34 @@ do--[[setter]]--
 		this["paneldata"]["visible"] = vis
 		E2VguiCore.SetPanelVisibility(self.entity:EntIndex(),this["paneldata"]["uniqueID"],players,vis)
 	end
+
+
+	e2function void dpanel:sizeToContents(number sizeToContents)
+		this:SizeToContents(sizeToContents>0) 
+	end
 -- setter
 end
 
 
 do--[[getter]]--
-	e2function vector dpanel:getColor()
-		local col = this["paneldata"]["color"]
+	e2function vector2 dpanel:getPos()
+		return {this["paneldata"]["posX"],this["paneldata"]["posY"]}
+	end
+
+
+	e2function vector2 dpanel:getSize()
+		return {this["paneldata"]["width"],this["paneldata"]["height"]}
+	end
+
+
+	--TODO: look up catch color
+	e2function vector dbutton:getColor()
+		local col = this["paneldata"]["color"] != nil and this["paneldata"]["color"] or {["r"]=100,["g"]=100,["b"]=100}
 		return {col.r,col.g,col.b}
 	end
 
-	e2function vector4 dpanel:getColor4()
-		local col = this["paneldata"]["color"]
+	e2function vector4 dbutton:getColor4()
+		local col = this["paneldata"]["color"] != nil and this["paneldata"]["color"] or {["r"]=100,["g"]=100,["b"]=100,["a"]=255}
 		return {col.r,col.g,col.b,col.a}
 	end
 

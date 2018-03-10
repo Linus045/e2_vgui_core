@@ -180,13 +180,14 @@ do--[[getter]]--
 	end
 	
 
+	--TODO: look up catch color
 	e2function vector dbutton:getColor()
-		local col = this["paneldata"]["color"]
+		local col = this["paneldata"]["color"] != nil and this["paneldata"]["color"] or {["r"]=100,["g"]=100,["b"]=100}
 		return {col.r,col.g,col.b}
 	end
 
 	e2function vector4 dbutton:getColor4()
-		local col = this["paneldata"]["color"]
+		local col = this["paneldata"]["color"] != nil and this["paneldata"]["color"] or {["r"]=100,["g"]=100,["b"]=100,["a"]=255}
 		return {col.r,col.g,col.b,col.a}
 	end
 

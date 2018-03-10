@@ -125,6 +125,10 @@ do--[[setter]]--
 		return this
 	end
 
+	e2function dframe dframe:center()
+		this["paneldata"]["putCenter"] = true
+		return this
+	end
 
 	e2function dframe dframe:setSize(number width,number height)
 		this["paneldata"]["width"] = width
@@ -193,6 +197,11 @@ do--[[setter]]--
 	end
 
 
+	e2function dframe dframe:showCloseButton(number showCloseButton)
+		this["paneldata"]["showCloseButton"] = showCloseButton > 0
+	end
+
+
 	e2function void dframe:setDeleteOnClose(number delete)
 		this["paneldata"]["deleteOnClose"] = delete > 0
 		return this
@@ -202,20 +211,6 @@ end
 
 
 do--[[getter]]--
-	e2function vector dframe:getColor()
-		local col = this["paneldata"]["color"]
-		return {col.r,col.g,col.b}
-	end
-
-	e2function vector4 dframe:getColor4()
-		local col = this["paneldata"]["color"]
-		return {col.r,col.g,col.b,col.a}
-	end
-
-
-	e2function void dframe:getDeleteOnClose()
-		return this["paneldata"]["deleteOnClose"] and 1 or 0
-	end
 
 
 	e2function vector2 dframe:getPos()
@@ -223,8 +218,44 @@ do--[[getter]]--
 	end
 
 
+	e2function vector2 dframe:getSize()
+		return {this["paneldata"]["width"],this["paneldata"]["height"]}
+	end
+
+
+	--TODO: look up catch color
+	e2function vector dbutton:getColor()
+		local col = this["paneldata"]["color"] != nil and this["paneldata"]["color"] or {["r"]=100,["g"]=100,["b"]=100}
+		return {col.r,col.g,col.b}
+	end
+
+	e2function vector4 dbutton:getColor4()
+		local col = this["paneldata"]["color"] != nil and this["paneldata"]["color"] or {["r"]=100,["g"]=100,["b"]=100,["a"]=255}
+		return {col.r,col.g,col.b,col.a}
+	end
+
 	e2function number dframe:isVisible()
 		return this["paneldata"]["visible"] and 1 or 0
+	end
+
+	
+	e2function string dframe:getTitle()
+		return this["paneldata"]["title"]
+	end
+
+
+	e2function number dframe:getSizable()
+		return this["paneldata"]["sizable"] and 1 or 0
+	end
+
+
+	e2function number dframe:getShowCloseButton()
+		return this["paneldata"]["showCloseButton"] and 1 or 0
+	end	
+
+
+	e2function number dframe:getDeleteOnClose()
+		return this["paneldata"]["deleteOnClose"] and 1 or 0
 	end
 -- getter
 end
@@ -261,16 +292,6 @@ do--[[utility]]--
 	end	
 
 
-	e2function dframe dframe:showCloseButton(number showCloseButton)
-		this["paneldata"]["showCloseButton"] = showCloseButton > 0
-	end
-
-
-	e2function number dframe:isShowCloseButton()
-		return this["paneldata"]["showCloseButton"] and 1 or 0
-	end	
-
-
 	e2function void dframe:addPlayer(entity ply)
 		if ply != nil and ply:IsPlayer() then
 			table.insert(this["players"],ply)
@@ -295,17 +316,6 @@ do--[[utility]]--
 	e2function void dframe:enableKeyboardInput(number keyboardInput)
 		this["paneldata"]["keyboardinput"] = keyboardInput > 0
 	end
-
-
-	e2function dframe dframe:center()
-		this["paneldata"]["putCenter"] = true
-		return this
-	end
 -- utility
 end
-
-
- 
-
-
 
