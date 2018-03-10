@@ -24,8 +24,8 @@ e2function void vguiDefaultPlayers(array players)
 end
 
 --[[-------------------------------------------------------------------------
-	RunOnVGUI stuff, used for button clicks and similar
----------------------------------------------------------------------------]]
+			RunOnVGUI stuff, used for button clicks and similar
+-------------------------------------------------------------------------]]--
 e2function void runOnVgui(number enabled)
 	if E2VguiCore.Trigger[self.entity:EntIndex()] == nil then 
 		E2VguiCore.Trigger[self.entity:EntIndex()] = {}
