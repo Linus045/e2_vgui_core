@@ -1,4 +1,4 @@
-E2VguiCore.RegisterVguiElementType("DSlider",true)
+E2VguiCore.RegisterVguiElementType("dslider.lua",true)
 
 local function isValidDFrame(panel)
 	if !istable(panel) then return false end
@@ -90,7 +90,7 @@ end
 	Args: 
 	Return: DSlider
 ---------------------------------------------------------------------------]]
-e2function dslider dSlider(number uniqueID)
+e2function dslider dslider(number uniqueID)
 	local players = {self.player}
 	if self.entity.e2_vgui_core_default_players != nil and self.entity.e2_vgui_core_default_players[self.entity:EntIndex()] != nil then
 		players = self.entity.e2_vgui_core_default_players[self.entity:EntIndex()]
@@ -116,7 +116,6 @@ e2function void dslider:setVisible(number visible)
 	local vis = visible > 0
 	this["paneldata"]["visible"] = vis
 	E2VguiCore.SetPanelVisibility(self.entity:EntIndex(),this["paneldata"]["uniqueID"],this["players"],vis)
-	return this
 end
 
 e2function number dslider:isVisible()
@@ -137,34 +136,29 @@ e2function void dslider:removePlayer(entity ply)
 	end
 end
 
-e2function dslider dslider:setPos(number posX,number posY)
+e2function void dslider:setPos(number posX,number posY)
 	this["paneldata"]["posX"] = posX
 	this["paneldata"]["posY"] = posY
-	return this
 end
 
-e2function dslider dslider:setPos(vector2 pos)
+e2function void dslider:setPos(vector2 pos)
 	this["paneldata"]["posX"] = pos[1]
 	this["paneldata"]["posY"] = pos[2]
-	return this
 end
 
-e2function dslider dslider:setSize(number width,number height)
+e2function void dslider:setSize(number width,number height)
 	this["paneldata"]["width"] = width
 	this["paneldata"]["height"] = height
-	return this
 end
 
-e2function dslider dslider:setSize(vector2 pnlSize)
+e2function void dslider:setSize(vector2 pnlSize)
 	this["paneldata"]["width"] = pnlSize[1]
 	this["paneldata"]["height"] = pnlSize[2]
-	return this
 end
 
 
-e2function dslider dslider:setText(string text)
+e2function void dslider:setText(string text)
 	this["paneldata"]["text"] = text
-	return this
 end
 
 e2function void dslider:setMin(number min)
@@ -187,29 +181,24 @@ e2function void dslider:setDark(number dark)
 	this["paneldata"]["dark"] = dark>0 and true or false
 end
 
-e2function dslider dslider:setColor(vector col)
+e2function void dslider:setColor(vector col)
 	this["paneldata"]["color"] = Color(col[1],col[2],col[3],255)
-	return this
 end
 
-e2function dslider dslider:setColor(vector col,number alpha)
+e2function void dslider:setColor(vector col,number alpha)
 	this["paneldata"]["color"] = Color(col[1],col[2],col[3],alpha)
-	return this
 end
 
-e2function dslider dslider:setColor(vector4 col)
+e2function void dslider:setColor(vector4 col)
 	this["paneldata"]["color"] = Color(col[1],col[2],col[3],col[4])
-	return this
 end
 
-e2function dslider dslider:setColor(number red,number green,number blue)
+e2function void dslider:setColor(number red,number green,number blue)
 	this["paneldata"]["color"] = Color(red,green,blue,255)
-	return this
 end
 
-e2function dslider dslider:setColor(number red,number green,number blue,number alpha)
+e2function void dslider:setColor(number red,number green,number blue,number alpha)
 	this["paneldata"]["color"] = Color(red,green,blue,alpha)
-	return this
 end
 
 

@@ -214,15 +214,6 @@ function E2VguiCore.RegisterVguiElementType(vguiType,status)
 		end
 	end
 	E2VguiCore.vgui_types[vguiType] = status
-	
-	if true then
-		print(" ")
-		print("#####################")
-		print(vguiType.." , "..tostring(status))
-		print("#####################")
-		print(" ")
-	-- log Type Status
-	end
 end
 
 
@@ -245,10 +236,9 @@ function E2VguiCore.CreatePanel(e2self, players, paneldata, pnlType)
 	if uniqueID == nil or players == nil then return end
 	if e2EntityID == nil or e2EntityID <= 0 then return end
 
-	if pnlType == nil or !E2VguiCore.vgui_types[pnlType] then
-		//ErrorNoHalt("[E2VguiCore] Paneltype is invalid or not registered! type: ".. tostring(pnlType))
-		//e2self.player:ChatPrint("[E2VguiCore] Paneltype is invalid or not registered! type: ".. tostring(pnlType))
-		//return
+	if pnlType == nil or !E2VguiCore.vgui_types[string.lower(pnlType)..".lua"] then
+		error("[E2VguiCore] Paneltype is invalid or not registered! type: ".. tostring(pnlType)..", received value: "..tostring(E2VguiCore.vgui_types[pnlType]))
+		return
 	end
 
 	if !E2VguiCore.CanUpdateVgui(e2self.player) then return end
@@ -289,7 +279,7 @@ function E2VguiCore.ModifyPanel(e2self, players, paneldata, pnlType)
 	if uniqueID == nil or players == nil then return end
 	if e2EntityID == nil or e2EntityID <= 0 then return end
 
-	if pnlType == nil or !E2VguiCore.vgui_types[pnlType] then
+	if pnlType == nil or !E2VguiCore.vgui_types[string.lower(pnlType)..".lua"] then
 		error("[E2VguiCore] Paneltype is invalid or not registered! type: ".. tostring(pnlType)..", received value: "..tostring(E2VguiCore.vgui_types[pnlType]))
 		return
 	end

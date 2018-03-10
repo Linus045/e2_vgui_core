@@ -1,4 +1,4 @@
-E2VguiCore.RegisterVguiElementType("DFrame",true)
+E2VguiCore.RegisterVguiElementType("dframe.lua",true)
 
 
 local function isValidDFrame(panel)
@@ -111,7 +111,6 @@ e2function dframe dframe(number uniqueID)
 	}
 end
 
-
 e2function void dframe:makePopup(number popup)
 	this["paneldata"]["makepopup"] = popup > 0
 end
@@ -147,7 +146,6 @@ e2function void dframe:removePlayer(entity ply)
 	end
 end
 
-
 e2function dframe dframe:center()
 	this["paneldata"]["putCenter"] = true
 	return this
@@ -175,13 +173,11 @@ do
 		return this
 	end
 
-
 	e2function dframe dframe:setSize(vector2 pnlSize)
 		this["paneldata"]["width"] = pnlSize[1]
 		this["paneldata"]["height"] = pnlSize[2]
 		return this
 	end
-
 
 	e2function dframe dframe:setColor(vector col)
 		this["paneldata"]["color"] = Color(col[1],col[2],col[3],255)
@@ -279,8 +275,23 @@ end
 
 e2function dframe dframe:showCloseButton(number showCloseButton)
 	this["paneldata"]["showCloseButton"] = showCloseButton > 0 
-	return this
 end
+
+e2function number dframe:isShowCloseButton()
+	return this["paneldata"]["showCloseButton"] and 1 or 0
+end
+
+e2function vector dframe:getColor()
+	local col = this["paneldata"]["color"]
+	return {col.r,col.g,col.b}
+end
+
+e2function vector4 dframe:getColor4()
+	local col = this["paneldata"]["color"]
+	return {col.r,col.g,col.b,col.a}
+end
+
+
 
 e2function void dframe:create()
 	local pnl = E2VguiCore.CreatePanel(self,this["players"],this["paneldata"],"DFrame")

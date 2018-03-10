@@ -122,19 +122,42 @@ end
 
 --[[-------------------------------------------------------------------------
 	HELPER FUNCTIONS 
----------------------------------------------------------------------------]]
-E2Helper.Descriptions["dframe"] = "Creates a DFrame."
-E2Helper.Descriptions["xdf:setPos(nn)"] = "Sets the X and Y position of the panel."
-E2Helper.Descriptions["xdf:setSize(nn)"] = "Sets the width and height of the panel."
-E2Helper.Descriptions["xdf:center()"] = "Centers the panel in the middle of the screen."
-E2Helper.Descriptions["xdf:setTitle(s)"] = "Sets the title of the panel."
-E2Helper.Descriptions["xdf:setSizable(s)"] = "Enables the panel to be resizable."
-E2Helper.Descriptions["xdf:setColor(nnnn)"] = "Sets the color of the panel. (RGBA)"
-E2Helper.Descriptions["xdf:showCloseButton(n)"] = "Hides the close button."
-E2Helper.Descriptions["xdf:create()"] = "Creates the panel."
-
-
-
+--------------------------------------------------------------------------]]
+E2Helper.Descriptions["dframe(n)"] = "Creates a Dframe element. Use xdf:create() to create the panel."
+--E2Helper.Descriptions["dframe(nn)"] = "Creates a Dframe element with parent id. Use xdf:create() to create the panel."
+E2Helper.Descriptions["setDeleteOnClose(xdf:n)"] = "Removes the Dframe when the close button is pressed or simply hides it (SetVisible(0)."
+E2Helper.Descriptions["getDeleteOnClose(xdf:)"] = "Returns if the Dframe gets removed on close."
+E2Helper.Descriptions["setVisible(xdf:n)"] 	= "Makes the panel invisible or visible. For all players inside the panel's players list."
+E2Helper.Descriptions["setVisible(xdf:ne)"] = "Makes the panel invisible or visible. For the specified player."
+E2Helper.Descriptions["setVisible(xdf:nr)"] = "Makes the panel invisible or visible. For an array of players."
+E2Helper.Descriptions["makePopup(xdf:n)"] = "Makes the panel pop up after using <panel>:create(). See enableMouseInput() and enableKeyboardInput()."
+E2Helper.Descriptions["enableMouseInput(xdf:n)"] = "Enables the mouse input after using <panel>:create()."
+E2Helper.Descriptions["enableKeyboardInput(xdf:n)"] = "Enables the keyboard input after using <panel>:create()."
+E2Helper.Descriptions["isVisible(xdf:)"] = "Returns wheather the panel is visible or not."
+E2Helper.Descriptions["addPlayer(xdf:e)"] = "Adds a player to the panel's player list. To create the panel use <panel>:create(). See addPlayer()/removePlayer() and vguiDefaultPlayers()."
+E2Helper.Descriptions["removePlayer(xdf:e)"]= "Removes a player from the panel's player list. See addPlayer()/removePlayer() and vguiDefaultPlayers()."
+E2Helper.Descriptions["setPos(xdf:nn)"] = "Sets the position of the panel."
+E2Helper.Descriptions["setPos(xdf:xv2)"] = "Sets the position of the panel."
+E2Helper.Descriptions["setSize(xdf:nn)"] = "Sets the size of the panel."
+E2Helper.Descriptions["setSize(xdf:xv2)"] = "Sets the size of the panel."
+E2Helper.Descriptions["getSize(xdf:)"] = "Sets the size of the panel."
+E2Helper.Descriptions["center(xdf:)"] = "Sets the position of the panel in the center of the screen."
+E2Helper.Descriptions["setTitle(xdf:s)"] = "Set the title of the panel."
+E2Helper.Descriptions["getTitle(xdf:)"] = "Returns the title of the panel"
+E2Helper.Descriptions["setSizable(xdf:n)"] = "Makes the panel resizable."
+E2Helper.Descriptions["isSizable(xdf:)"] = "Returns if the panel is resizable."
+E2Helper.Descriptions["setColor(xdf:v)"] = "Sets the color of the panel."
+E2Helper.Descriptions["setColor(xdf:vn)"] = "Sets the color of the panel."
+E2Helper.Descriptions["setColor(xdf:nnn)"] = "Sets the color of the panel."
+E2Helper.Descriptions["setColor(xdf:nnnn)"] = "Sets the color of the panel."
+E2Helper.Descriptions["showCloseButton(xdf:n)"] = "Shows or hides the close button."
+E2Helper.Descriptions["isShowCloseButton(xdf:)"] = "Returns if the close button is visible."
+E2Helper.Descriptions["getColor(xdf:)"] = "Returns the color of the panel."
+E2Helper.Descriptions["getColor4(xdf:)"] = "Returns the color of the panel."
+E2Helper.Descriptions["create(xdf:)"] = "Creates the Panel on all players inside the panel's player list. See addPlayer()/removePlayer() and vguiDefaultPlayers()."
+E2Helper.Descriptions["modify(xdf:)"] = "Modifies created panels on all players inside the panel's player list. See addPlayer()/removePlayer() and vguiDefaultPlayers(). Does not create a new panel if it got removed!."
+E2Helper.Descriptions["closePlayer(xdf:e)"] = "Closes the panel on the specified player."
+E2Helper.Descriptions["closeAll(xdf:)"] = "Closes the panel on all players inside the player's list. See addPlayer()/removePlayer() and vguiDefaultPlayers()."
 
 
 
