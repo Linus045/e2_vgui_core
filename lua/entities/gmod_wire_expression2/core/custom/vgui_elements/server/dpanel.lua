@@ -1,4 +1,4 @@
-E2VguiCore.RegisterVguiElementType("dframe.lua",true)
+E2VguiCore.RegisterVguiElementType("dpanel.lua",true)
 
 
 local function isValidDFrame(panel)
@@ -16,18 +16,10 @@ local pnl = {
 		["parentID"] = parentPnlID,
 		["posX"] = 0,
 		["posY"] = 0,
-		["width"] = 150,
-		["height"] = 150,
-		["title"] = "DFrame",
+		["width"] = 80,
+		["height"] = 80,
 		["color"] = nil,
-		["putCenter"] = false,
-		["sizable"] = false,
-		["deleteOnClose"] = true,
-		["visible"] = true,
-		["makepopup"] = true,
-		["mouseinput"] = true,
-		["keyboardinput"] = true,
-		["showCloseButton"] = true
+		["visible"] = true
 	}
 return pnl
 end
@@ -35,7 +27,7 @@ end
 
 --6th argument type checker without return,
 --7th arguement type checker with return. False for valid type and True for invalid
-registerType("dframe", "xdf", {["players"] = {}, ["paneldata"] = {}},
+registerType("dpanel", "xdp", {["players"] = {}, ["paneldata"] = {}},
 	nil,
 	nil,
 	function(retval)
@@ -54,7 +46,7 @@ E2 Functions
 
 
 -- B = B
-registerOperator("ass", "xdf", "xdf", function(self, args)
+registerOperator("ass", "xdp", "xdp", function(self, args)
 	local op1, op2, scope = args[2], args[3], args[4]
 	local      rv2 = op2[1](self, op2)
 	self.Scopes[scope][op1] = rv2
@@ -96,11 +88,11 @@ end
 
 
 --[[-------------------------------------------------------------------------
-	Desc: Creates a dframe element
+	Desc: Creates a dpanel element
 	Args:
-	Return: dframe
+	Return: dpanel
 ---------------------------------------------------------------------------]]
-e2function dframe dframe(number uniqueID)
+e2function dpanel dpanel(number uniqueID)
 	local players = {self.player}
 	if self.entity.e2_vgui_core_default_players != nil and self.entity.e2_vgui_core_default_players[self.entity:EntIndex()] != nil then
 		players = self.entity.e2_vgui_core_default_players[self.entity:EntIndex()]
@@ -111,34 +103,29 @@ e2function dframe dframe(number uniqueID)
 	}
 end
 
-e2function void dframe:makePopup(number popup)
-	this["paneldata"]["makepopup"] = popup > 0
+e2function dpanel dpanel(number uniqueID,number parentID)
+	local players = {self.player}
+	if self.entity.e2_vgui_core_default_players != nil and self.entity.e2_vgui_core_default_players[self.entity:EntIndex()] != nil then
+		players = self.entity.e2_vgui_core_default_players[self.entity:EntIndex()]
+	end
+	return {
+		["players"] =  players,
+		["paneldata"] = generateDefaultPanel(uniqueID,parentID)
+	}
 end
 
-
-e2function void dframe:enableMouseInput(number mouseInput)
-	this["paneldata"]["mouseinput"] = mouseInput > 0
-end
-
-
-e2function void dframe:enableKeyboardInput(number keyboardInput)
-	this["paneldata"]["keyboardinput"] = keyboardInput > 0
-end
-
-
-e2function number dframe:isVisible()
+e2function number dpanel:isVisible()
 	return this["paneldata"]["visible"] and 1 or 0
 end
 
-
-e2function void dframe:addPlayer(entity ply)
+e2function void dpanel:addPlayer(entity ply)
 	if ply != nil and ply:IsPlayer() then
 		table.insert(this["players"],ply)
 	end
 end
 
 
-e2function void dframe:removePlayer(entity ply)
+e2function void dpanel:removePlayer(entity ply)
 	for k,v in pairs(this["players"]) do
 		if ply == v then
 			table.remove(this["players"],k)
@@ -146,155 +133,112 @@ e2function void dframe:removePlayer(entity ply)
 	end
 end
 
-e2function dframe dframe:center()
-	this["paneldata"]["putCenter"] = true
-	return this
-end
-
-
 do
-	e2function dframe dframe:setPos(number posX,number posY)
+	e2function dpanel dpanel:setPos(number posX,number posY)
 		this["paneldata"]["posX"] = posX
 		this["paneldata"]["posY"] = posY
 		return this
 	end
 
-
-	e2function dframe dframe:setPos(vector2 pos)
+	e2function dpanel dpanel:setPos(vector2 pos)
 		this["paneldata"]["posX"] = pos[1]
 		this["paneldata"]["posY"] = pos[2]
 		return this
 	end
 
-
-	e2function dframe dframe:setSize(number width,number height)
+	e2function dpanel dpanel:setSize(number width,number height)
 		this["paneldata"]["width"] = width
 		this["paneldata"]["height"] = height
 		return this
 	end
 
-	e2function dframe dframe:setSize(vector2 pnlSize)
+	e2function dpanel dpanel:setSize(vector2 pnlSize)
 		this["paneldata"]["width"] = pnlSize[1]
 		this["paneldata"]["height"] = pnlSize[2]
 		return this
 	end
 
-	e2function dframe dframe:setColor(vector col)
+	e2function dpanel dpanel:setColor(vector col)
 		this["paneldata"]["color"] = Color(col[1],col[2],col[3],255)
 		return this
 	end
 
-
-	e2function dframe dframe:setColor(vector col,number alpha)
+	e2function dpanel dpanel:setColor(vector col,number alpha)
 		this["paneldata"]["color"] = Color(col[1],col[2],col[3],alpha)
 		return this
 	end
 
-
-	e2function dframe dframe:setColor(number red,number green,number blue)
+	e2function dpanel dpanel:setColor(number red,number green,number blue)
 		this["paneldata"]["color"] = Color(red,green,blue,255)
 		return this
 	end
 
-
-	e2function dframe dframe:setColor(number red,number green,number blue,number alpha)
+	e2function dpanel dpanel:setColor(number red,number green,number blue,number alpha)
 		this["paneldata"]["color"] = Color(red,green,blue,alpha)
 		return this
 	end
 
-
-	e2function dframe dframe:setTitle(string title)
-		this["paneldata"]["title"] = title
-		return this
-	end
-
-
-	e2function dframe dframe:setSizable(number sizable)
-		this["paneldata"]["sizable"] = sizable > 0
-		return this
-	end
-
-
-	e2function void dframe:setVisible(number visible)
+	e2function void dpanel:setVisible(number visible)
 		local vis = visible > 0
 		this["paneldata"]["visible"] = vis
 		E2VguiCore.SetPanelVisibility(self.entity:EntIndex(),this["paneldata"]["uniqueID"],this["players"],vis)
 	end
 
-
-	e2function void dframe:setVisible(number visible,entity ply)
+	e2function void dpanel:setVisible(number visible,entity ply)
 		if !IsValid(ply) or !ply:IsPlayer() then return end
 		local vis = visible > 0
 		this["paneldata"]["visible"] = vis
 		E2VguiCore.SetPanelVisibility(self.entity:EntIndex(),this["paneldata"]["uniqueID"],{ply},vis)
 	end
 
-
-	e2function void dframe:setVisible(number visible,array players)
+	e2function void dpanel:setVisible(number visible,array players)
 		local players = E2VguiCore.FilterPlayers(players)
 		local vis = visible > 0
 		this["paneldata"]["visible"] = vis
 		E2VguiCore.SetPanelVisibility(self.entity:EntIndex(),this["paneldata"]["uniqueID"],players,vis)
 	end
 
-
-	e2function void dframe:setDeleteOnClose(number delete)
-		this["paneldata"]["deleteOnClose"] = delete > 0
-		return this
-	end
 -- panel setter
 end
 
 
 do
-	e2function vector dframe:getColor()
+	e2function vector dpanel:getColor()
 		local col = this["paneldata"]["color"]
 		return {col.r,col.g,col.b}
 	end
 
-	e2function vector4 dframe:getColor4()
+	e2function vector4 dpanel:getColor4()
 		local col = this["paneldata"]["color"]
 		return {col.r,col.g,col.b,col.a}
-	end
-
-	e2function void dframe:getDeleteOnClose()
-		return this["paneldata"]["deleteOnClose"] and 1 or 0
 	end
 -- panel getter
 end
 
-e2function dframe dframe:showCloseButton(number showCloseButton)
-	this["paneldata"]["showCloseButton"] = showCloseButton > 0
+e2function void dpanel:create()
+	local pnl = E2VguiCore.CreatePanel(self,this["players"],this["paneldata"],"DPanel")
 end
 
-e2function number dframe:isShowCloseButton()
-	return this["paneldata"]["showCloseButton"] and 1 or 0
-end
-
-e2function void dframe:create()
-	local pnl = E2VguiCore.CreatePanel(self,this["players"],this["paneldata"],"DFrame")
-end
-
-e2function dframe dframe:modify()
-	local pnl = E2VguiCore.ModifyPanel(self,this["players"],this["paneldata"],"DFrame")
+e2function dpanel dpanel:modify()
+	local pnl = E2VguiCore.ModifyPanel(self,this["players"],this["paneldata"],"DPanel")
 	return pnl
 end
 
-e2function void dframe:closePlayer(entity ply)
+e2function void dpanel:closePlayer(entity ply)
 	if IsValid(ply) and ply:IsPlayer() then
 		E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
 	end
 end
 
-e2function void dframe:closeAll()
+e2function void dpanel:closeAll()
 	for _,ply in pairs(this["players"]) do
 		E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
 	end
 end
 
 --[[
-e2function void dframe:update() --make usable for an array of frames
-e2function void dframe:modify() --make usable for an array of frames
+e2function void dpanel:update() --make usable for an array of frames
+e2function void dpanel:modify() --make usable for an array of frames
 
 e2function void array:modify() --make usable for an array of frames
 e2function void array:modify() --make usable for an array of frames

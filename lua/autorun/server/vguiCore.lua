@@ -89,7 +89,7 @@ end
 Desc: Returns if the player can create a vguipanel on the target (Check ConVar 'sbox_E2_Vgui_permissionDefault')
 Args:
 	ply:		the player who wants creates the panel
-	target:		the target 
+	target:		the target
 Return: true OR false
 ---------------------------------------------------------------------------]]
 --TODO:Implement this
@@ -122,11 +122,11 @@ end
 
 --[[-------------------------------------------------------------------------
 				E2VguiCore.IsBlocked
-Desc: Returns if the player can create a dermapanel on the target. Blocklist of the target is checked. 
+Desc: Returns if the player can create a dermapanel on the target. Blocklist of the target is checked.
 					(See lua/autorun/cl_util.lua 'wire_expression2_derma_blockplayer/unblockplayer')
 Args:
 	ply:		the player who wants creates the panel
-	target:		the target 
+	target:		the target
 Return: true OR false
 ---------------------------------------------------------------------------]]
 function E2VguiCore.IsBlocked(ply,target)
@@ -149,7 +149,7 @@ Desc: Blocks the target the player requests so he can't create derma panels anym
 	(See lua/autorun/cl_util.lua 'wire_expression2_derma_blockplayer/unblockplayer')
 Args:
 	ply:		the player who wants to block
-	target:		the target 
+	target:		the target
 Return: nil
 ---------------------------------------------------------------------------]]
 function E2VguiCore.BlockClient(ply,target)
@@ -170,7 +170,7 @@ Desc: Unlocks the target the player requests so he can create derma panels again
 	(See lua/autorun/cl_util.lua 'wire_expression2_derma_blockplayer/unblockplayer')
 Args:
 	ply:		the player who wants to unblock
-	target:		the target 
+	target:		the target
 Return: nil
 ---------------------------------------------------------------------------]]
 function E2VguiCore.UnblockClient(ply,target)
@@ -178,7 +178,7 @@ function E2VguiCore.UnblockClient(ply,target)
 	if ply == nil or target == nil then return end
 	if !ply:IsPlayer() or !target:IsPlayer() then return end
 	if ply == target then return end
-	if E2VguiCore.BlockedPlayer[ply:SteamID()] then 
+	if E2VguiCore.BlockedPlayer[ply:SteamID()] then
 		E2VguiCore.BlockedPlayer[ply:SteamID()] = {}
 	end
 	E2VguiCore.BlockedPlayer[ply:SteamID()][target:SteamID()] = nil
@@ -198,7 +198,7 @@ function E2VguiCore.GetCurrentPanelAmount(ply)
 	if ply.e2_vgui_core == nil then return 0 end
 	local e2s = ply.e2_vgui_core
 	for _,panels in pairs(e2s) do
-		if panels != nil and istable(panels) then 
+		if panels != nil and istable(panels) then
 			count = count + table.Count(panels)
 		end
 	end
@@ -232,7 +232,7 @@ end
 function E2VguiCore.CreatePanel(e2self, players, paneldata, pnlType)
 	if !istable(e2self) or !istable(players) or !istable(paneldata) then return end
 	e2EntityID = e2self.entity:EntIndex()
-	local uniqueID = paneldata["uniqueID"]
+	local uniqueID = math.Round(paneldata["uniqueID"])
 	if uniqueID == nil or players == nil then return end
 	if e2EntityID == nil or e2EntityID <= 0 then return end
 
@@ -261,7 +261,7 @@ function E2VguiCore.CreatePanel(e2self, players, paneldata, pnlType)
 		ply.e2_vgui_core[e2EntityID] = ply.e2_vgui_core[e2EntityID] or {}
 		ply.e2_vgui_core[e2EntityID][uniqueID] = panel
 	end
-	
+
 	net.Start("E2Vgui.CreatePanel")
 		net.WriteString(pnlType)
 		net.WriteInt(uniqueID,32)
@@ -275,7 +275,7 @@ end
 function E2VguiCore.ModifyPanel(e2self, players, paneldata, pnlType)
 	if !istable(e2self) or !istable(players) or !istable(paneldata) then return end
 	e2EntityID = e2self.entity:EntIndex()
-	local uniqueID = paneldata["uniqueID"]
+	local uniqueID = math.Round(paneldata["uniqueID"])
 	if uniqueID == nil or players == nil then return end
 	if e2EntityID == nil or e2EntityID <= 0 then return end
 
@@ -467,8 +467,8 @@ function E2VguiCore.SetPanelVisibility(e2EntityID,uniqueID,players,visible)
 	local targets = {}
 	for k,v in pairs(players) do
 		panel = E2VguiCore.GetPanelByID(v,e2EntityID, uniqueID)
-		//TODO: Check why this IsValid returns false 
-		if !IsValid(panel) and not type(panel) == "table" then 
+		//TODO: Check why this IsValid returns false
+		if !IsValid(panel) and not type(panel) == "table" then
 			continue
 		end
 		table.insert(targets,v)
@@ -513,7 +513,7 @@ net.Receive("E2Vgui.NotifyPanelRemove",function(len, ply)
 		local panels = net.ReadTable()
 		for k,panelID in pairs(panels) do
 			local panel = E2VguiCore.GetPanelByID(ply,e2EntityID,panelID)
-			if panel != nil then 
+			if panel != nil then
 				local uniqueID = panel["paneldata"]["uniqueID"]
 				E2VguiCore.RemovePanelOnPlayerServer(e2EntityID,uniqueID,ply)
 			end

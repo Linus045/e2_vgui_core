@@ -43,7 +43,7 @@ registerType("dslider", "xds", {["players"] = {}, ["paneldata"] = {}},
 
 
 --[[------------------------------------------------------------
-E2 Functions 
+E2 Functions
 ]]--------------------------------------------------------------
 
 --- B = B
@@ -56,7 +56,7 @@ registerOperator("ass", "xds", "xds", function(self, args)
 end)
 
 --TODO: Check if the entire pnl data is valid
--- if (B) 
+-- if (B)
 e2function number operator_is(xdb pnldata)
 	return isValidDFrame(pnldata) and  1 or 0
 end
@@ -87,7 +87,7 @@ end
 
 --[[-------------------------------------------------------------------------
 	Desc: Creates a DSlider element
-	Args: 
+	Args:
 	Return: DSlider
 ---------------------------------------------------------------------------]]
 e2function dslider dslider(number uniqueID)
@@ -123,7 +123,7 @@ e2function number dslider:isVisible()
 end
 
 e2function void dslider:addPlayer(entity ply)
-	if ply != nil and ply:IsPlayer() then 
+	if ply != nil and ply:IsPlayer() then
 		table.insert(this["players"],ply)
 	end
 end
@@ -201,6 +201,15 @@ e2function void dslider:setColor(number red,number green,number blue,number alph
 	this["paneldata"]["color"] = Color(red,green,blue,alpha)
 end
 
+e2function vector dslider:getColor()
+	local col = this["paneldata"]["color"]
+	return {col.r,col.g,col.b}
+end
+
+e2function vector4 dslider:getColor4()
+	local col = this["paneldata"]["color"]
+	return {col.r,col.g,col.b,col.a}
+end
 
 
 e2function void dslider:create()
@@ -230,5 +239,3 @@ or make it update it child panels when the parent is updated/modified
 
 
 ]]
-
-
