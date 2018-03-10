@@ -9,18 +9,18 @@ local function isValidDFrame(panel)
 end
 
 local function generateDefaultPanel(uniqueID,parentPnlID)
-local pnl = {
-		["uniqueID"] = uniqueID,
-		["parentID"] = parentPnlID,
-		["posX"] = 0,
-		["posY"] = 0,
-		["width"] = 50,
-		["height"] = 22,
-		["text"] = "DButton",
-		["visible"] = true,
-		["color"] = nil
-	}
-return pnl
+	local pnl = {
+			["uniqueID"] = uniqueID,
+			["parentID"] = parentPnlID,
+			["posX"] = 0,
+			["posY"] = 0,
+			["width"] = 50,
+			["height"] = 22,
+			["text"] = "DButton",
+			["visible"] = true,
+			["color"] = nil
+		}
+	return pnl
 end
 
 
@@ -40,8 +40,8 @@ registerType("dbutton", "xdb", {["players"] = {}, ["paneldata"] = {}},
 
 
 --[[------------------------------------------------------------
-E2 Functions 
-]]--------------------------------------------------------------
+						E2 Functions
+------------------------------------------------------------]]--
 
 --- B = B
 registerOperator("ass", "xdb", "xdb", function(self, args)
@@ -82,10 +82,6 @@ end
 
 
 
-
-
-
-
 --[[-------------------------------------------------------------------------
 	Desc: Creates a dbutton element
 	Args: 
@@ -113,132 +109,136 @@ e2function dbutton dbutton(number uniqueID,number parentID)
 	}
 end
 
-e2function void dbutton:setVisible(number visible)
-	local vis = visible > 0
-	this["paneldata"]["visible"] = vis
-	E2VguiCore.SetPanelVisibility(self.entity:EntIndex(),this["paneldata"]["uniqueID"],this["players"],vis)
-	return this
-end
 
-e2function number dbutton:isVisible()
-	return this["paneldata"]["visible"] and 1 or 0
-end
-
---TODO:Fix player table stuff, check dframe and dslider
-e2function void dbutton:addPlayer(entity ply)
-	if ply != nil and ply:IsPlayer() then 
-		table.insert(this["players"],ply)
+do--[[setter]]--
+	e2function void dbutton:setPos(number posX,number posY)
+		this["paneldata"]["posX"] = posX
+		this["paneldata"]["posY"] = posY
 	end
+
+	e2function void dbutton:setPos(vector2 pos)
+		this["paneldata"]["posX"] = pos[1]
+		this["paneldata"]["posY"] = pos[2]
+	end
+
+	
+	e2function void dbutton:setSize(number width,number height)
+		this["paneldata"]["width"] = width
+		this["paneldata"]["height"] = height
+	end
+
+	e2function void dbutton:setSize(vector2 pnlSize)
+		this["paneldata"]["width"] = pnlSize[1]
+		this["paneldata"]["height"] = pnlSize[2]
+	end
+
+
+	e2function void dbutton:setColor(vector col)
+		this["paneldata"]["color"] = Color(col[1],col[2],col[3],255)
+	end
+
+	e2function void dbutton:setColor(vector col,number alpha)
+		this["paneldata"]["color"] = Color(col[1],col[2],col[3],alpha)
+	end
+
+	e2function void dbutton:setColor(vector4 col)
+		this["paneldata"]["color"] = Color(col[1],col[2],col[3],col[4])
+	end
+
+	e2function void dbutton:setColor(number red,number green,number blue)
+		this["paneldata"]["color"] = Color(red,green,blue,255)
+	end
+
+	e2function void dbutton:setColor(number red,number green,number blue,number alpha)
+		this["paneldata"]["color"] = Color(red,green,blue,alpha)
+	end
+
+
+	e2function void dbutton:setText(string text)
+		this["paneldata"]["text"] = text
+	end
+
+
+	e2function void dbutton:setVisible(number visible)
+		local vis = visible > 0
+		this["paneldata"]["visible"] = vis
+		E2VguiCore.SetPanelVisibility(self.entity:EntIndex(),this["paneldata"]["uniqueID"],this["players"],vis)
+		return this
+	end	
+-- setter
 end
 
-e2function void dbutton:removePlayer(entity ply)
-	for k,v in pairs(this["players"]) do
-		if ply == v then
-			table.remove(this["players"],k)
+
+do--[[getter]]--
+	e2function vector2 dbutton:getPos()
+		return {this["paneldata"]["posX"],this["paneldata"]["posY"]}
+	end
+
+
+	e2function vector2 dbutton:getSize()
+		return {this["paneldata"]["width"],this["paneldata"]["height"]}
+	end
+	
+
+	e2function vector dbutton:getColor()
+		local col = this["paneldata"]["color"]
+		return {col.r,col.g,col.b}
+	end
+
+	e2function vector4 dbutton:getColor4()
+		local col = this["paneldata"]["color"]
+		return {col.r,col.g,col.b,col.a}
+	end
+
+	e2function string dbutton:getText()
+		return this["paneldata"]["text"]
+	end	
+
+
+	e2function number dbutton:isVisible()
+		return this["paneldata"]["visible"] and 1 or 0
+	end
+-- getter
+end
+
+
+do--[[utility]]--
+	e2function void dbutton:create()
+		local pnl = E2VguiCore.CreatePanel(self,this["players"],this["paneldata"],"DButton")
+	end
+
+	e2function void dbutton:modify()
+		local pnl = E2VguiCore.ModifyPanel(self,this["players"],this["paneldata"],"DButton")
+	end
+
+
+	e2function void dbutton:closePlayer(entity ply)
+		if IsValid(ply) and ply:IsPlayer() then
+			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
 		end
 	end
-end
-
-e2function void dbutton:setPos(number posX,number posY)
-	this["paneldata"]["posX"] = posX
-	this["paneldata"]["posY"] = posY
-end
 
 
-e2function void dbutton:setPos(vector2 pos)
-	this["paneldata"]["posX"] = pos[1]
-	this["paneldata"]["posY"] = pos[2]
-end
-
-e2function vector2 dbutton:getPos()
-	return {this["paneldata"]["posX"],this["paneldata"]["posY"]}
-end
-
-e2function void dbutton:setSize(number width,number height)
-	this["paneldata"]["width"] = width
-	this["paneldata"]["height"] = height
-end
-
-e2function void dbutton:setSize(vector2 pnlSize)
-	this["paneldata"]["width"] = pnlSize[1]
-	this["paneldata"]["height"] = pnlSize[2]
-end
-
-e2function vector2 dbutton:getSize()
-	return {this["paneldata"]["width"],this["paneldata"]["height"]}
-end
-
-e2function void dbutton:setText(string text)
-	this["paneldata"]["text"] = text
-end
-
-e2function string dbutton:getText()
-	return this["paneldata"]["text"]
-end
-
-e2function void dbutton:setColor(vector col)
-	this["paneldata"]["color"] = Color(col[1],col[2],col[3],255)
-end
-
-e2function void dbutton:setColor(vector col,number alpha)
-	this["paneldata"]["color"] = Color(col[1],col[2],col[3],alpha)
-end
-
-e2function void dbutton:setColor(vector4 col)
-	this["paneldata"]["color"] = Color(col[1],col[2],col[3],col[4])
-end
-
-e2function void dbutton:setColor(number red,number green,number blue)
-	this["paneldata"]["color"] = Color(red,green,blue,255)
-end
-
-e2function void dbutton:setColor(number red,number green,number blue,number alpha)
-	this["paneldata"]["color"] = Color(red,green,blue,alpha)
-end
-
-e2function vector dbutton:getColor()
-	local col = this["paneldata"]["color"]
-	return {col.r,col.g,col.b}
-end
-
-e2function vector4 dbutton:getColor4()
-	local col = this["paneldata"]["color"]
-	return {col.r,col.g,col.b,col.a}
-end
-
-
-
-e2function void dbutton:create()
-	local pnl = E2VguiCore.CreatePanel(self,this["players"],this["paneldata"],"DButton")
-end
-
-e2function void dbutton:modify()
-	local pnl = E2VguiCore.ModifyPanel(self,this["players"],this["paneldata"],"DButton")
-end
-
-e2function void dbutton:closePlayer(entity ply)
-	if IsValid(ply) and ply:IsPlayer() then
-		E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
+	e2function void dbutton:closeAll()
+		for _,ply in pairs(this["players"]) do
+			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
+		end
 	end
-end
 
-e2function void dbutton:closeAll()
-	for _,ply in pairs(this["players"]) do
-		E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
+
+	--TODO: Fix player table stuff, check dframe and dslider
+	e2function void dbutton:addPlayer(entity ply)
+		if ply != nil and ply:IsPlayer() then 
+			table.insert(this["players"],ply)
+		end
 	end
+
+	e2function void dbutton:removePlayer(entity ply)
+		for k,v in pairs(this["players"]) do
+			if ply == v then
+				table.remove(this["players"],k)
+			end
+		end
+	end
+-- utility
 end
-
-
---[[
-e2function void dbutton:update() --make usable for an array of frames
-e2function void dbutton:modify() --make usable for an array of frames
-
-e2function void array:modify() --make usable for an array of frames
-e2function void array:modify() --make usable for an array of frames
-
-or make it update it child panels when the parent is updated/modified
-
-
-]]
-
-

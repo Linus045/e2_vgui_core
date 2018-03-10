@@ -41,8 +41,8 @@ registerType("dpanel", "xdp", {["players"] = {}, ["paneldata"] = {}},
 
 
 --[[------------------------------------------------------------
-E2 Functions
-]]--------------------------------------------------------------
+						E2 Functions
+------------------------------------------------------------]]--
 
 
 -- B = B
@@ -114,26 +114,8 @@ e2function dpanel dpanel(number uniqueID,number parentID)
 	}
 end
 
-e2function number dpanel:isVisible()
-	return this["paneldata"]["visible"] and 1 or 0
-end
 
-e2function void dpanel:addPlayer(entity ply)
-	if ply != nil and ply:IsPlayer() then
-		table.insert(this["players"],ply)
-	end
-end
-
-
-e2function void dpanel:removePlayer(entity ply)
-	for k,v in pairs(this["players"]) do
-		if ply == v then
-			table.remove(this["players"],k)
-		end
-	end
-end
-
-do
+do--[[setter]]--
 	e2function dpanel dpanel:setPos(number posX,number posY)
 		this["paneldata"]["posX"] = posX
 		this["paneldata"]["posY"] = posY
@@ -197,12 +179,11 @@ do
 		this["paneldata"]["visible"] = vis
 		E2VguiCore.SetPanelVisibility(self.entity:EntIndex(),this["paneldata"]["uniqueID"],players,vis)
 	end
-
--- panel setter
+-- setter
 end
 
 
-do
+do--[[getter]]--
 	e2function vector dpanel:getColor()
 		local col = this["paneldata"]["color"]
 		return {col.r,col.g,col.b}
@@ -212,38 +193,51 @@ do
 		local col = this["paneldata"]["color"]
 		return {col.r,col.g,col.b,col.a}
 	end
--- panel getter
-end
 
-e2function void dpanel:create()
-	local pnl = E2VguiCore.CreatePanel(self,this["players"],this["paneldata"],"DPanel")
-end
-
-e2function dpanel dpanel:modify()
-	local pnl = E2VguiCore.ModifyPanel(self,this["players"],this["paneldata"],"DPanel")
-	return pnl
-end
-
-e2function void dpanel:closePlayer(entity ply)
-	if IsValid(ply) and ply:IsPlayer() then
-		E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
+	e2function number dpanel:isVisible()
+		return this["paneldata"]["visible"] and 1 or 0
 	end
+-- getter
 end
 
-e2function void dpanel:closeAll()
-	for _,ply in pairs(this["players"]) do
-		E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
+
+do--[[utility]]--
+	e2function void dpanel:create()
+		local pnl = E2VguiCore.CreatePanel(self,this["players"],this["paneldata"],"DPanel")
 	end
+
+	e2function dpanel dpanel:modify()
+		local pnl = E2VguiCore.ModifyPanel(self,this["players"],this["paneldata"],"DPanel")
+		return pnl
+	end
+
+
+	e2function void dpanel:closePlayer(entity ply)
+		if IsValid(ply) and ply:IsPlayer() then
+			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
+		end
+	end
+
+	e2function void dpanel:closeAll()
+		for _,ply in pairs(this["players"]) do
+			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
+		end
+	end
+
+
+	e2function void dpanel:addPlayer(entity ply)
+		if ply != nil and ply:IsPlayer() then
+			table.insert(this["players"],ply)
+		end
+	end
+
+
+	e2function void dpanel:removePlayer(entity ply)
+		for k,v in pairs(this["players"]) do
+			if ply == v then
+				table.remove(this["players"],k)
+			end
+		end
+	end
+-- utility
 end
-
---[[
-e2function void dpanel:update() --make usable for an array of frames
-e2function void dpanel:modify() --make usable for an array of frames
-
-e2function void array:modify() --make usable for an array of frames
-e2function void array:modify() --make usable for an array of frames
-
-or make it update it child panels when the parent is updated/modified
-
-
-]]

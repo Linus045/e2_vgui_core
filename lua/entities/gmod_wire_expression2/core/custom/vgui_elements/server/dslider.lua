@@ -43,8 +43,8 @@ registerType("dslider", "xds", {["players"] = {}, ["paneldata"] = {}},
 
 
 --[[------------------------------------------------------------
-E2 Functions
-]]--------------------------------------------------------------
+							E2 Functions
+------------------------------------------------------------]]--
 
 --- B = B
 registerOperator("ass", "xds", "xds", function(self, args)
@@ -112,130 +112,146 @@ e2function dslider dslider(number uniqueID,number parentID)
 	}
 end
 
-e2function void dslider:setVisible(number visible)
-	local vis = visible > 0
-	this["paneldata"]["visible"] = vis
-	E2VguiCore.SetPanelVisibility(self.entity:EntIndex(),this["paneldata"]["uniqueID"],this["players"],vis)
-end
 
-e2function number dslider:isVisible()
-	return this["paneldata"]["visible"] and 1 or 0
-end
-
-e2function void dslider:addPlayer(entity ply)
-	if ply != nil and ply:IsPlayer() then
-		table.insert(this["players"],ply)
+do--[[setter]]--
+	e2function void dslider:setPos(number posX,number posY)
+		this["paneldata"]["posX"] = posX
+		this["paneldata"]["posY"] = posY
 	end
+
+	e2function void dslider:setPos(vector2 pos)
+		this["paneldata"]["posX"] = pos[1]
+		this["paneldata"]["posY"] = pos[2]
+	end
+
+
+	e2function void dslider:setSize(number width,number height)
+		this["paneldata"]["width"] = width
+		this["paneldata"]["height"] = height
+	end
+
+	e2function void dslider:setSize(vector2 pnlSize)
+		this["paneldata"]["width"] = pnlSize[1]
+		this["paneldata"]["height"] = pnlSize[2]
+	end
+
+
+	e2function void dslider:setColor(vector col)
+		this["paneldata"]["color"] = Color(col[1],col[2],col[3],255)
+	end
+
+	e2function void dslider:setColor(vector col,number alpha)
+		this["paneldata"]["color"] = Color(col[1],col[2],col[3],alpha)
+	end
+
+	e2function void dslider:setColor(vector4 col)
+		this["paneldata"]["color"] = Color(col[1],col[2],col[3],col[4])
+	end
+
+	e2function void dslider:setColor(number red,number green,number blue)
+		this["paneldata"]["color"] = Color(red,green,blue,255)
+	end
+
+	e2function void dslider:setColor(number red,number green,number blue,number alpha)
+		this["paneldata"]["color"] = Color(red,green,blue,alpha)
+	end
+
+
+	e2function void dslider:setVisible(number visible)
+		local vis = visible > 0
+		this["paneldata"]["visible"] = vis
+		E2VguiCore.SetPanelVisibility(self.entity:EntIndex(),this["paneldata"]["uniqueID"],this["players"],vis)
+	end
+
+
+	e2function void dslider:setText(string text)
+		this["paneldata"]["text"] = text
+	end
+
+
+	e2function void dslider:setMin(number min)
+		this["paneldata"]["min"] = min
+	end
+
+	e2function void dslider:setMax(number max)
+		this["paneldata"]["max"] = max
+	end
+
+
+	e2function void dslider:setDecimals(number decimals)
+		this["paneldata"]["decimals"] = decimals
+	end
+
+
+	e2function void dslider:setValue(number value)
+		this["paneldata"]["value"] = value
+	end
+
+
+	e2function void dslider:setDark(number dark)
+		this["paneldata"]["dark"] = dark>0 and true or false
+	end
+-- setter
 end
 
-e2function void dslider:removePlayer(entity ply)
-	for k,v in pairs(this["players"]) do
-		if ply == v then
-			table.remove(this["players"],k)
+
+do--[[getter]]--
+	e2function vector dslider:getColor()
+		local col = this["paneldata"]["color"]
+		return {col.r,col.g,col.b}
+	end
+
+	e2function vector4 dslider:getColor4()
+		local col = this["paneldata"]["color"]
+		return {col.r,col.g,col.b,col.a}
+	end
+
+
+	e2function number dslider:isVisible()
+		return this["paneldata"]["visible"] and 1 or 0
+	end	
+-- getter
+end
+
+
+do--[[utility]]--
+	e2function void dslider:create()
+		local pnl = E2VguiCore.CreatePanel(self,this["players"],this["paneldata"],"DSlider")
+	end
+
+	e2function dslider dslider:modify()
+		local pnl = E2VguiCore.ModifyPanel(self,this["players"],this["paneldata"],"DSlider")
+		return pnl
+	end
+
+
+	e2function void dslider:close()
+		for _,ply in pairs(this["players"]) do
+			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
 		end
 	end
-end
-
-e2function void dslider:setPos(number posX,number posY)
-	this["paneldata"]["posX"] = posX
-	this["paneldata"]["posY"] = posY
-end
-
-e2function void dslider:setPos(vector2 pos)
-	this["paneldata"]["posX"] = pos[1]
-	this["paneldata"]["posY"] = pos[2]
-end
-
-e2function void dslider:setSize(number width,number height)
-	this["paneldata"]["width"] = width
-	this["paneldata"]["height"] = height
-end
-
-e2function void dslider:setSize(vector2 pnlSize)
-	this["paneldata"]["width"] = pnlSize[1]
-	this["paneldata"]["height"] = pnlSize[2]
-end
 
 
-e2function void dslider:setText(string text)
-	this["paneldata"]["text"] = text
-end
-
-e2function void dslider:setMin(number min)
-	this["paneldata"]["min"] = min
-end
-
-e2function void dslider:setMax(number max)
-	this["paneldata"]["max"] = max
-end
-
-e2function void dslider:setDecimals(number decimals)
-	this["paneldata"]["decimals"] = decimals
-end
-
-e2function void dslider:setValue(number value)
-	this["paneldata"]["value"] = value
-end
-
-e2function void dslider:setDark(number dark)
-	this["paneldata"]["dark"] = dark>0 and true or false
-end
-
-e2function void dslider:setColor(vector col)
-	this["paneldata"]["color"] = Color(col[1],col[2],col[3],255)
-end
-
-e2function void dslider:setColor(vector col,number alpha)
-	this["paneldata"]["color"] = Color(col[1],col[2],col[3],alpha)
-end
-
-e2function void dslider:setColor(vector4 col)
-	this["paneldata"]["color"] = Color(col[1],col[2],col[3],col[4])
-end
-
-e2function void dslider:setColor(number red,number green,number blue)
-	this["paneldata"]["color"] = Color(red,green,blue,255)
-end
-
-e2function void dslider:setColor(number red,number green,number blue,number alpha)
-	this["paneldata"]["color"] = Color(red,green,blue,alpha)
-end
-
-e2function vector dslider:getColor()
-	local col = this["paneldata"]["color"]
-	return {col.r,col.g,col.b}
-end
-
-e2function vector4 dslider:getColor4()
-	local col = this["paneldata"]["color"]
-	return {col.r,col.g,col.b,col.a}
-end
-
-
-e2function void dslider:create()
-	local pnl = E2VguiCore.CreatePanel(self,this["players"],this["paneldata"],"DSlider")
-end
-
-e2function dslider dslider:modify()
-	local pnl = E2VguiCore.ModifyPanel(self,this["players"],this["paneldata"],"DSlider")
-	return pnl
-end
-
-e2function void dslider:close()
-	for _,ply in pairs(this["players"]) do
-		E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
+	e2function void dslider:addPlayer(entity ply)
+		if ply != nil and ply:IsPlayer() then
+			table.insert(this["players"],ply)
+		end
 	end
+
+
+	e2function void dslider:removePlayer(entity ply)
+		for k,v in pairs(this["players"]) do
+			if ply == v then
+				table.remove(this["players"],k)
+			end
+		end
+	end	
+-- utility
 end
 
 
---[[
-e2function void DSlider:update() --make usable for an array of frames
-e2function void DSlider:modify() --make usable for an array of frames
-
-e2function void array:modify() --make usable for an array of frames
-e2function void array:modify() --make usable for an array of frames
-
-or make it update it child panels when the parent is updated/modified
 
 
-]]
+
+
+

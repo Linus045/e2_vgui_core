@@ -111,54 +111,13 @@ e2function dframe dframe(number uniqueID)
 	}
 end
 
-e2function void dframe:makePopup(number popup)
-	this["paneldata"]["makepopup"] = popup > 0
-end
 
-
-e2function void dframe:enableMouseInput(number mouseInput)
-	this["paneldata"]["mouseinput"] = mouseInput > 0
-end
-
-
-e2function void dframe:enableKeyboardInput(number keyboardInput)
-	this["paneldata"]["keyboardinput"] = keyboardInput > 0
-end
-
-
-e2function number dframe:isVisible()
-	return this["paneldata"]["visible"] and 1 or 0
-end
-
-
-e2function void dframe:addPlayer(entity ply)
-	if ply != nil and ply:IsPlayer() then
-		table.insert(this["players"],ply)
-	end
-end
-
-
-e2function void dframe:removePlayer(entity ply)
-	for k,v in pairs(this["players"]) do
-		if ply == v then
-			table.remove(this["players"],k)
-		end
-	end
-end
-
-e2function dframe dframe:center()
-	this["paneldata"]["putCenter"] = true
-	return this
-end
-
-
-do
+do--[[setter]]--
 	e2function dframe dframe:setPos(number posX,number posY)
 		this["paneldata"]["posX"] = posX
 		this["paneldata"]["posY"] = posY
 		return this
 	end
-
 
 	e2function dframe dframe:setPos(vector2 pos)
 		this["paneldata"]["posX"] = pos[1]
@@ -179,27 +138,46 @@ do
 		return this
 	end
 
+
 	e2function dframe dframe:setColor(vector col)
 		this["paneldata"]["color"] = Color(col[1],col[2],col[3],255)
 		return this
 	end
-
 
 	e2function dframe dframe:setColor(vector col,number alpha)
 		this["paneldata"]["color"] = Color(col[1],col[2],col[3],alpha)
 		return this
 	end
 
-
 	e2function dframe dframe:setColor(number red,number green,number blue)
 		this["paneldata"]["color"] = Color(red,green,blue,255)
 		return this
 	end
 
-
 	e2function dframe dframe:setColor(number red,number green,number blue,number alpha)
 		this["paneldata"]["color"] = Color(red,green,blue,alpha)
 		return this
+	end
+
+
+	e2function void dframe:setVisible(number visible)
+		local vis = visible > 0
+		this["paneldata"]["visible"] = vis
+		E2VguiCore.SetPanelVisibility(self.entity:EntIndex(),this["paneldata"]["uniqueID"],this["players"],vis)
+	end
+
+	e2function void dframe:setVisible(number visible,entity ply)
+		if !IsValid(ply) or !ply:IsPlayer() then return end
+		local vis = visible > 0
+		this["paneldata"]["visible"] = vis
+		E2VguiCore.SetPanelVisibility(self.entity:EntIndex(),this["paneldata"]["uniqueID"],{ply},vis)
+	end
+
+	e2function void dframe:setVisible(number visible,array players)
+		local players = E2VguiCore.FilterPlayers(players)
+		local vis = visible > 0
+		this["paneldata"]["visible"] = vis
+		E2VguiCore.SetPanelVisibility(self.entity:EntIndex(),this["paneldata"]["uniqueID"],players,vis)
 	end
 
 
@@ -215,38 +193,15 @@ do
 	end
 
 
-	e2function void dframe:setVisible(number visible)
-		local vis = visible > 0
-		this["paneldata"]["visible"] = vis
-		E2VguiCore.SetPanelVisibility(self.entity:EntIndex(),this["paneldata"]["uniqueID"],this["players"],vis)
-	end
-
-
-	e2function void dframe:setVisible(number visible,entity ply)
-		if !IsValid(ply) or !ply:IsPlayer() then return end
-		local vis = visible > 0
-		this["paneldata"]["visible"] = vis
-		E2VguiCore.SetPanelVisibility(self.entity:EntIndex(),this["paneldata"]["uniqueID"],{ply},vis)
-	end
-
-
-	e2function void dframe:setVisible(number visible,array players)
-		local players = E2VguiCore.FilterPlayers(players)
-		local vis = visible > 0
-		this["paneldata"]["visible"] = vis
-		E2VguiCore.SetPanelVisibility(self.entity:EntIndex(),this["paneldata"]["uniqueID"],players,vis)
-	end
-
-
 	e2function void dframe:setDeleteOnClose(number delete)
 		this["paneldata"]["deleteOnClose"] = delete > 0
 		return this
 	end
--- panel setter
+-- setter
 end
 
 
-do
+do--[[getter]]--
 	e2function vector dframe:getColor()
 		local col = this["paneldata"]["color"]
 		return {col.r,col.g,col.b}
@@ -257,49 +212,100 @@ do
 		return {col.r,col.g,col.b,col.a}
 	end
 
+
 	e2function void dframe:getDeleteOnClose()
 		return this["paneldata"]["deleteOnClose"] and 1 or 0
 	end
--- panel getter
-end
 
-e2function dframe dframe:showCloseButton(number showCloseButton)
-	this["paneldata"]["showCloseButton"] = showCloseButton > 0
-end
 
-e2function number dframe:isShowCloseButton()
-	return this["paneldata"]["showCloseButton"] and 1 or 0
-end
-
-e2function void dframe:create()
-	local pnl = E2VguiCore.CreatePanel(self,this["players"],this["paneldata"],"DFrame")
-end
-
-e2function dframe dframe:modify()
-	local pnl = E2VguiCore.ModifyPanel(self,this["players"],this["paneldata"],"DFrame")
-	return pnl
-end
-
-e2function void dframe:closePlayer(entity ply)
-	if IsValid(ply) and ply:IsPlayer() then
-		E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
+	e2function vector2 dframe:getPos()
+		return {this["paneldata"]["posX"],this["paneldata"]["posY"]}
 	end
-end
 
-e2function void dframe:closeAll()
-	for _,ply in pairs(this["players"]) do
-		E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
+
+	e2function number dframe:isVisible()
+		return this["paneldata"]["visible"] and 1 or 0
 	end
+-- getter
 end
 
---[[
-e2function void dframe:update() --make usable for an array of frames
-e2function void dframe:modify() --make usable for an array of frames
 
-e2function void array:modify() --make usable for an array of frames
-e2function void array:modify() --make usable for an array of frames
+do--[[utility]]--
+	e2function void dframe:create()
+		local pnl = E2VguiCore.CreatePanel(self,this["players"],this["paneldata"],"DFrame")
+	end
 
-or make it update it child panels when the parent is updated/modified
+	--THINK: make it update it child panels when the parent is modified ?
+	e2function dframe dframe:modify()
+		local pnl = E2VguiCore.ModifyPanel(self,this["players"],this["paneldata"],"DFrame")
+		return pnl
+	end
+
+	
+	e2function void dframe:makePopup(number popup)
+		this["paneldata"]["makepopup"] = popup > 0
+	end		
 
 
-]]
+	e2function void dframe:closePlayer(entity ply)
+		if IsValid(ply) and ply:IsPlayer() then
+			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
+		end
+	end
+
+	
+	e2function void dframe:closeAll()
+		for _,ply in pairs(this["players"]) do
+			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
+		end
+	end	
+
+
+	e2function dframe dframe:showCloseButton(number showCloseButton)
+		this["paneldata"]["showCloseButton"] = showCloseButton > 0
+	end
+
+
+	e2function number dframe:isShowCloseButton()
+		return this["paneldata"]["showCloseButton"] and 1 or 0
+	end	
+
+
+	e2function void dframe:addPlayer(entity ply)
+		if ply != nil and ply:IsPlayer() then
+			table.insert(this["players"],ply)
+		end
+	end
+
+
+	e2function void dframe:removePlayer(entity ply)
+		for k,v in pairs(this["players"]) do
+			if ply == v then
+				table.remove(this["players"],k)
+			end
+		end
+	end
+
+
+	e2function void dframe:enableMouseInput(number mouseInput)
+		this["paneldata"]["mouseinput"] = mouseInput > 0
+	end
+
+
+	e2function void dframe:enableKeyboardInput(number keyboardInput)
+		this["paneldata"]["keyboardinput"] = keyboardInput > 0
+	end
+
+
+	e2function dframe dframe:center()
+		this["paneldata"]["putCenter"] = true
+		return this
+	end
+-- utility
+end
+
+
+ 
+
+
+
