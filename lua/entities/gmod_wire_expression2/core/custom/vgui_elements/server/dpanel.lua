@@ -6,6 +6,7 @@ local function isValidDFrame(panel)
 	if table.Count(panel) != 2 then return false end
 	if panel["players"] == nil then return false end
 	if panel["paneldata"] == nil then return false end
+	if panel["changes"] == nil then return false end
 	return true
 end
 
@@ -14,6 +15,7 @@ local function generateDefaultPanel(uniqueID,parentPnlID)
 local pnl = {
 		["uniqueID"] = uniqueID,
 		["parentID"] = parentPnlID,
+		["typeID"] = "dpanel",
 		["posX"] = 0,
 		["posY"] = 0,
 		["width"] = 80,
@@ -27,12 +29,12 @@ end
 
 --6th argument type checker without return,
 --7th arguement type checker with return. False for valid type and True for invalid
-registerType("dpanel", "xdp", {["players"] = {}, ["paneldata"] = {}},
+registerType("dpanel", "xdp", {["players"] = {}, ["paneldata"] = {},["changes"] = {}},
 	nil,
 	nil,
 	function(retval)
 		if !istable(retval) then error("Return value is not a table, but a "..type(retval).."!",0) end
-		if #retval ~= 2 then error("Return value does not have exactly 2 entries!",0) end
+		if #retval ~= 3 then error("Return value does not have exactly 2 entries!",0) end
 	end,
 	function(v)
 		return !isValidDFrame(v)
@@ -110,54 +112,47 @@ e2function dpanel dpanel(number uniqueID,number parentID)
 	end
 	return {
 		["players"] =  players,
-		["paneldata"] = generateDefaultPanel(uniqueID,parentID)
+		["paneldata"] = generateDefaultPanel(uniqueID,parentID),
+		["changes"] = {}
 	}
 end
 
 
 do--[[setter]]--
-	e2function dpanel dpanel:setPos(number posX,number posY)
-		this["paneldata"]["posX"] = posX
-		this["paneldata"]["posY"] = posY
-		return this
+	e2function void dpanel:setPos(number posX,number posY)
+		E2VguiCore.registerAttributeChange(this,"posX", posX)
+		E2VguiCore.registerAttributeChange(this,"posY", posY)
 	end
 
-	e2function dpanel dpanel:setPos(vector2 pos)
-		this["paneldata"]["posX"] = pos[1]
-		this["paneldata"]["posY"] = pos[2]
-		return this
+	e2function void dpanel:setPos(vector2 pos)
+		E2VguiCore.registerAttributeChange(this,"posX", pos[1])
+		E2VguiCore.registerAttributeChange(this,"posY", pos[2])
 	end
 
-	e2function dpanel dpanel:setSize(number width,number height)
-		this["paneldata"]["width"] = width
-		this["paneldata"]["height"] = height
-		return this
+	e2function void dpanel:setSize(number width,number height)
+		E2VguiCore.registerAttributeChange(this,"width", width)
+		E2VguiCore.registerAttributeChange(this,"height", height)
 	end
 
-	e2function dpanel dpanel:setSize(vector2 pnlSize)
-		this["paneldata"]["width"] = pnlSize[1]
-		this["paneldata"]["height"] = pnlSize[2]
-		return this
+	e2function void dpanel:setSize(vector2 pnlSize)
+		E2VguiCore.registerAttributeChange(this,"width", pnlSize[1])
+		E2VguiCore.registerAttributeChange(this,"height", pnlSize[2])
 	end
 
-	e2function dpanel dpanel:setColor(vector col)
-		this["paneldata"]["color"] = Color(col[1],col[2],col[3],255)
-		return this
+	e2function void dpanel:setColor(vector col)
+		E2VguiCore.registerAttributeChange(this,"color", Color(col[1],col[2],col[3],255))
 	end
 
-	e2function dpanel dpanel:setColor(vector col,number alpha)
-		this["paneldata"]["color"] = Color(col[1],col[2],col[3],alpha)
-		return this
+	e2function void dpanel:setColor(vector col,number alpha)
+		E2VguiCore.registerAttributeChange(this,"color", Color(col[1],col[2],col[3],col[4]))
 	end
 
-	e2function dpanel dpanel:setColor(number red,number green,number blue)
-		this["paneldata"]["color"] = Color(red,green,blue,255)
-		return this
+	e2function void dpanel:setColor(number red,number green,number blue)
+		E2VguiCore.registerAttributeChange(this,"color", Color(red,green,blue,255))
 	end
 
-	e2function dpanel dpanel:setColor(number red,number green,number blue,number alpha)
-		this["paneldata"]["color"] = Color(red,green,blue,alpha)
-		return this
+	e2function void dpanel:setColor(number red,number green,number blue,number alpha)
+		E2VguiCore.registerAttributeChange(this,"color", Color(red,green,blue,alpha))
 	end
 
 
@@ -227,12 +222,12 @@ end
 
 do--[[utility]]--
 	e2function void dpanel:create()
-		local pnl = E2VguiCore.CreatePanel(self,this["players"],this["paneldata"],"DPanel")
+		E2VguiCore.CreatePanel(self,this)
+		this["changes"] = {}
 	end
 
-	e2function dpanel dpanel:modify()
-		local pnl = E2VguiCore.ModifyPanel(self,this["players"],this["paneldata"],"DPanel")
-		return pnl
+	e2function void dpanel:modify()
+		E2VguiCore.ModifyPanel(self,this)
 	end
 
 

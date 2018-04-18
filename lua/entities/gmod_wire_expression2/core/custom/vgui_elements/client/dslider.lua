@@ -1,5 +1,5 @@
-E2VguiPanels["vgui_elements"]["functions"]["DSlider"] = {}
-E2VguiPanels["vgui_elements"]["functions"]["DSlider"]["createFunc"] = function(uniqueID, pnlData, e2EntityID)
+E2VguiPanels["vgui_elements"]["functions"]["dslider"] = {}
+E2VguiPanels["vgui_elements"]["functions"]["dslider"]["createFunc"] = function(uniqueID, pnlData, e2EntityID)
 	local parent = E2VguiLib.GetPanelByID(pnlData["parentID"],e2EntityID)
 	local panel = vgui.Create("DNumSlider",parent)
 	panel:SetSize(pnlData["width"],pnlData["height"])
@@ -68,7 +68,7 @@ E2VguiPanels["vgui_elements"]["functions"]["DSlider"]["createFunc"] = function(u
 end
 
 
-E2VguiPanels["vgui_elements"]["functions"]["DSlider"]["modifyFunc"] = function(uniqueID, pnlData, e2EntityID)
+E2VguiPanels["vgui_elements"]["functions"]["dslider"]["modifyFunc"] = function(uniqueID, pnlData, e2EntityID)
 	local panel = E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
 	if panel["pnlData"]["width"] != pnlData["width"] then
 		panel:SetWidth(pnlData["width"])

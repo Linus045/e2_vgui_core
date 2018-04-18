@@ -17,7 +17,6 @@ net.Receive("E2Vgui.CreatePanel",function()
 	local e2EntityID = net.ReadInt(32)
 	local pnlData = net.ReadTable()
 
-
 	if E2VguiPanels["vgui_elements"]["functions"][pnlType] != nil and E2VguiPanels["vgui_elements"]["functions"][pnlType]["createFunc"] != nil then
 
 		if E2VguiPanels["panels"][e2EntityID] == nil then
@@ -29,7 +28,7 @@ net.Receive("E2Vgui.CreatePanel",function()
 			createSuccessful = createFunc(uniqueID,pnlData,e2EntityID)
 		else
 			--panel already exists. How to deal that on serverside ? maybe overwrite/modify it ?
-			return 
+			return
 		end
 	end
 
@@ -56,17 +55,16 @@ net.Receive("E2Vgui.ModifyPanel",function()
 	local pnlType = net.ReadString()
 	local uniqueID = net.ReadInt(32)
 	local e2EntityID = net.ReadInt(32)
-	local pnlData = net.ReadTable()
+	local changes = net.ReadTable()
 
+	local pnlData = {}
 	if E2VguiPanels["vgui_elements"]["functions"][pnlType] != nil and E2VguiPanels["vgui_elements"]["functions"][pnlType]["modifyFunc"] != nil then
 
-		if E2VguiPanels["panels"][e2EntityID] == nil then
-			E2VguiPanels["panels"][e2EntityID] = {}
-		end
+		if E2VguiPanels["panels"][e2EntityID] != nil and E2VguiPanels["panels"][e2EntityID][uniqueID] != nil then
+			pnlData = E2VguiPanels["panels"][e2EntityID][uniqueID]["pnlData"]
 
-		if E2VguiPanels["panels"][e2EntityID][uniqueID] then
 			local modifyFunc = E2VguiPanels["vgui_elements"]["functions"][pnlType]["modifyFunc"]
-			modifiedSuccess = modifyFunc(uniqueID,pnlData,e2EntityID)
+			modifiedSuccess = modifyFunc(uniqueID,changes,e2EntityID)
 --[[ Don't recreate the panel when the player closed it
 		elseif !E2VguiPanels["panels"][e2EntityID][uniqueID] then
 			local createFunc = E2VguiPanels["vgui_elements"]["functions"][pnlType]["createFunc"]
@@ -121,6 +119,3 @@ net.Receive("E2Vgui.ClosePanels",function()
 		E2VguiPanels["panels"][e2Index] = nil
 	end
 end)
-
-
-

@@ -1,5 +1,5 @@
-E2VguiPanels["vgui_elements"]["functions"]["DButton"] = {}
-E2VguiPanels["vgui_elements"]["functions"]["DButton"]["createFunc"] = function(uniqueID, pnlData, e2EntityID)
+E2VguiPanels["vgui_elements"]["functions"]["dbutton"] = {}
+E2VguiPanels["vgui_elements"]["functions"]["dbutton"]["createFunc"] = function(uniqueID, pnlData, e2EntityID)
 	local parent = E2VguiLib.GetPanelByID(pnlData["parentID"],e2EntityID)
 	local panel = vgui.Create("DButton",parent)
 	panel:SetSize(pnlData["width"],pnlData["height"])
@@ -54,7 +54,7 @@ E2VguiPanels["vgui_elements"]["functions"]["DButton"]["createFunc"] = function(u
 end
 
 
-E2VguiPanels["vgui_elements"]["functions"]["DButton"]["modifyFunc"] = function(uniqueID, pnlData, e2EntityID)
+E2VguiPanels["vgui_elements"]["functions"]["dbutton"]["modifyFunc"] = function(uniqueID, pnlData, e2EntityID)
 	local panel = E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
 	if panel["pnlData"]["width"] != pnlData["width"] then
 		panel:SetWidth(pnlData["width"])

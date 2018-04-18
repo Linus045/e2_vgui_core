@@ -6,9 +6,30 @@ E2VguiPanels = {
 }
 
 E2VguiLib = {
-    ["BlockedPlayers"] = {}
+    ["BlockedPlayers"] = {},
+    ["panelFunctions"] = {
+        text = function(panel,value) panel:SetText(value) end,
+        width = function(panel,value) panel:SetWidth(value) end,
+        height = function(panel,value) panel:SetHeight(value) end,
+        title = function(panel,value) panel:SetTitle(value) end,
+        parent = function(panel,value) panel:SetParent(value) end,
+        posX = function(panel,value) local old_posX,old_posY = panel:GetPos() panel:SetPos(value,old_posY) end,
+        posY = function(panel,value) local old_posX,old_posY = panel:GetPos() panel:SetPos(old_posX,value) end,
+        visible = function(panel,value) panel:SetVisible(value) end, //this gets dealed with diffently
+        putCenter = function(panel,value) if value == true then panel:Center() end end,
+        sizable = function(panel,value) panel:SetSizable(value) end,
+        deleteOnClose = function(panel,value) panel:SetDeleteOnClose(value) end,
+        makepopup = function(panel,value) if value == true then panel:MakePopup() end end,
+        mouseinput = function(panel,value) panel:SetMouseInputEnabled(value) end,
+        keyboardinput = function(panel,value) panel:SetKeyBoardInputEnabled(value) end,
+        showCloseButton = function(panel,value) panel:ShowCloseButton(value) end,
+        dark = function(panel,value) panel:SetDark(value) end,
+        decimals = function(panel,value) panel:SetDecimals(value) end,
+        max = function(panel,value) panel:SetMax(value) end,
+        min = function(panel,value) panel:SetMin(value) end,
+        value = function(panel,value) panel:SetValue(value) end
+    }
 }
-
 
 function E2VguiLib.RegisterNewPanel(e2EntityID ,uniqueID, pnl)
     E2VguiPanels.panels[e2EntityID][uniqueID] = pnl

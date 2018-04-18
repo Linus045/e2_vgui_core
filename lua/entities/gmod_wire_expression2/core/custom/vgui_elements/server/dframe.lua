@@ -6,6 +6,7 @@ local function isValidDFrame(panel)
 	if table.Count(panel) != 2 then return false end
 	if panel["players"] == nil then return false end
 	if panel["paneldata"] == nil then return false end
+	if panel["changes"] == nil then return false end
 	return true
 end
 
@@ -14,6 +15,7 @@ local function generateDefaultPanel(uniqueID,parentPnlID)
 local pnl = {
 		["uniqueID"] = uniqueID,
 		["parentID"] = parentPnlID,
+		["typeID"] = "dframe",
 		["posX"] = 0,
 		["posY"] = 0,
 		["width"] = 150,
@@ -32,15 +34,14 @@ local pnl = {
 return pnl
 end
 
-
 --6th argument type checker without return,
 --7th arguement type checker with return. False for valid type and True for invalid
-registerType("dframe", "xdf", {["players"] = {}, ["paneldata"] = {}},
-	nil,
+registerType("dframe", "xdf", {["players"] = {}, ["paneldata"] = {},["changes"] = {}},
+nil,
 	nil,
 	function(retval)
 		if !istable(retval) then error("Return value is not a table, but a "..type(retval).."!",0) end
-		if #retval ~= 2 then error("Return value does not have exactly 2 entries!",0) end
+		if #retval ~= 3 then error("Return value does not have exactly 2 entries!",0) end
 	end,
 	function(v)
 		return !isValidDFrame(v)
@@ -107,92 +108,96 @@ e2function dframe dframe(number uniqueID)
 	end
 	return {
 		["players"] =  players,
-		["paneldata"] = generateDefaultPanel(uniqueID)
+		["paneldata"] = generateDefaultPanel(uniqueID),
+		["changes"] = {}
 	}
 end
 
 
 do--[[setter]]--
 	e2function void dframe:setPos(number posX,number posY)
-		this["paneldata"]["posX"] = posX
-		this["paneldata"]["posY"] = posY
+		E2VguiCore.registerAttributeChange(this,"posX", posX)
+		E2VguiCore.registerAttributeChange(this,"posY", posY)
 	end
 
 	e2function void dframe:setPos(vector2 pos)
-		this["paneldata"]["posX"] = pos[1]
-		this["paneldata"]["posY"] = pos[2]
+		E2VguiCore.registerAttributeChange(this,"posX", pos[1])
+		E2VguiCore.registerAttributeChange(this,"posY", pos[2])
 	end
 
 	e2function void dframe:center()
-		this["paneldata"]["putCenter"] = true
+		E2VguiCore.registerAttributeChange(this,"putCenter", true)
 	end
 
 	e2function void dframe:setSize(number width,number height)
-		this["paneldata"]["width"] = width
-		this["paneldata"]["height"] = height
+		E2VguiCore.registerAttributeChange(this,"width", width)
+		E2VguiCore.registerAttributeChange(this,"height", height)
 	end
 
 	e2function void dframe:setSize(vector2 pnlSize)
-		this["paneldata"]["width"] = pnlSize[1]
-		this["paneldata"]["height"] = pnlSize[2]
+		E2VguiCore.registerAttributeChange(this,"width", pnlSize[1])
+		E2VguiCore.registerAttributeChange(this,"height", pnlSize[2])
 	end
 
 
 	e2function void dframe:setColor(vector col)
-		this["paneldata"]["color"] = Color(col[1],col[2],col[3],255)
+		E2VguiCore.registerAttributeChange(this,"color", Color(col[1],col[2],col[3],255))
 	end
 
 	e2function void dframe:setColor(vector col,number alpha)
-		this["paneldata"]["color"] = Color(col[1],col[2],col[3],alpha)
+		E2VguiCore.registerAttributeChange(this,"color", Color(col[1],col[2],col[3],col[4]))
 	end
 
 	e2function void dframe:setColor(number red,number green,number blue)
-		this["paneldata"]["color"] = Color(red,green,blue,255)
+		E2VguiCore.registerAttributeChange(this,"color", Color(red,green,blue,255))
 	end
 
 	e2function void dframe:setColor(number red,number green,number blue,number alpha)
-		this["paneldata"]["color"] = Color(red,green,blue,alpha)
-		return this
+		E2VguiCore.registerAttributeChange(this,"color", Color(red,green,blue,alpha))
 	end
 
-
+//TODO: Why do we use an extra function for visibility again ??? and not just the default pnl:modify() ?
+//		was it because we didn't only set changes but every attribute back then ?
 	e2function void dframe:setVisible(number visible)
 		local vis = visible > 0
-		this["paneldata"]["visible"] = vis
-		E2VguiCore.SetPanelVisibility(self.entity:EntIndex(),this["paneldata"]["uniqueID"],this["players"],vis)
+		E2VguiCore.registerAttributeChange(this,"visible", vis)
+		-- this["paneldata"]["visible"] = vis
+		-- E2VguiCore.SetPanelVisibility(self.entity:EntIndex(),this["paneldata"]["uniqueID"],this["players"],vis)
 	end
 
 	e2function void dframe:setVisible(number visible,entity ply)
 		if !IsValid(ply) or !ply:IsPlayer() then return end
 		local vis = visible > 0
-		this["paneldata"]["visible"] = vis
-		E2VguiCore.SetPanelVisibility(self.entity:EntIndex(),this["paneldata"]["uniqueID"],{ply},vis)
+		E2VguiCore.registerAttributeChange(this,"visible", vis)
+		-- this["paneldata"]["visible"] = vis
+		-- E2VguiCore.SetPanelVisibility(self.entity:EntIndex(),this["paneldata"]["uniqueID"],{ply},vis)
 	end
 
 	e2function void dframe:setVisible(number visible,array players)
 		local players = E2VguiCore.FilterPlayers(players)
 		local vis = visible > 0
-		this["paneldata"]["visible"] = vis
-		E2VguiCore.SetPanelVisibility(self.entity:EntIndex(),this["paneldata"]["uniqueID"],players,vis)
+		-- this["paneldata"]["visible"] = vis
+		-- E2VguiCore.SetPanelVisibility(self.entity:EntIndex(),this["paneldata"]["uniqueID"],players,vis)
 	end
 
 
 	e2function void dframe:setTitle(string title)
-		this["paneldata"]["title"] = title
+		E2VguiCore.registerAttributeChange(this,"title",  title )
 	end
 
 
 	e2function void dframe:setSizable(number sizable)
-		this["paneldata"]["sizable"] = sizable > 0
+	E2VguiCore.registerAttributeChange(this,"sizeable",  sizeable > 0 )
 	end
 
 
 	e2function void dframe:showCloseButton(number showCloseButton)
-		this["paneldata"]["showCloseButton"] = showCloseButton > 0
+		E2VguiCore.registerAttributeChange(this,"showCloseButton",  showCloseButton > 0 )
 	end
 
 
 	e2function void dframe:setDeleteOnClose(number delete)
+		E2VguiCore.registerAttributeChange(this,"deleteOnClose",  delete > 0 )
 		this["paneldata"]["deleteOnClose"] = delete > 0
 	end
 -- setter
@@ -233,7 +238,7 @@ do--[[getter]]--
 		return this["paneldata"]["visible"] and 1 or 0
 	end
 
-	
+
 	e2function string dframe:getTitle()
 		return this["paneldata"]["title"]
 	end
@@ -246,7 +251,7 @@ do--[[getter]]--
 
 	e2function number dframe:getShowCloseButton()
 		return this["paneldata"]["showCloseButton"] and 1 or 0
-	end	
+	end
 
 
 	e2function number dframe:getDeleteOnClose()
@@ -258,19 +263,20 @@ end
 
 do--[[utility]]--
 	e2function void dframe:create()
-		local pnl = E2VguiCore.CreatePanel(self,this["players"],this["paneldata"],"DFrame")
+		E2VguiCore.CreatePanel(self,this)
+		this["changes"] = {}
 	end
 
 	--TODO: make it update it child panels when the parent is modified ?
-	e2function dframe dframe:modify()
-		local pnl = E2VguiCore.ModifyPanel(self,this["players"],this["paneldata"],"DFrame")
-		return pnl
+	e2function void dframe:modify()
+		E2VguiCore.ModifyPanel(self,this)
+		this["changes"] = {}
 	end
 
-	
+
 	e2function void dframe:makePopup(number popup)
-		this["paneldata"]["makepopup"] = popup > 0
-	end		
+		E2VguiCore.registerAttributeChange(this,"makepopup",  popup > 0 )
+	end
 
 
 	e2function void dframe:closePlayer(entity ply)
@@ -279,12 +285,12 @@ do--[[utility]]--
 		end
 	end
 
-	
+
 	e2function void dframe:closeAll()
 		for _,ply in pairs(this["players"]) do
 			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
 		end
-	end	
+	end
 
 
 	e2function void dframe:addPlayer(entity ply)
@@ -304,13 +310,12 @@ do--[[utility]]--
 
 
 	e2function void dframe:enableMouseInput(number mouseInput)
-		this["paneldata"]["mouseinput"] = mouseInput > 0
+		E2VguiCore.registerAttributeChange(this,"mouseinput",  mouseInput > 0 )
 	end
 
 
 	e2function void dframe:enableKeyboardInput(number keyboardInput)
-		this["paneldata"]["keyboardinput"] = keyboardInput > 0
+		E2VguiCore.registerAttributeChange(this,"keyboardinput",  keyboardInput > 0 )
 	end
 -- utility
 end
-

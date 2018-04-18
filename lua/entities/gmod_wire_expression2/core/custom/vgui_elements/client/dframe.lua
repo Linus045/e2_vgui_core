@@ -1,21 +1,20 @@
-E2VguiPanels["vgui_elements"]["functions"]["DFrame"] = {}
-E2VguiPanels["vgui_elements"]["functions"]["DFrame"]["createFunc"] = function(uniqueID, pnlData, e2EntityID)
+E2VguiPanels["vgui_elements"]["functions"]["dframe"] = {}
+E2VguiPanels["vgui_elements"]["functions"]["dframe"]["createFunc"] = function(uniqueID, pnlData, e2EntityID)
 	local panel = vgui.Create("DFrame")
-	panel:SetSize(pnlData["width"],pnlData["height"])
-	panel:SetPos(pnlData["posX"],pnlData["posY"])
-	panel:SetTitle(pnlData["title"])
 
-	if pnlData["putCenter"] then
+	for attribute,value in pairs(pnlData) do
+		if E2VguiLib.panelFunctions[attribute] then
+//			print("Set: ".. attribute.." to: "..tostring(value))
+			E2VguiLib.panelFunctions[attribute](panel,value)
+		else
+//			print("Couln't set: ".. attribute.." to: "..tostring(value))
+		end
+	end
+	if pnlData["putCenter"] == true then //center() gets priorized
+		//call center() again because setPos() gets called after center() in the loop above
+		//and therefore center() had no effect
 		panel:Center()
 	end
-	panel:SetDeleteOnClose(pnlData["deleteOnClose"])
-	panel:SetSizable(pnlData["sizable"])
-	panel:ShowCloseButton(pnlData["showCloseButton"])
-	if pnlData["makepopup"] == true then
-		panel:MakePopup()
-	end
-	panel:SetMouseInputEnabled(pnlData["mouseinput"])
-	panel:SetKeyboardInputEnabled(pnlData["keyboardinput"])
 
 	--notify server of removal and also update client table
 	function panel:OnRemove()
@@ -49,7 +48,6 @@ E2VguiPanels["vgui_elements"]["functions"]["DFrame"]["createFunc"] = function(un
 			draw.RoundedBoxEx(5,1,1,w-2,25-2,col2,true,true,false,false)
 		end
 	end
-
 	panel["uniqueID"] = uniqueID
 	panel["pnlData"] = pnlData
 	E2VguiLib.RegisterNewPanel(e2EntityID ,uniqueID, panel)
@@ -57,66 +55,34 @@ E2VguiPanels["vgui_elements"]["functions"]["DFrame"]["createFunc"] = function(un
 end
 
 
-E2VguiPanels["vgui_elements"]["functions"]["DFrame"]["modifyFunc"] = function(uniqueID, pnlData, e2EntityID)
+E2VguiPanels["vgui_elements"]["functions"]["dframe"]["modifyFunc"] = function(uniqueID, changesTable, e2EntityID)
 	local panel = E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
 	if panel == nil or !IsValid(panel)  then return end
 
-	if panel["pnlData"]["width"] != pnlData["width"] then
-		panel:SetWidth(pnlData["width"])
-	end
-	if panel["pnlData"]["height"] != pnlData["height"] then
-		panel:SetHeight(pnlData["height"])
-	end
-
-	if panel["pnlData"]["posX"] != pnlData["posX"] or panel["pnlData"]["posY"] != pnlData["posY"] then
-		panel:SetPos(pnlData["posX"],pnlData["posY"])
-	end
-
-	if panel["pnlData"]["title"] != pnlData["title"] then
-		panel:SetTitle(pnlData["title"])
-	end
-
-	if panel["pnlData"]["deleteOnClose"] != pnlData["deleteOnClose"] then
-		panel:SetDeleteOnClose(pnlData["deleteOnClose"])
-	end
-
-	if panel["pnlData"]["sizable"] != pnlData["sizable"] then
-		panel:SetSizable(pnlData["sizable"])
-	end
-
-	if panel["pnlData"]["showCloseButton"] != pnlData["showCloseButton"] then
-		panel:ShowCloseButton(pnlData["showCloseButton"])
-	end
-
-	if panel["pnlData"]["putCenter"] != pnlData["putCenter"] and pnlData["putCenter"] == true then
-		panel:Center()
-	end
-	if panel["pnlData"]["makepopup"] != pnlData["makepopup"] and pnlData["makepopup"] == true then
-		panel:MakePopup()
-	end
-
-	panel:SetMouseInputEnabled(pnlData["mouseinput"])
-	panel:SetKeyboardInputEnabled(pnlData["keyboardinput"])
-
-	--TODO: optimize the contrast setting
-	if pnlData["color"] ~= nil then
-		if panel["pnlData"]["color"] != pnlData["color"] then
-			function panel:Paint(w,h)
-				local col = pnlData["color"]
-				local col2 = Color(col.r*0.8%255,col.g*0.8%255,col.b*0.8%255)
-				local col3 = Color(col.r*0.4%255,col.g*0.4%255,col.b*0.4%255)
-
-				draw.RoundedBox(5,0,0,w,h,col3)
-
-				draw.RoundedBox(5,1,1,w-2,h-2,col)
-				draw.RoundedBoxEx(5,1,1,w-2,25-2,col2,true,true,false,false)
-			end
+	for attribute,value in pairs(changesTable) do
+		if E2VguiLib.panelFunctions[attribute] then
+			E2VguiLib.panelFunctions[attribute](panel,value)
+			panel.pnlData[attribute] = value
+			//changesTable[attribute] = nil
 		end
 	end
+	if changesTable["putCenter"] == true then //center() gets priorized
+		//call center() again because setPos() gets called after center() in the loop above
+		//and therefore center() had no effect
+		panel:Center()
+	end
 
-	panel["uniqueID"] = uniqueID
-	panel["pnlData"] = pnlData
-
+	--TODO: optimize the contrast setting
+	if changesTable["color"] ~= nil then
+		function panel:Paint(w,h)
+			local col = changesTable["color"]
+			local col2 = Color(col.r*0.8%255,col.g*0.8%255,col.b*0.8%255)
+			local col3 = Color(col.r*0.4%255,col.g*0.4%255,col.b*0.4%255)
+			draw.RoundedBox(5,0,0,w,h,col3)
+			draw.RoundedBox(5,1,1,w-2,h-2,col)
+			draw.RoundedBoxEx(5,1,1,w-2,25-2,col2,true,true,false,false)
+		end
+	end
 	return true
 end
 

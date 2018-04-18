@@ -5,6 +5,7 @@ local function isValidDFrame(panel)
 	if table.Count(panel) != 2 then return false end
 	if panel["players"] == nil then return false end
 	if panel["paneldata"] == nil then return false end
+	if panel["changes"] == nil then return false end
 	return true
 end
 
@@ -12,6 +13,7 @@ local function generateDefaultPanel(uniqueID,parentPnlID)
 local pnl = {
 		["uniqueID"] = uniqueID,
 		["parentID"] = parentPnlID,
+		["typeID"] = "dslider",
 		["posX"] = 0,
 		["posY"] = 0,
 		["width"] = 130,
@@ -29,12 +31,12 @@ end
 
 --6th argument type checker without return,
 --7th arguement type checker with return. False for valid type and True for invalid
-registerType("dslider", "xds", {["players"] = {}, ["paneldata"] = {}},
+registerType("dslider", "xds", {["players"] = {}, ["paneldata"] = {},["changes"] = {}},
 	nil,
 	nil,
 	function(retval)
 		if !istable(retval) then error("Return value is not a table, but a "..type(retval).."!",0) end
-		if #retval ~= 2 then error("Return value does not have exactly 2 entries!",0) end
+		if #retval ~= 3 then error("Return value does not have exactly 2 entries!",0) end
 	end,
 	function(v)
 		return !isValidDFrame(v)
@@ -97,7 +99,8 @@ e2function dslider dslider(number uniqueID)
 	end
 	return {
 		["players"] =  players,
-		["paneldata"] = generateDefaultPanel(uniqueID)
+		["paneldata"] = generateDefaultPanel(uniqueID),
+		["changes"] = {}
 	}
 end
 
@@ -178,7 +181,7 @@ do--[[setter]]--
 	end
 
 
-	--THINK: do we need a getter for that ? 
+	--THINK: do we need a getter for that ?
 	e2function void dslider:setDecimals(number decimals)
 		this["paneldata"]["decimals"] = decimals
 	end
@@ -247,12 +250,13 @@ end
 
 do--[[utility]]--
 	e2function void dslider:create()
-		local pnl = E2VguiCore.CreatePanel(self,this["players"],this["paneldata"],"DSlider")
+		E2VguiCore.CreatePanel(self,this)
+		this["changes"] = {}
 	end
 
-	e2function dslider dslider:modify()
-		local pnl = E2VguiCore.ModifyPanel(self,this["players"],this["paneldata"],"DSlider")
-		return pnl
+	e2function void dslider:modify()
+		E2VguiCore.ModifyPanel(self,this)
+		this["changes"] = {}
 	end
 
 
@@ -276,13 +280,6 @@ do--[[utility]]--
 				table.remove(this["players"],k)
 			end
 		end
-	end	
+	end
 -- utility
 end
-
-
-
-
-
-
-

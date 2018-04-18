@@ -1,5 +1,5 @@
-E2VguiPanels["vgui_elements"]["functions"]["DPanel"] = {}
-E2VguiPanels["vgui_elements"]["functions"]["DPanel"]["createFunc"] = function(uniqueID, pnlData, e2EntityID)
+E2VguiPanels["vgui_elements"]["functions"]["dpanel"] = {}
+E2VguiPanels["vgui_elements"]["functions"]["dpanel"]["createFunc"] = function(uniqueID, pnlData, e2EntityID)
 	local parent = E2VguiLib.GetPanelByID(pnlData["parentID"],e2EntityID)
 	local panel = vgui.Create("DPanel",parent)
 	panel:SetSize(pnlData["width"],pnlData["height"])
@@ -38,41 +38,32 @@ E2VguiPanels["vgui_elements"]["functions"]["DPanel"]["createFunc"] = function(un
 	return true
 end
 
-
-E2VguiPanels["vgui_elements"]["functions"]["DPanel"]["modifyFunc"] = function(uniqueID, pnlData, e2EntityID)
+E2VguiPanels["vgui_elements"]["functions"]["dpanel"]["modifyFunc"] = function(uniqueID, changesTable, e2EntityID)
 	local panel = E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
 	if panel == nil or !IsValid(panel)  then return end
 
-	if panel["pnlData"]["width"] != pnlData["width"] then
-		panel:SetWidth(pnlData["width"])
-	end
-	if panel["pnlData"]["height"] != pnlData["height"] then
-		panel:SetHeight(pnlData["height"])
-	end
-
-	if panel["pnlData"]["posX"] != pnlData["posX"] or panel["pnlData"]["posY"] != pnlData["posY"] then
-		panel:SetPos(pnlData["posX"],pnlData["posY"])
-	end
-
-	--TODO: optimize the contrast setting
-	if pnlData["color"] ~= nil then
-		if panel["pnlData"]["color"] != pnlData["color"] then
-			function panel:Paint(w,h)
-				local col = pnlData["color"]
-				local col2 = Color(col.r*0.8%255,col.g*0.8%255,col.b*0.8%255)
-				local col3 = Color(col.r*0.4%255,col.g*0.4%255,col.b*0.4%255)
-
-				draw.RoundedBox(5,0,0,w,h,col3)
-
-				draw.RoundedBox(5,1,1,w-2,h-2,col)
-				draw.RoundedBoxEx(5,1,1,w-2,25-2,col2,true,true,false,false)
-			end
+	for attribute,value in pairs(changesTable) do
+		if E2VguiLib.panelFunctions[attribute] then
+			E2VguiLib.panelFunctions[attribute](panel,value)
+			panel.pnlData[attribute] = value
+			changesTable[attribute] = nil
 		end
 	end
 
-	panel["uniqueID"] = uniqueID
-	panel["pnlData"] = pnlData
+	if changesTable["parentID"] ~= nil then
+		local parentPnl = E2E2VguiLib.GetPanelByID(changesTable["parentID"],e2EntityID)
+		if parentPnl != nil then
+			panel:SetParent(parentPnl)
+		end
+	end
 
+	--TODO: optimize the contrast setting
+	if changesTable["color"] ~= nil then
+		function panel:Paint(w,h)
+			local col = changesTable["color"]
+			draw.RoundedBox(3,0,0,w,h,col)
+		end
+	end
 	return true
 end
 

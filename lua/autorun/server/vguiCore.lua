@@ -228,38 +228,31 @@ function E2VguiCore.EnableVguiElementType(vguiType,status)
 end
 
 
-function E2VguiCore.CreatePanel(e2self, players, paneldata, pnlType)
-	if !istable(e2self) or !istable(players) or !istable(paneldata) then return end
-	e2EntityID = e2self.entity:EntIndex()
-	local uniqueID = math.Round(paneldata["uniqueID"])
-	if uniqueID == nil or players == nil then return end
-	if e2EntityID == nil or e2EntityID <= 0 then return end
+function E2VguiCore.CreatePanel(e2self, panel)
+	if e2self == nil then return end
+	if panel == nil then return end
 
+	local e2EntityID = e2self.entity:EntIndex()
+	local players = panel["players"]
+	local paneldata = panel["paneldata"]
+	local changes = panel["changes"]
+	local uniqueID = math.Round(paneldata["uniqueID"])
+	table.Merge(paneldata,changes) //implement changes from the changes table
+
+	local pnlType = paneldata["typeID"]
 	if pnlType == nil or !E2VguiCore.vgui_types[string.lower(pnlType)..".lua"] then
 		error("[E2VguiCore] Paneltype is invalid or not registered! type: ".. tostring(pnlType)..", received value: "..tostring(E2VguiCore.vgui_types[pnlType]))
 		return
 	end
 
+	//Check if the player hit the spam protection limit
 	if !E2VguiCore.CanUpdateVgui(e2self.player) then return end
 	e2self.player.e2vgui_tempPanels = e2self.player.e2vgui_tempPanels + 1
 
 	local players = E2VguiCore.FilterPlayers(players) //remove redundant names and not-player entries
-	--TODO: Implement this
 	players = E2VguiCore.FilterBlocklist(players,e2self.player) //has anyone e2self.player in their block list ?
 	players = E2VguiCore.FilterPermission(players,e2self.player) //check if e2self.player is allowed to use vguicore
 	if table.Count(players) == 0 then return end //there are no players to create the panel for therefore return
-
-	local panel = {
-		["type"] = pnlType,
-		["players"] = players,
-		["paneldata"] = paneldata
-	}
-
-	for k,ply in pairs(players) do
-		ply.e2_vgui_core = ply.e2_vgui_core or {}
-		ply.e2_vgui_core[e2EntityID] = ply.e2_vgui_core[e2EntityID] or {}
-		ply.e2_vgui_core[e2EntityID][uniqueID] = panel
-	end
 
 	net.Start("E2Vgui.CreatePanel")
 		net.WriteString(pnlType)
@@ -267,49 +260,75 @@ function E2VguiCore.CreatePanel(e2self, players, paneldata, pnlType)
 		net.WriteInt(e2EntityID,32)
 		net.WriteTable(paneldata)
 	net.Send(players)
-	return panel
-end
-
-
-function E2VguiCore.ModifyPanel(e2self, players, paneldata, pnlType)
-	if !istable(e2self) or !istable(players) or !istable(paneldata) then return end
-	e2EntityID = e2self.entity:EntIndex()
-	local uniqueID = math.Round(paneldata["uniqueID"])
-	if uniqueID == nil or players == nil then return end
-	if e2EntityID == nil or e2EntityID <= 0 then return end
-
-	if pnlType == nil or !E2VguiCore.vgui_types[string.lower(pnlType)..".lua"] then
-		error("[E2VguiCore] Paneltype is invalid or not registered! type: ".. tostring(pnlType)..", received value: "..tostring(E2VguiCore.vgui_types[pnlType]))
-		return
-	end
-
-	if !E2VguiCore.CanUpdateVgui(e2self.player) then return end
-	e2self.player.e2vgui_tempPanels = e2self.player.e2vgui_tempPanels + 1
-
-	players = E2VguiCore.FilterPlayers(players) //remove redundant names and not-player entries
-	--TODO: Implement this
-	players = E2VguiCore.FilterBlocklist(players,e2self.player) //has anyone e2self.player in their block list ?
-	players = E2VguiCore.FilterPermission(players,e2self.player) //check if e2self.player is allowed to use vguicore
-	if table.Count(players) == 0 then return end //there are no players to create the panel for therefore return
 
 	local panel = {
-		["type"] = pnlType,
 		["players"] = players,
-		["paneldata"] = paneldata
+		["paneldata"] = paneldata,
+		["changes"] = {}
 	}
 
+	//update server table with new values
 	for k,ply in pairs(players) do
 		ply.e2_vgui_core = ply.e2_vgui_core or {}
 		ply.e2_vgui_core[e2EntityID] = ply.e2_vgui_core[e2EntityID] or {}
 		ply.e2_vgui_core[e2EntityID][uniqueID] = panel
 	end
+
+	return panel
+end
+
+
+function E2VguiCore.ModifyPanel(e2self, panel)
+	if e2self == nil then return end
+	if panel == nil then return end
+
+	local e2EntityID = e2self.entity:EntIndex()
+	local players = panel["players"]
+	local paneldata = panel["paneldata"]
+	local changes = panel["changes"]
+	local uniqueID = math.Round(paneldata["uniqueID"])
+
+	local pnlType = paneldata["typeID"]
+	if pnlType == nil or !E2VguiCore.vgui_types[string.lower(pnlType)..".lua"] then
+		error("[E2VguiCore] Paneltype is invalid or not registered! type: ".. tostring(pnlType)..", received value: "..tostring(E2VguiCore.vgui_types[pnlType]))
+		return
+	end
+
+	//Check if the player hit the spam protection limit
+	if !E2VguiCore.CanUpdateVgui(e2self.player) then return end
+	e2self.player.e2vgui_tempPanels = e2self.player.e2vgui_tempPanels + 1
+
+	players = E2VguiCore.FilterPlayers(players) //remove redundant names and not-player entries
+	players = E2VguiCore.FilterBlocklist(players,e2self.player) //has anyone e2self.player in their block list ?
+	players = E2VguiCore.FilterPermission(players,e2self.player) //check if e2self.player is allowed to use vguicore
+	if table.Count(players) == 0 then return end //there are no players to create the panel for therefore return
+
 	net.Start("E2Vgui.ModifyPanel")
 		net.WriteString(pnlType)
 		net.WriteInt(uniqueID,32)
 		net.WriteInt(e2EntityID,32)
-		net.WriteTable(paneldata)
+		net.WriteTable(changes)
 	net.Send(players)
+
+	local panel = {
+		["players"] = players,
+		["paneldata"] = paneldata,
+		["changes"] = {}	//changes are send to the player with pnl_modify() so reset them
+	}
+
+	//update server table with new values
+	for k,ply in pairs(players) do
+		ply.e2_vgui_core = ply.e2_vgui_core or {}
+		ply.e2_vgui_core[e2EntityID] = ply.e2_vgui_core[e2EntityID] or {}
+		ply.e2_vgui_core[e2EntityID][uniqueID] = panel
+	end
 	return panel
+end
+
+function E2VguiCore.registerAttributeChange(panel,attributeName, attributeValue)
+	//TODO: check if the attributeName exists for this panel type
+	//print("Attribute added: "..attributeName .. " Value: " .. tostring(attributeValue))
+	panel["changes"][attributeName] = attributeValue
 end
 
 

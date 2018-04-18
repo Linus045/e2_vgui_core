@@ -5,6 +5,7 @@ local function isValidDFrame(panel)
 	if table.Count(panel) != 2 then return false end
 	if panel["players"] == nil then return false end
 	if panel["paneldata"] == nil then return false end
+	if panel["changes"] == nil then return false end
 	return true
 end
 
@@ -12,6 +13,7 @@ local function generateDefaultPanel(uniqueID,parentPnlID)
 	local pnl = {
 			["uniqueID"] = uniqueID,
 			["parentID"] = parentPnlID,
+			["typeID"] = "dbutton",
 			["posX"] = 0,
 			["posY"] = 0,
 			["width"] = 50,
@@ -26,12 +28,12 @@ end
 
 --6th argument type checker without return,
 --7th arguement type checker with return. False for valid type and True for invalid
-registerType("dbutton", "xdb", {["players"] = {}, ["paneldata"] = {}},
+registerType("dbutton", "xdb", {["players"] = {}, ["paneldata"] = {},["changes"] = {}},
 	nil,
 	nil,
 	function(retval)
 		if !istable(retval) then error("Return value is not a table, but a "..type(retval).."!",0) end
-		if #retval ~= 2 then error("Return value does not have exactly 2 entries!",0) end
+		if #retval ~= 3 then error("Return value does not have exactly 2 entries!",0) end
 	end,
 	function(v)
 		return !isValidDFrame(v)
@@ -53,7 +55,7 @@ registerOperator("ass", "xdb", "xdb", function(self, args)
 end)
 
 --TODO: Check if the entire pnl data is valid
--- if (B) 
+-- if (B)
 e2function number operator_is(xdb pnldata)
 	return isValidDFrame(pnldata) and  1 or 0
 end
@@ -84,7 +86,7 @@ end
 
 --[[-------------------------------------------------------------------------
 	Desc: Creates a dbutton element
-	Args: 
+	Args:
 	Return: dbutton
 ---------------------------------------------------------------------------]]
 e2function dbutton dbutton(number uniqueID)
@@ -94,7 +96,8 @@ e2function dbutton dbutton(number uniqueID)
 	end
 	return {
 		["players"] =  players,
-		["paneldata"] = generateDefaultPanel(uniqueID)
+		["paneldata"] = generateDefaultPanel(uniqueID),
+		["changes"] = {}
 	}
 end
 
@@ -121,7 +124,7 @@ do--[[setter]]--
 		this["paneldata"]["posY"] = pos[2]
 	end
 
-	
+
 	e2function void dbutton:setSize(number width,number height)
 		this["paneldata"]["width"] = width
 		this["paneldata"]["height"] = height
@@ -164,7 +167,7 @@ do--[[setter]]--
 		this["paneldata"]["visible"] = vis
 		E2VguiCore.SetPanelVisibility(self.entity:EntIndex(),this["paneldata"]["uniqueID"],this["players"],vis)
 		return this
-	end	
+	end
 -- setter
 end
 
@@ -178,7 +181,7 @@ do--[[getter]]--
 	e2function vector2 dbutton:getSize()
 		return {this["paneldata"]["width"],this["paneldata"]["height"]}
 	end
-	
+
 
 	--TODO: look up catch color
 	e2function vector dbutton:getColor()
@@ -191,7 +194,7 @@ do--[[getter]]--
 
 	e2function vector4 dbutton:getColor4()
 		local col = this["paneldata"]["color"]
-		if col == nil then 
+		if col == nil then
 			return {0,0,0,255}
 		end
 		return {col.r,col.g,col.b,col.a}
@@ -199,7 +202,7 @@ do--[[getter]]--
 
 	e2function string dbutton:getText()
 		return this["paneldata"]["text"]
-	end	
+	end
 
 
 	e2function number dbutton:isVisible()
@@ -211,11 +214,13 @@ end
 
 do--[[utility]]--
 	e2function void dbutton:create()
-		local pnl = E2VguiCore.CreatePanel(self,this["players"],this["paneldata"],"DButton")
+		E2VguiCore.CreatePanel(self,this)
+		this["changes"] = {}
 	end
 
 	e2function void dbutton:modify()
-		local pnl = E2VguiCore.ModifyPanel(self,this["players"],this["paneldata"],"DButton")
+		E2VguiCore.ModifyPanel(self,this)
+		this["changes"] = {}
 	end
 
 
@@ -235,7 +240,7 @@ do--[[utility]]--
 
 	--TODO: Fix player table stuff, check dframe and dslider
 	e2function void dbutton:addPlayer(entity ply)
-		if ply != nil and ply:IsPlayer() then 
+		if ply != nil and ply:IsPlayer() then
 			table.insert(this["players"],ply)
 		end
 	end
