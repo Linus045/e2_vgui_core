@@ -19,7 +19,7 @@ local pnl = {
 		["width"] = 150,
 		["height"] = 150,
 		["title"] = "DFrame",
-		["color"] = nil,
+		["color"] = nil, //set no default color to use the default skin
 		["putCenter"] = false,
 		["sizable"] = false,
 		["deleteOnClose"] = true,
@@ -113,52 +113,44 @@ end
 
 
 do--[[setter]]--
-	e2function dframe dframe:setPos(number posX,number posY)
+	e2function void dframe:setPos(number posX,number posY)
 		this["paneldata"]["posX"] = posX
 		this["paneldata"]["posY"] = posY
-		return this
 	end
 
-	e2function dframe dframe:setPos(vector2 pos)
+	e2function void dframe:setPos(vector2 pos)
 		this["paneldata"]["posX"] = pos[1]
 		this["paneldata"]["posY"] = pos[2]
-		return this
 	end
 
-	e2function dframe dframe:center()
+	e2function void dframe:center()
 		this["paneldata"]["putCenter"] = true
-		return this
 	end
 
-	e2function dframe dframe:setSize(number width,number height)
+	e2function void dframe:setSize(number width,number height)
 		this["paneldata"]["width"] = width
 		this["paneldata"]["height"] = height
-		return this
 	end
 
-	e2function dframe dframe:setSize(vector2 pnlSize)
+	e2function void dframe:setSize(vector2 pnlSize)
 		this["paneldata"]["width"] = pnlSize[1]
 		this["paneldata"]["height"] = pnlSize[2]
-		return this
 	end
 
 
-	e2function dframe dframe:setColor(vector col)
+	e2function void dframe:setColor(vector col)
 		this["paneldata"]["color"] = Color(col[1],col[2],col[3],255)
-		return this
 	end
 
-	e2function dframe dframe:setColor(vector col,number alpha)
+	e2function void dframe:setColor(vector col,number alpha)
 		this["paneldata"]["color"] = Color(col[1],col[2],col[3],alpha)
-		return this
 	end
 
-	e2function dframe dframe:setColor(number red,number green,number blue)
+	e2function void dframe:setColor(number red,number green,number blue)
 		this["paneldata"]["color"] = Color(red,green,blue,255)
-		return this
 	end
 
-	e2function dframe dframe:setColor(number red,number green,number blue,number alpha)
+	e2function void dframe:setColor(number red,number green,number blue,number alpha)
 		this["paneldata"]["color"] = Color(red,green,blue,alpha)
 		return this
 	end
@@ -185,26 +177,23 @@ do--[[setter]]--
 	end
 
 
-	e2function dframe dframe:setTitle(string title)
+	e2function void dframe:setTitle(string title)
 		this["paneldata"]["title"] = title
-		return this
 	end
 
 
-	e2function dframe dframe:setSizable(number sizable)
+	e2function void dframe:setSizable(number sizable)
 		this["paneldata"]["sizable"] = sizable > 0
-		return this
 	end
 
 
-	e2function dframe dframe:showCloseButton(number showCloseButton)
+	e2function void dframe:showCloseButton(number showCloseButton)
 		this["paneldata"]["showCloseButton"] = showCloseButton > 0
 	end
 
 
 	e2function void dframe:setDeleteOnClose(number delete)
 		this["paneldata"]["deleteOnClose"] = delete > 0
-		return this
 	end
 -- setter
 end
@@ -224,13 +213,19 @@ do--[[getter]]--
 
 
 	--TODO: look up catch color
-	e2function vector dbutton:getColor()
-		local col = this["paneldata"]["color"] != nil and this["paneldata"]["color"] or {["r"]=100,["g"]=100,["b"]=100}
+	e2function vector dframe:getColor()
+		local col = this["paneldata"]["color"]
+		if col == nil then
+			return {0,0,0}
+		end
 		return {col.r,col.g,col.b}
 	end
 
-	e2function vector4 dbutton:getColor4()
-		local col = this["paneldata"]["color"] != nil and this["paneldata"]["color"] or {["r"]=100,["g"]=100,["b"]=100,["a"]=255}
+	e2function vector4 dframe:getColor4()
+		local col = this["paneldata"]["color"]
+		if col == nil then
+			return {0,0,0,255}
+		end
 		return {col.r,col.g,col.b,col.a}
 	end
 
@@ -266,7 +261,7 @@ do--[[utility]]--
 		local pnl = E2VguiCore.CreatePanel(self,this["players"],this["paneldata"],"DFrame")
 	end
 
-	--THINK: make it update it child panels when the parent is modified ?
+	--TODO: make it update it child panels when the parent is modified ?
 	e2function dframe dframe:modify()
 		local pnl = E2VguiCore.ModifyPanel(self,this["players"],this["paneldata"],"DFrame")
 		return pnl

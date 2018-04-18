@@ -92,7 +92,6 @@ Args:
 	target:		the target
 Return: true OR false
 ---------------------------------------------------------------------------]]
---TODO:Implement this
 function E2VguiCore.HasAccess(ply,target)
 	if ply == nil or target == nil then return false end
 	if !ply:IsPlayer() or !target:IsPlayer() then return false end
@@ -384,6 +383,65 @@ function E2VguiCore.GetPanelByID(ply,e2EntityID, uniqueID)
 	return ply.e2_vgui_core[e2EntityID][uniqueID]
 end
 
+//Converts a normal lua table into an e2Table
+function E2VguiCore.convertToE2Table(tbl)
+    /*	{n={},ntypes={},s={},stypes={},size=0}
+    n 			- table for number keys
+    ntypes 	- number indics
+    s 			- table for string keys
+    stypes 	- string indices
+    */
+    local e2table = {n={},ntypes={},s={},stypes={},size=0}
+    local size = 0
+
+    for k,v in pairs( tbl ) do
+        local vtype = type(v)
+        //convert number to Normal otherwise it won't get recognized as wire datatype
+        if vtype == "number" then vtype = "normal" end
+        local keyType = type(k)
+
+        local e2Type = ""
+        if wire_expression_types[string.upper(vtype)] != nil then
+            e2Type = wire_expression_types[string.upper(vtype)][1]
+        elseif vtype == "boolean" and wire_expression_types[string.upper(vtype)] == nil then
+            //handle booleans beforehand because they have no type in e2
+            e2Type = wire_expression_types["NORMAL"][1]
+        else
+            ErrorNoHalt("Unknown type detected key:"..vtype.." value:"..tostring(v))
+            continue
+        end
+
+        //determine if the key is a number or anything else
+        local indextype = (keyType == "number" and "n" or "s")
+        if indextype == "n" then
+            e2table[indextype.."types"][k] = e2Type
+        else
+            //convert the key to a string
+            e2table[indextype.."types"][tostring(k)] = e2Type
+        end
+
+        if vtype == "table" then
+            //colors are getting detected as table, so we make sure they get parsed as vector4
+            if IsColor(v) then
+                e2table[indextype.."types"][indextype == "n" and k or tostring(k)] = wire_expression_types["VECTOR4"][1]
+                e2table[indextype][k] = {v.r,v.g,v.b,v.a}
+            else
+                //TODO:implement protection against recursive tables. Infinite loops!
+                e2table[indextype][k] = E2VguiLib.convertToE2Table(v)
+            end
+        elseif vtype == "boolean" then
+            //booleans have no type in e2 so parse them as number
+            e2table[indextype.."types"][indextype == "n" and k or tostring(k)] = wire_expression_types["NORMAL"][1]
+            e2table[indextype][k] = v and 1 or 0
+        else
+            //everything that has a valid type in e2 just put the value inside
+            e2table[indextype][k] = v
+        end
+        size = size + 1
+    end
+    e2table.size = size
+    return e2table
+end
 
 --[[-------------------------------------------------------------------------
 						DERMA PANEL ADDING/MODIFY FOR SERVER SYNC
@@ -466,18 +524,19 @@ function E2VguiCore.SetPanelVisibility(e2EntityID,uniqueID,players,visible)
 	local panel = nil
 	local targets = {}
 	for k,v in pairs(players) do
+		//Get the players panel
 		panel = E2VguiCore.GetPanelByID(v,e2EntityID, uniqueID)
-		//TODO: Check why this IsValid returns false
-		if !IsValid(panel) and not type(panel) == "table" then
+		//check if it is valid
+		if panel == nil or not istable(panel) then
 			continue
 		end
+		//put it in the table to be updated on the client via net-message
 		table.insert(targets,v)
 	end
 	net.Start("E2Vgui.SetPanelVisibility")
 		net.WriteInt(uniqueID,32)
 		net.WriteInt(e2EntityID,32)
-		visible = visible and 1 or 0
-		net.WriteInt(visible,2) //TODO:Check why writeBool doesn't work
+		net.WriteBool(visible)
 	net.Send(targets)
 end
 
@@ -541,13 +600,12 @@ net.Receive("E2Vgui.TriggerE2",function(len,ply)
 	local e2EntityID = net.ReadInt(32)
 	local uniqueID = net.ReadInt(32)
 	local panelType = net.ReadString()
-	local text = net.ReadString()
-	E2VguiCore.TriggerE2(e2EntityID,uniqueID, ply, text)
+	local tableData = net.ReadTable()
+	E2VguiCore.TriggerE2(e2EntityID,uniqueID, ply, tableData)
 end)
 
-
 --TODO: Refine this function.
-function E2VguiCore.TriggerE2(e2EntityID,uniqueID, triggerPly, value)
+function E2VguiCore.TriggerE2(e2EntityID,uniqueID, triggerPly, tableData)
 	if E2VguiCore.Trigger[e2EntityID] == nil then
 		E2VguiCore.Trigger[e2EntityID] = {}
 	end
@@ -559,7 +617,8 @@ function E2VguiCore.TriggerE2(e2EntityID,uniqueID, triggerPly, value)
 
 	local value = value and tostring(value) or ""
 	E2VguiCore.Trigger[e2EntityID].triggeredByClient = triggerPly
-	E2VguiCore.Trigger[e2EntityID].triggerValue = value
+	E2VguiCore.Trigger[e2EntityID].triggerValues = table.ClearKeys(tableData)
+	E2VguiCore.Trigger[e2EntityID].triggerValuesTable = tableData
 	E2VguiCore.Trigger[e2EntityID].triggerUniqueID = uniqueID
 	E2VguiCore.Trigger[e2EntityID].run = true
 

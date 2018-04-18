@@ -27,7 +27,7 @@ end
 			RunOnVGUI stuff, used for button clicks and similar
 -------------------------------------------------------------------------]]--
 e2function void runOnVgui(number enabled)
-	if E2VguiCore.Trigger[self.entity:EntIndex()] == nil then 
+	if E2VguiCore.Trigger[self.entity:EntIndex()] == nil then
 		E2VguiCore.Trigger[self.entity:EntIndex()] = {}
 	end
 	E2VguiCore.Trigger[self.entity:EntIndex()].RunOnDerma = (enabled >= 1)
@@ -54,8 +54,12 @@ e2function entity vguiClkPlayer()
 	return 	E2VguiCore.Trigger[self.entity:EntIndex()].triggeredByClient or NULL
 end
 
-e2function string vguiClkValue()
+e2function array vguiClkValues()
 	if E2VguiCore.Trigger[self.entity:EntIndex()] == nil then return -1 end
-	return E2VguiCore.Trigger[self.entity:EntIndex()].triggerValue
+	return E2VguiCore.Trigger[self.entity:EntIndex()].triggerValues
 end
 
+e2function table vguiClkValuesTable()
+	if E2VguiCore.Trigger[self.entity:EntIndex()] == nil then return -1 end
+	return E2VguiCore.Trigger[self.entity:EntIndex()].triggerValuesTable
+end

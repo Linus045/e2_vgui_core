@@ -39,7 +39,9 @@ E2VguiPanels["vgui_elements"]["functions"]["DButton"]["createFunc"] = function(u
 				net.WriteInt(e2EntityID,32)
 				net.WriteInt(uniqueID,32)
 				net.WriteString("DButton")
-				net.WriteString(self:GetText())
+				net.WriteTable(E2VguiLib.convertToE2Table({
+					buttonText = self:GetText()
+				}))
 			net.SendToServer()
 		end
 	end
@@ -83,7 +85,7 @@ E2VguiPanels["vgui_elements"]["functions"]["DButton"]["modifyFunc"] = function(u
 end
 
 --[[-------------------------------------------------------------------------
-	HELPER FUNCTIONS 
+	HELPER FUNCTIONS
 ---------------------------------------------------------------------------]]
 E2Helper.Descriptions["dbutton(n)"] = "Creates a Dbutton element. Use xdb:create() to create the panel."
 E2Helper.Descriptions["dbutton(nn)"] = "Creates a Dbutton element with parent id. Use xdb:create() to create the panel."
@@ -110,5 +112,3 @@ E2Helper.Descriptions["create(xdb:)"] = "Creates the Panel on all players inside
 E2Helper.Descriptions["modify(xdb:)"] = "Modifies created panels on all players inside the panel's player list. See addPlayer()/removePlayer() and vguiDefaultPlayers(). Does not create a new panel if it got removed!."
 E2Helper.Descriptions["closePlayer(xdb:e)"] = "Closes the panel on the specified player."
 E2Helper.Descriptions["closeAll(xdb:)"] = "Closes the panel on all players inside the player's list. See addPlayer()/removePlayer() and vguiDefaultPlayers()."
-
-

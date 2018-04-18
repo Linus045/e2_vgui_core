@@ -28,7 +28,7 @@ E2VguiPanels["vgui_elements"]["functions"]["DSlider"]["createFunc"] = function(u
 		net.SendToServer()
 	end
 	panel["changed"] = true
-	
+
 	function panel:Think()
 		if panel["changed"] == false then
 			if self:IsEditing() == nil then //Returns nil instead of false if not editing
@@ -38,7 +38,10 @@ E2VguiPanels["vgui_elements"]["functions"]["DSlider"]["createFunc"] = function(u
 						net.WriteInt(e2EntityID,32)
 						net.WriteInt(uniqueID,32)
 						net.WriteString("DSlider")
-						net.WriteString(tostring(math.Round(self:GetValue(),self:GetDecimals())))
+						net.WriteTable(E2VguiLib.convertToE2Table(
+						{
+							math.Round(self:GetValue(),self:GetDecimals())
+						}))
 					net.SendToServer()
 				end
 				panel["changed"] = true
@@ -47,7 +50,7 @@ E2VguiPanels["vgui_elements"]["functions"]["DSlider"]["createFunc"] = function(u
 	end
 
 	function panel:OnValueChanged(number)
-		panel["changed"] = false //set flag to false so it waits until you 
+		panel["changed"] = false //set flag to false so it waits until you
 								 //stopped editing before sending net-messages
 	end
 
@@ -114,7 +117,7 @@ E2VguiPanels["vgui_elements"]["functions"]["DSlider"]["modifyFunc"] = function(u
 end
 
 --[[-------------------------------------------------------------------------
-	HELPER FUNCTIONS 
+	HELPER FUNCTIONS
 ---------------------------------------------------------------------------]]
 E2Helper.Descriptions["DSlider"] = "Creates a DSlider."
 E2Helper.Descriptions["xdf:setPos(nn)"] = "Sets the X and Y position of the panel."
@@ -125,9 +128,3 @@ E2Helper.Descriptions["xdf:setSizable(s)"] = "Enables the panel to be resizable.
 E2Helper.Descriptions["xdf:setColor(nnnn)"] = "Sets the color of the panel. (RGBA)"
 E2Helper.Descriptions["xdf:showCloseButton(n)"] = "Hides the close button."
 E2Helper.Descriptions["xdf:create()"] = "Creates the panel."
-
-
-
-
-
-

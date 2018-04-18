@@ -17,7 +17,7 @@ local pnl = {
 		["width"] = 130,
 		["height"] = 22,
 		["text"] = "DSlider",
-		["color"] = nil,
+		["color"] = nil, //set no default color to use the default skin
 		["dark"] = false,
 		["decimals"] = 2,
 		["max"] = 1,
@@ -209,12 +209,18 @@ do--[[getter]]--
 
 	--TODO: look up catch color
 	e2function vector dbutton:getColor()
-		local col = this["paneldata"]["color"] != nil and this["paneldata"]["color"] or {["r"]=100,["g"]=100,["b"]=100}
+		local col = this["paneldata"]["color"]
+		if col == nil then
+			return {0,0,0}
+		end
 		return {col.r,col.g,col.b}
 	end
 
 	e2function vector4 dbutton:getColor4()
-		local col = this["paneldata"]["color"] != nil and this["paneldata"]["color"] or {["r"]=100,["g"]=100,["b"]=100,["a"]=255}
+		local col = this["paneldata"]["color"]
+		if col == nil then
+			return {0,0,0,255}
+		end
 		return {col.r,col.g,col.b,col.a}
 	end
 
