@@ -4,10 +4,7 @@ E2VguiPanels["vgui_elements"]["functions"]["dframe"]["createFunc"] = function(un
 
 	for attribute,value in pairs(pnlData) do
 		if E2VguiLib.panelFunctions[attribute] then
-//			print("Set: ".. attribute.." to: "..tostring(value))
 			E2VguiLib.panelFunctions[attribute](panel,value)
-		else
-//			print("Couln't set: ".. attribute.." to: "..tostring(value))
 		end
 	end
 	if pnlData["putCenter"] == true then //center() gets priorized
@@ -63,7 +60,6 @@ E2VguiPanels["vgui_elements"]["functions"]["dframe"]["modifyFunc"] = function(un
 		if E2VguiLib.panelFunctions[attribute] then
 			E2VguiLib.panelFunctions[attribute](panel,value)
 			panel.pnlData[attribute] = value
-			//changesTable[attribute] = nil
 		end
 	end
 	if changesTable["putCenter"] == true then //center() gets priorized

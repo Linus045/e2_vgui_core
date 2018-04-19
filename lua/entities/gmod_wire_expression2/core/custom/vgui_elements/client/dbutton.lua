@@ -2,9 +2,12 @@ E2VguiPanels["vgui_elements"]["functions"]["dbutton"] = {}
 E2VguiPanels["vgui_elements"]["functions"]["dbutton"]["createFunc"] = function(uniqueID, pnlData, e2EntityID)
 	local parent = E2VguiLib.GetPanelByID(pnlData["parentID"],e2EntityID)
 	local panel = vgui.Create("DButton",parent)
-	panel:SetSize(pnlData["width"],pnlData["height"])
-	panel:SetPos(pnlData["posX"],pnlData["posY"])
-	panel:SetText(pnlData["text"])
+
+	for attribute,value in pairs(pnlData) do
+		if E2VguiLib.panelFunctions[attribute] then
+			E2VguiLib.panelFunctions[attribute](panel,value)
+		end
+	end
 
 	--notify server of removal and also update client table
 	function panel:OnRemove()
@@ -39,14 +42,12 @@ E2VguiPanels["vgui_elements"]["functions"]["dbutton"]["createFunc"] = function(u
 				net.WriteInt(e2EntityID,32)
 				net.WriteInt(uniqueID,32)
 				net.WriteString("DButton")
-				net.WriteTable(E2VguiLib.convertToE2Table({
-					buttonText = self:GetText()
-				}))
+				net.WriteTable({
+					text = self:GetText()
+				})
 			net.SendToServer()
 		end
 	end
-
-
 	panel["uniqueID"] = uniqueID
 	panel["pnlData"] = pnlData
 	E2VguiLib.RegisterNewPanel(e2EntityID ,uniqueID, panel)
@@ -54,33 +55,23 @@ E2VguiPanels["vgui_elements"]["functions"]["dbutton"]["createFunc"] = function(u
 end
 
 
-E2VguiPanels["vgui_elements"]["functions"]["dbutton"]["modifyFunc"] = function(uniqueID, pnlData, e2EntityID)
+E2VguiPanels["vgui_elements"]["functions"]["dbutton"]["modifyFunc"] = function(uniqueID, changesTable, e2EntityID)
 	local panel = E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
-	if panel["pnlData"]["width"] != pnlData["width"] then
-		panel:SetWidth(pnlData["width"])
-	end
-	if panel["pnlData"]["height"] != pnlData["height"] then
-		panel:SetHeight(pnlData["heigth"])
-	end
+	if panel == nil or !IsValid(panel)  then return end
 
-	if panel["pnlData"]["posX"] != pnlData["posX"] or panel["pnlData"]["posY"] != pnlData["posY"] then
-		panel:SetPos(pnlData["posX"],pnlData["posY"])
-	end
-
-	if panel["pnlData"]["text"] != pnlData["text"] then
-		panel:SetText(pnlData["text"])
-	end
-
-	if panel["pnlData"]["color"] != pnlData["color"] then
-		if pnlData["color"] ~= nil then
-			function panel:Paint(w,h)
-				surface.SetDrawColor(pnlData["color"])
-				surface.DrawRect(0,0,w,h)
-			end
+	for attribute,value in pairs(changesTable) do
+		if E2VguiLib.panelFunctions[attribute] then
+			E2VguiLib.panelFunctions[attribute](panel,value)
+			panel.pnlData[attribute] = value
 		end
 	end
-	panel["uniqueID"] = uniqueID
-	panel["pnlData"] = pnlData
+
+	if changesTable["color"] ~= nil then
+		function panel:Paint(w,h)
+			surface.SetDrawColor(changesTable["color"])
+			surface.DrawRect(0,0,w,h)
+		end
+	end
 	return true
 end
 

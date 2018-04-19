@@ -38,10 +38,9 @@ E2VguiPanels["vgui_elements"]["functions"]["dslider"]["createFunc"] = function(u
 						net.WriteInt(e2EntityID,32)
 						net.WriteInt(uniqueID,32)
 						net.WriteString("DSlider")
-						net.WriteTable(E2VguiLib.convertToE2Table(
-						{
+						net.WriteTable({
 							math.Round(self:GetValue(),self:GetDecimals())
-						}))
+						})
 					net.SendToServer()
 				end
 				panel["changed"] = true

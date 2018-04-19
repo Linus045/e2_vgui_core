@@ -1,15 +1,13 @@
 E2VguiCore.RegisterVguiElementType("dframe.lua",true)
 
-
 local function isValidDFrame(panel)
 	if !istable(panel) then return false end
-	if table.Count(panel) != 2 then return false end
+	if table.Count(panel) != 3 then return false end
 	if panel["players"] == nil then return false end
 	if panel["paneldata"] == nil then return false end
 	if panel["changes"] == nil then return false end
 	return true
 end
-
 
 local function generateDefaultPanel(uniqueID,parentPnlID)
 local pnl = {
@@ -48,12 +46,9 @@ nil,
 	end
 )
 
-
 --[[------------------------------------------------------------
 E2 Functions
 ]]--------------------------------------------------------------
-
-
 -- B = B
 registerOperator("ass", "xdf", "xdf", function(self, args)
 	local op1, op2, scope = args[2], args[3], args[4]
@@ -63,22 +58,19 @@ registerOperator("ass", "xdf", "xdf", function(self, args)
 	return rv2
 end)
 
-
 --TODO: Check if the entire pnl data is valid
 -- if (B)
 e2function number operator_is(xdf pnldata)
 	return isValidDFrame(pnldata) and  1 or 0
 end
 
-
 -- if (!B)
 e2function number operator!(xdf pnldata)
 	return isValidDFrame(pnldata) and  0 or 1
 end
 
-
 --- B == B --check if the names match
---TODO: Check if the entire pnl data is equal ?
+--TODO: Check if the entire pnl data is equal (each attribute of the panel)
 e2function number operator==(xdf ldata, xdf rdata)
 	if !isValidDFrame(ldata) then return 0 end
 	if !isValidDFrame(rdata) then return 0 end
@@ -86,15 +78,13 @@ e2function number operator==(xdf ldata, xdf rdata)
 	return ldata["paneldata"]["uniqueID"] == rdata["paneldata"]["uniqueID"] and 1 or 0
 end
 
-
 --- B != B
---TODO: Check if the entire pnl data is equal ?
+--TODO:
 e2function number operator!=(xdf ldata, xdf rdata)
 	if !isValidDFrame(ldata) then return 1 end
 	if !isValidDFrame(rdata) then return 1 end
 	return ldata["paneldata"]["uniqueID"] == rdata["paneldata"]["uniqueID"] and 0 or 1
 end
-
 
 --[[-------------------------------------------------------------------------
 	Desc: Creates a dframe element
@@ -112,7 +102,6 @@ e2function dframe dframe(number uniqueID)
 		["changes"] = {}
 	}
 end
-
 
 do--[[setter]]--
 	e2function void dframe:setPos(number posX,number posY)
@@ -139,7 +128,6 @@ do--[[setter]]--
 		E2VguiCore.registerAttributeChange(this,"height", pnlSize[2])
 	end
 
-
 	e2function void dframe:setColor(vector col)
 		E2VguiCore.registerAttributeChange(this,"color", Color(col[1],col[2],col[3],255))
 	end
@@ -161,61 +149,35 @@ do--[[setter]]--
 	e2function void dframe:setVisible(number visible)
 		local vis = visible > 0
 		E2VguiCore.registerAttributeChange(this,"visible", vis)
-		-- this["paneldata"]["visible"] = vis
-		-- E2VguiCore.SetPanelVisibility(self.entity:EntIndex(),this["paneldata"]["uniqueID"],this["players"],vis)
 	end
-
-	e2function void dframe:setVisible(number visible,entity ply)
-		if !IsValid(ply) or !ply:IsPlayer() then return end
-		local vis = visible > 0
-		E2VguiCore.registerAttributeChange(this,"visible", vis)
-		-- this["paneldata"]["visible"] = vis
-		-- E2VguiCore.SetPanelVisibility(self.entity:EntIndex(),this["paneldata"]["uniqueID"],{ply},vis)
-	end
-
-	e2function void dframe:setVisible(number visible,array players)
-		local players = E2VguiCore.FilterPlayers(players)
-		local vis = visible > 0
-		-- this["paneldata"]["visible"] = vis
-		-- E2VguiCore.SetPanelVisibility(self.entity:EntIndex(),this["paneldata"]["uniqueID"],players,vis)
-	end
-
 
 	e2function void dframe:setTitle(string title)
 		E2VguiCore.registerAttributeChange(this,"title",  title )
 	end
 
-
 	e2function void dframe:setSizable(number sizable)
-	E2VguiCore.registerAttributeChange(this,"sizeable",  sizeable > 0 )
+	E2VguiCore.registerAttributeChange(this,"sizable",  sizable > 0 )
 	end
-
 
 	e2function void dframe:showCloseButton(number showCloseButton)
 		E2VguiCore.registerAttributeChange(this,"showCloseButton",  showCloseButton > 0 )
 	end
 
-
 	e2function void dframe:setDeleteOnClose(number delete)
 		E2VguiCore.registerAttributeChange(this,"deleteOnClose",  delete > 0 )
-		this["paneldata"]["deleteOnClose"] = delete > 0
 	end
 -- setter
 end
 
-
 do--[[getter]]--
-
 
 	e2function vector2 dframe:getPos()
 		return {this["paneldata"]["posX"],this["paneldata"]["posY"]}
 	end
 
-
 	e2function vector2 dframe:getSize()
 		return {this["paneldata"]["width"],this["paneldata"]["height"]}
 	end
-
 
 	--TODO: look up catch color
 	e2function vector dframe:getColor()
@@ -238,28 +200,23 @@ do--[[getter]]--
 		return this["paneldata"]["visible"] and 1 or 0
 	end
 
-
 	e2function string dframe:getTitle()
 		return this["paneldata"]["title"]
 	end
-
 
 	e2function number dframe:getSizable()
 		return this["paneldata"]["sizable"] and 1 or 0
 	end
 
-
 	e2function number dframe:getShowCloseButton()
 		return this["paneldata"]["showCloseButton"] and 1 or 0
 	end
-
 
 	e2function number dframe:getDeleteOnClose()
 		return this["paneldata"]["deleteOnClose"] and 1 or 0
 	end
 -- getter
 end
-
 
 do--[[utility]]--
 	e2function void dframe:create()
@@ -273,11 +230,9 @@ do--[[utility]]--
 		this["changes"] = {}
 	end
 
-
 	e2function void dframe:makePopup(number popup)
 		E2VguiCore.registerAttributeChange(this,"makepopup",  popup > 0 )
 	end
-
 
 	e2function void dframe:closePlayer(entity ply)
 		if IsValid(ply) and ply:IsPlayer() then
@@ -285,20 +240,17 @@ do--[[utility]]--
 		end
 	end
 
-
 	e2function void dframe:closeAll()
 		for _,ply in pairs(this["players"]) do
 			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
 		end
 	end
 
-
 	e2function void dframe:addPlayer(entity ply)
 		if ply != nil and ply:IsPlayer() then
 			table.insert(this["players"],ply)
 		end
 	end
-
 
 	e2function void dframe:removePlayer(entity ply)
 		for k,v in pairs(this["players"]) do
@@ -308,11 +260,9 @@ do--[[utility]]--
 		end
 	end
 
-
 	e2function void dframe:enableMouseInput(number mouseInput)
 		E2VguiCore.registerAttributeChange(this,"mouseinput",  mouseInput > 0 )
 	end
-
 
 	e2function void dframe:enableKeyboardInput(number keyboardInput)
 		E2VguiCore.registerAttributeChange(this,"keyboardinput",  keyboardInput > 0 )

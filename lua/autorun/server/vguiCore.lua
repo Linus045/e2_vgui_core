@@ -16,7 +16,7 @@ util.AddNetworkString("E2Vgui.ClosePanels")
 util.AddNetworkString("E2Vgui.ModifyPanel")
 util.AddNetworkString("E2Vgui.ConfirmModification")
 util.AddNetworkString("E2Vgui.TriggerE2")
-util.AddNetworkString("E2Vgui.SetPanelVisibility")
+--util.AddNetworkString("E2Vgui.SetPanelVisibility")
 util.AddNetworkString("E2Vgui.BlockUnblockClient")
 
 local sbox_E2_Vgui_maxVgui 				= CreateConVar("wire_vgui_maxPanels",100,{FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE},"Sets the max amount of panels you can create with E2")
@@ -539,25 +539,25 @@ function E2VguiCore.RemovePanel(e2EntityID,uniqueID,ply)
 end
 
 
-function E2VguiCore.SetPanelVisibility(e2EntityID,uniqueID,players,visible)
-	local panel = nil
-	local targets = {}
-	for k,v in pairs(players) do
-		//Get the players panel
-		panel = E2VguiCore.GetPanelByID(v,e2EntityID, uniqueID)
-		//check if it is valid
-		if panel == nil or not istable(panel) then
-			continue
-		end
-		//put it in the table to be updated on the client via net-message
-		table.insert(targets,v)
-	end
-	net.Start("E2Vgui.SetPanelVisibility")
-		net.WriteInt(uniqueID,32)
-		net.WriteInt(e2EntityID,32)
-		net.WriteBool(visible)
-	net.Send(targets)
-end
+-- function E2VguiCore.SetPanelVisibility(e2EntityID,uniqueID,players,visible)
+-- 	local panel = nil
+-- 	local targets = {}
+-- 	for k,v in pairs(players) do
+-- 		//Get the players panel
+-- 		panel = E2VguiCore.GetPanelByID(v,e2EntityID, uniqueID)
+-- 		//check if it is valid
+-- 		if panel == nil or not istable(panel) then
+-- 			continue
+-- 		end
+-- 		//put it in the table to be updated on the client via net-message
+-- 		table.insert(targets,v)
+-- 	end
+-- 	net.Start("E2Vgui.SetPanelVisibility")
+-- 		net.WriteInt(uniqueID,32)
+-- 		net.WriteInt(e2EntityID,32)
+-- 		net.WriteBool(visible)
+-- 	net.Send(targets)
+-- end
 
 
 --[[-------------------------------------------------------------------------
@@ -637,7 +637,7 @@ function E2VguiCore.TriggerE2(e2EntityID,uniqueID, triggerPly, tableData)
 	local value = value and tostring(value) or ""
 	E2VguiCore.Trigger[e2EntityID].triggeredByClient = triggerPly
 	E2VguiCore.Trigger[e2EntityID].triggerValues = table.ClearKeys(tableData)
-	E2VguiCore.Trigger[e2EntityID].triggerValuesTable = tableData
+	E2VguiCore.Trigger[e2EntityID].triggerValuesTable = E2VguiCore.convertToE2Table(tableData)
 	E2VguiCore.Trigger[e2EntityID].triggerUniqueID = uniqueID
 	E2VguiCore.Trigger[e2EntityID].run = true
 

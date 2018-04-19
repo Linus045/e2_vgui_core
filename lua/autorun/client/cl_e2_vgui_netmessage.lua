@@ -40,14 +40,14 @@ net.Receive("E2Vgui.CreatePanel",function()
 	net.SendToServer()
 end)
 
-net.Receive("E2Vgui.SetPanelVisibility",function()
-	local uniqueID = net.ReadInt(32)
-	local e2EntityID = net.ReadInt(32)
-	local visible = net.ReadBool()
-	local panel = E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
-	if panel == nil or !IsValid(panel) then return end
-	panel:SetVisible(visible)
-end)
+-- net.Receive("E2Vgui.SetPanelVisibility",function()
+-- 	local uniqueID = net.ReadInt(32)
+-- 	local e2EntityID = net.ReadInt(32)
+-- 	local visible = net.ReadBool()
+-- 	local panel = E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
+-- 	if panel == nil or !IsValid(panel) then return end
+-- 	panel:SetVisible(visible)
+-- end)
 
 net.Receive("E2Vgui.ModifyPanel",function()
 	local modifiedSuccess = nil
