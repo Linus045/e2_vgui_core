@@ -63,3 +63,35 @@ e2function table vguiClkValuesTable()
 	if E2VguiCore.Trigger[self.entity:EntIndex()] == nil then return -1 end
 	return E2VguiCore.Trigger[self.entity:EntIndex()].triggerValuesTable
 end
+
+
+
+local function addFunction(panelName,panelID,OtherPanelID)
+	registerFunction( panelName, "n"..OtherPanelID, panelID, function(self,args)
+		local op1, op2 = args[2], args[3]
+		local uniqueID, panel = op1[1](self,op1), op2[1](self,op2)
+		local players = {self.player}
+		if self.entity.e2_vgui_core_default_players != nil and self.entity.e2_vgui_core_default_players[self.entity:EntIndex()] != nil then
+			players = self.entity.e2_vgui_core_default_players[self.entity:EntIndex()]
+		end
+		return {
+			["players"] =  players,
+			["paneldata"] = E2VguiCore.GetDefaultPanelTable(panelName,uniqueID,panel["paneldata"]["uniqueID"]),
+			["changes"] = {}
+		}
+	end)
+end
+
+//TESTING
+E2VguiCore.registerCallback("loaded_elements",function()
+	for _,otherpanelid in pairs(E2VguiCore.e2_types) do
+		for panelName,id in pairs(E2VguiCore.e2_types) do
+			//change this to something like E2VguiCore.e2_types.parentable == true instead of hardcoded identifiers
+			//only parent to dframes and dpanels for now
+			if (otherpanelid == "xdf" or otherpanelid == "xdp") and otherpanelid != id then
+				addFunction(panelName,id,otherpanelid)
+				--print("Created function: "..panelName.."(number,".. otherpanelid ..")")
+			end
+		end
+	end
+end)

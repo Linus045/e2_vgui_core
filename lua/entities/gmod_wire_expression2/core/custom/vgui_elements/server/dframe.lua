@@ -35,7 +35,7 @@ end
 --6th argument type checker without return,
 --7th arguement type checker with return. False for valid type and True for invalid
 registerType("dframe", "xdf", {["players"] = {}, ["paneldata"] = {},["changes"] = {}},
-nil,
+	nil,
 	nil,
 	function(retval)
 		if !istable(retval) then error("Return value is not a table, but a "..type(retval).."!",0) end
@@ -45,6 +45,9 @@ nil,
 		return !isValidDFrame(v)
 	end
 )
+
+//TESTING
+E2VguiCore.RegisterTypeWithID("dframe","xdf")
 
 --[[------------------------------------------------------------
 E2 Functions
@@ -78,12 +81,38 @@ e2function number operator==(xdf ldata, xdf rdata)
 	return ldata["paneldata"]["uniqueID"] == rdata["paneldata"]["uniqueID"] and 1 or 0
 end
 
+--- B == number --check if the uniqueID matches
+e2function number operator==(xdf ldata, n index)
+	if !isValidDFrame(ldata) then return 0 end
+	return ldata["paneldata"]["uniqueID"] == index and 1 or 0
+end
+
+--- number == B --check if the uniqueID matches
+e2function number operator==(n index,xdf rdata)
+	if !isValidDFrame(rdata) then return 0 end
+	return rdata["paneldata"]["uniqueID"] == index and 1 or 0
+end
+
+
+
 --- B != B
 --TODO:
 e2function number operator!=(xdf ldata, xdf rdata)
 	if !isValidDFrame(ldata) then return 1 end
 	if !isValidDFrame(rdata) then return 1 end
 	return ldata["paneldata"]["uniqueID"] == rdata["paneldata"]["uniqueID"] and 0 or 1
+end
+
+--- B != number --check if the uniqueID matches
+e2function number operator!=(xdf ldata, n index)
+	if !isValidDFrame(ldata) then return 0 end
+	return ldata["paneldata"]["uniqueID"] == index and 0 or 1
+end
+
+--- number != B --check if the uniqueID matches
+e2function number operator!=(n index,xdf rdata)
+	if !isValidDFrame(rdata) then return 0 end
+	return rdata["paneldata"]["uniqueID"] == index and 0 or 1
 end
 
 --[[-------------------------------------------------------------------------

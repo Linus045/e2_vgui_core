@@ -9,8 +9,9 @@ local function isValidDSlider(panel)
 	return true
 end
 
-local function generateDefaultPanel(uniqueID,parentPnlID)
-local pnl = {
+//register this default table creation function so we can use it anywhere
+E2VguiCore.AddDefaultPanelTable("dslider",function(uniqueID,parentPnlID)
+	local tbl = {
 		["uniqueID"] = uniqueID,
 		["parentID"] = parentPnlID,
 		["typeID"] = "dslider",
@@ -26,8 +27,8 @@ local pnl = {
 		["min"] = 0,
 		["value"] = 0,
 	}
-return pnl
-end
+	return tbl
+end)
 
 --6th argument type checker without return,
 --7th arguement type checker with return. False for valid type and True for invalid
@@ -42,6 +43,8 @@ registerType("dslider", "xds", {["players"] = {}, ["paneldata"] = {},["changes"]
 		return !isValidDSlider(v)
 	end
 )
+//TESTING
+E2VguiCore.RegisterTypeWithID("dslider","xds")
 
 --[[------------------------------------------------------------
 							E2 Functions
@@ -58,30 +61,56 @@ end)
 
 -- if (B)
 --TODO: Check if the entire pnl data is valid (each attribute of the panel)
-e2function number operator_is(xdb pnldata)
+e2function number operator_is(xds pnldata)
 	return isValidDSlider(pnldata) and  1 or 0
 end
 
 -- if (!B)
-e2function number operator!(xdb pnldata)
+e2function number operator!(xds pnldata)
 	return isValidDSlider(pnldata) and  0 or 1
 end
 
 --- B == B --check if the names match
 --TODO: Check if the entire pnl data is equal (each attribute of the panel)
-e2function number operator==(xdb ldata, xdb rdata)
+e2function number operator==(xds ldata, xds rdata)
 	if !isValidDSlider(ldata) then return 0 end
 	if !isValidDSlider(rdata) then return 0 end
 	return ldata["paneldata"]["uniqueID"] == rdata["paneldata"]["uniqueID"] and 1 or 0
 end
 
+--- B == number --check if the uniqueID matches
+e2function number operator==(xds ldata, n index)
+	if !isValidDSlider(ldata) then return 0 end
+	return ldata["paneldata"]["uniqueID"] == index and 1 or 0
+end
+
+--- number == B --check if the uniqueID matches
+e2function number operator==(n index,xds rdata)
+	if !isValidDSlider(rdata) then return 0 end
+	return rdata["paneldata"]["uniqueID"] == index and 1 or 0
+end
+
+
 --- B != B
 --TODO: Check if the entire pnl data is equal (each attribute of the panel)
-e2function number operator!=(xdb ldata, xdb rdata)
+e2function number operator!=(xds ldata, xds rdata)
 	if !isValidDSlider(ldata) then return 1 end
 	if !isValidDSlider(rdata) then return 1 end
 	return ldata["paneldata"]["uniqueID"] == rdata["paneldata"]["uniqueID"] and 0 or 1
 end
+
+--- B != number --check if the uniqueID matches
+e2function number operator!=(xds ldata, n index)
+	if !isValidDSlider(ldata) then return 0 end
+	return ldata["paneldata"]["uniqueID"] == index and 0 or 1
+end
+
+--- number != B --check if the uniqueID matches
+e2function number operator!=(n index,xds rdata)
+	if !isValidDSlider(rdata) then return 0 end
+	return rdata["paneldata"]["uniqueID"] == index and 0 or 1
+end
+
 
 --[[-------------------------------------------------------------------------
 	Desc: Creates a DSlider element
@@ -95,7 +124,7 @@ e2function dslider dslider(number uniqueID)
 	end
 	return {
 		["players"] =  players,
-		["paneldata"] = generateDefaultPanel(uniqueID),
+		["paneldata"] = E2VguiCore.GetDefaultPanelTable("dslider",uniqueID,nil),
 		["changes"] = {}
 	}
 end
@@ -107,7 +136,7 @@ e2function dslider dslider(number uniqueID,number parentID)
 	end
 	return {
 		["players"] =  players,
-		["paneldata"] = generateDefaultPanel(uniqueID,parentID),
+		["paneldata"] = E2VguiCore.GetDefaultPanelTable("dslider",uniqueID,parentID),
 		["changes"] = {}
 	}
 end

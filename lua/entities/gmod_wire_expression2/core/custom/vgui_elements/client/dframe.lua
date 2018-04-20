@@ -16,20 +16,7 @@ E2VguiPanels["vgui_elements"]["functions"]["dframe"]["createFunc"] = function(un
 	--notify server of removal and also update client table
 	function panel:OnRemove()
 //		if not panel:GetDeleteOnClose() then return end
-		local name = self["uniqueID"]
-		local pnlData = self["pnlData"]
-		local panels = E2VguiLib.GetChildPanelIDs(name,e2EntityID)
-		for k,v in pairs(panels) do
-			--remove the panel on clientside
-			E2VguiPanels["panels"][e2EntityID][v] = nil
-		end
-		--notify the server of removal
-		net.Start("E2Vgui.NotifyPanelRemove")
-			-- -2 : none -1: single / 0 : multiple / 1 : all
-			net.WriteInt(0,2)
-			net.WriteInt(e2EntityID,32)
-			net.WriteTable(panels)
-		net.SendToServer()
+		E2VguiLib.RemovePanelWithChilds(self,e2EntityID)
 	end
 
 	--TODO: optimize the contrast setting

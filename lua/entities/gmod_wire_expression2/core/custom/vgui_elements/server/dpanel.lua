@@ -9,8 +9,9 @@ local function isValidDPanel(panel)
 	return true
 end
 
-local function generateDefaultPanel(uniqueID,parentPnlID)
-local pnl = {
+//register this default table creation function so we can use it anywhere
+E2VguiCore.AddDefaultPanelTable("dpanel",function(uniqueID,parentPnlID)
+	local tbl = {
 		["uniqueID"] = uniqueID,
 		["parentID"] = parentPnlID,
 		["typeID"] = "dpanel",
@@ -21,8 +22,8 @@ local pnl = {
 		["color"] = nil, //set no default color to use the default skin
 		["visible"] = true
 	}
-return pnl
-end
+	return tbl
+end)
 
 --6th argument type checker without return,
 --7th arguement type checker with return. False for valid type and True for invalid
@@ -37,7 +38,8 @@ registerType("dpanel", "xdp", {["players"] = {}, ["paneldata"] = {},["changes"] 
 		return !isValidDPanel(v)
 	end
 )
-
+//TESTING
+E2VguiCore.RegisterTypeWithID("dpanel","xdp")
 --[[------------------------------------------------------------
 						E2 Functions
 ------------------------------------------------------------]]--
@@ -71,12 +73,38 @@ e2function number operator==(xdp ldata, xdp rdata)
 	return ldata["paneldata"]["uniqueID"] == rdata["paneldata"]["uniqueID"] and 1 or 0
 end
 
+--- B == number --check if the uniqueID matches
+e2function number operator==(xdp ldata, n index)
+	if !isValidDPanel(ldata) then return 0 end
+	return ldata["paneldata"]["uniqueID"] == index and 1 or 0
+end
+
+--- number == B --check if the uniqueID matches
+e2function number operator==(n index,xdp rdata)
+	if !isValidDPanel(rdata) then return 0 end
+	return rdata["paneldata"]["uniqueID"] == index and 1 or 0
+end
+
+
 --- B != B
 --TODO:
 e2function number operator!=(xdp ldata, xdp rdata)
 	if !isValidDPanel(ldata) then return 1 end
 	if !isValidDPanel(rdata) then return 1 end
 	return ldata["paneldata"]["uniqueID"] == rdata["paneldata"]["uniqueID"] and 0 or 1
+end
+
+
+--- B != number --check if the uniqueID matches
+e2function number operator!=(xdp ldata, n index)
+	if !isValidDPanel(ldata) then return 0 end
+	return ldata["paneldata"]["uniqueID"] == index and 0 or 1
+end
+
+--- number != B --check if the uniqueID matches
+e2function number operator!=(n index,xdp rdata)
+	if !isValidDPanel(rdata) then return 0 end
+	return rdata["paneldata"]["uniqueID"] == index and 0 or 1
 end
 
 --[[-------------------------------------------------------------------------
@@ -91,7 +119,7 @@ e2function dpanel dpanel(number uniqueID)
 	end
 	return {
 		["players"] =  players,
-		["paneldata"] = generateDefaultPanel(uniqueID),
+		["paneldata"] = E2VguiCore.GetDefaultPanelTable("dpanel",uniqueID),
 		["changes"] = {}
 	}
 end
@@ -103,7 +131,7 @@ e2function dpanel dpanel(number uniqueID,number parentID)
 	end
 	return {
 		["players"] =  players,
-		["paneldata"] = generateDefaultPanel(uniqueID,parentID),
+		["paneldata"] = E2VguiCore.GetDefaultPanelTable("dpanel",uniqueID,parentID),
 		["changes"] = {}
 	}
 end

@@ -1,11 +1,11 @@
 E2Lib.RegisterExtension("vgui", true, "Allows E2s to create vgui panels.")
 
 --[[
-	In order to load the files correctly i copied the e2_include function from 
+	In order to load the files correctly i copied the e2_include function from
 	/lua/entities/gmod_wire_expression2/core/extloader.lua
-	and modified it so it loads my files from the directories (/core/vgui_elements/server and /core/vgui_elements/client). 
+	and modified it so it loads my files from the directories (/core/vgui_elements/server and /core/vgui_elements/client).
 	(Normally files inside sub-directories will get ignored by the default
-	loading method -> https://github.com/wiremod/wire/blob/8f0d491ff83b9c38ab28b3f5d7ebe924fad12a34/lua/entities/gmod_wire_expression2/core/extloader.lua#L74-L75) 
+	loading method -> https://github.com/wiremod/wire/blob/8f0d491ff83b9c38ab28b3f5d7ebe924fad12a34/lua/entities/gmod_wire_expression2/core/extloader.lua#L74-L75)
 ]]--
 
 
@@ -36,14 +36,14 @@ local function e2_include_pass2(name, luaname, contents)
 		-- e2_extpp_pass2 returned false => file didn't need preprocessing => use the regular means of inclusion
 		return include(name)
 	end
-	
+
 	-- file needed preprocessing => Run the processed file
 	local ok, func = pcall(CompileString,ret,luaname)
 	if not ok then -- an error occurred while compiling
 		error(func)
 		return
 	end
-	
+
 	local ok, err = pcall(func)
 	if not ok then -- an error occured while executing
 		if not err:find( "EXTENSION_DISABLED" ) then
@@ -51,7 +51,7 @@ local function e2_include_pass2(name, luaname, contents)
 		end
 		return
 	end
-	
+
 	__e2setcost(nil) -- Reset ops cost at the end of each file
 end
 
@@ -68,6 +68,12 @@ e2_include_init()
 --e2_include()
 -- Load serverside files here, they need additional parsing
 -- see top of this file
+//TESTING
+E2VguiCore.registerCallback("before_loading_elements",function()
+	E2VguiCore.callbacks["loaded_elements"] = {}
+end)
+
+E2VguiCore.executeCallback("before_loading_elements")
 print("/###########################################################\\")
 print("| Reloading E2 Extensions")
 print("| Including vgui elements from /custom/vgui_elements/server/")
@@ -84,5 +90,7 @@ end
 print("\\###########################################################/")
 
 e2_include_finalize()
+//TESTING
+E2VguiCore.executeCallback("loaded_elements")
 --wire_expression2_CallHook("postinit")
 --wire_expression2_PostLoadExtensions()

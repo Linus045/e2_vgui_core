@@ -12,20 +12,7 @@ E2VguiPanels["vgui_elements"]["functions"]["dslider"]["createFunc"] = function(u
 	panel:SetValue(pnlData["value"])
 	--notify server of removal and also update client table
 	function panel:OnRemove()
-		local name = self["uniqueID"]
-		local pnlData = self["pnlData"]
-		local panels = E2VguiLib.GetChildPanelIDs(name,e2EntityID)
-		for k,v in pairs(panels) do
-			--remove the panel on clientside
-			E2VguiPanels["panels"][e2EntityID][v] = nil
-		end
-		--notify the server of removal
-		net.Start("E2Vgui.NotifyPanelRemove")
-			-- -2 : none -1: single / 0 : multiple / 1 : all
-			net.WriteInt(0,2)
-			net.WriteInt(e2EntityID,32)
-			net.WriteTable(panels)
-		net.SendToServer()
+		E2VguiLib.RemovePanelWithChilds(self,e2EntityID)
 	end
 	panel["changed"] = true
 
@@ -67,51 +54,55 @@ E2VguiPanels["vgui_elements"]["functions"]["dslider"]["createFunc"] = function(u
 end
 
 
-E2VguiPanels["vgui_elements"]["functions"]["dslider"]["modifyFunc"] = function(uniqueID, pnlData, e2EntityID)
+E2VguiPanels["vgui_elements"]["functions"]["dslider"]["modifyFunc"] = function(uniqueID, changesTable, e2EntityID)
 	local panel = E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
-	if panel["pnlData"]["width"] != pnlData["width"] then
-		panel:SetWidth(pnlData["width"])
-	end
-	if panel["pnlData"]["height"] != pnlData["height"] then
-		panel:SetHeight(pnlData["height"])
-	end
-
-	if panel["pnlData"]["posX"] != pnlData["posX"] or panel["pnlData"]["posY"] != pnlData["posY"] then
-		panel:SetPos(pnlData["posX"],pnlData["posY"])
-	end
-
-	if panel["pnlData"]["text"] != pnlData["text"] then
-		panel:SetText(pnlData["text"])
-	end
-
-	if panel["pnlData"]["dark"] != pnlData["dark"] then
-		panel:SetDark(pnlData["dark"])
-	end
-
-	if panel["pnlData"]["decimals"] != pnlData["decimals"] then
-		panel:SetDecimals(pnlData["decimals"])
-	end
-
-	if panel["pnlData"]["max"] != pnlData["max"] then
-		panel:SetMax(pnlData["max"])
-	end
-
-	if panel["pnlData"]["min"] != pnlData["min"] then
-		panel:SetMin(pnlData["min"])
-	end
-	if panel["pnlData"]["value"] != pnlData["value"] then
-		panel:SetValue(pnlData["value"])
-	end
-
-	if pnlData["color"] ~= nil then
-		function panel:Paint(w,h)
-			surface.SetDrawColor(pnlData["color"])
-			surface.DrawRect(0,0,w,h)
+	for attribute,value in pairs(changesTable) do
+		if E2VguiLib.panelFunctions[attribute] then
+			E2VguiLib.panelFunctions[attribute](panel,value)
+			panel.pnlData[attribute] = value
 		end
 	end
 
-	panel["uniqueID"] = uniqueID
-	panel["pnlData"] = pnlData
+	-- if panel["pnlData"]["width"] != pnlData["width"] then
+	-- 	panel:SetWidth(pnlData["width"])
+	-- end
+	-- if panel["pnlData"]["height"] != pnlData["height"] then
+	-- 	panel:SetHeight(pnlData["height"])
+	-- end
+	--
+	-- if panel["pnlData"]["posX"] != pnlData["posX"] or panel["pnlData"]["posY"] != pnlData["posY"] then
+	-- 	panel:SetPos(pnlData["posX"],pnlData["posY"])
+	-- end
+	--
+	-- if panel["pnlData"]["text"] != pnlData["text"] then
+	-- 	panel:SetText(pnlData["text"])
+	-- end
+	--
+	-- if panel["pnlData"]["dark"] != pnlData["dark"] then
+	-- 	panel:SetDark(pnlData["dark"])
+	-- end
+	--
+	-- if panel["pnlData"]["decimals"] != pnlData["decimals"] then
+	-- 	panel:SetDecimals(pnlData["decimals"])
+	-- end
+	--
+	-- if panel["pnlData"]["max"] != pnlData["max"] then
+	-- 	panel:SetMax(pnlData["max"])
+	-- end
+	--
+	-- if panel["pnlData"]["min"] != pnlData["min"] then
+	-- 	panel:SetMin(pnlData["min"])
+	-- end
+	-- if panel["pnlData"]["value"] != pnlData["value"] then
+	-- 	panel:SetValue(pnlData["value"])
+	-- end
+
+	if changesTable["color"] ~= nil then
+		function panel:Paint(w,h)
+			surface.SetDrawColor(changesTable["color"])
+			surface.DrawRect(0,0,w,h)
+		end
+	end
 	return true
 end
 

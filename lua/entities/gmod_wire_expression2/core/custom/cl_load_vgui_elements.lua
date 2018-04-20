@@ -1,4 +1,3 @@
-
 print("/###########################################################\\")
 print("| Loading vgui elements from /custom/vgui_elements/client/")
 local list = file.Find("entities/gmod_wire_expression2/core/custom/vgui_elements/client/*.lua", "LUA")

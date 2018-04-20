@@ -1,5 +1,9 @@
 E2VguiCore = {
 	["vgui_types"] = {},
+	//TESTING
+	["defaultPanelTable"] = {},
+	["e2_types"] = {},
+	["callbacks"] = {},
 	["Trigger"] = {},
 	["BlockedPlayer"] = {},
 	["DefaultPanel"] = {
@@ -312,7 +316,7 @@ function E2VguiCore.ModifyPanel(e2self, panel)
 
 	local panel = {
 		["players"] = players,
-		["paneldata"] = paneldata,
+		["paneldata"] = table.Merge(paneldata,changes), //integrate changes into paneldata
 		["changes"] = {}	//changes are send to the player with pnl_modify() so reset them
 	}
 
@@ -329,6 +333,43 @@ function E2VguiCore.registerAttributeChange(panel,attributeName, attributeValue)
 	//TODO: check if the attributeName exists for this panel type
 	//print("Attribute added: "..attributeName .. " Value: " .. tostring(attributeValue))
 	panel["changes"][attributeName] = attributeValue
+end
+
+//TESTING
+function E2VguiCore.AddDefaultPanelTable(pnlType,func)
+	E2VguiCore["defaultPanelTable"][pnlType] = func
+end
+
+//TESTING
+function E2VguiCore.GetDefaultPanelTable(pnlType,uniqueID,parentID)
+	if E2VguiCore["defaultPanelTable"][pnlType] == nil then error("E2VguiCore.GetDefaultPanelTable : No valid paneltype!\n"..tostring(pnlType)) return nil end
+	local tbl = E2VguiCore["defaultPanelTable"][pnlType](uniqueID,parentID)
+	return tbl
+end
+
+//TESTING
+// dButton = xdb used to create the constructors later
+function E2VguiCore.RegisterTypeWithID(e2Type,id)
+	E2VguiCore["e2_types"][e2Type] = id
+end
+
+//TESTING
+function E2VguiCore.GetIDofType(e2Type)
+	if E2VguiCore["e2_types"][e2Type] == nil then error("No such type: "..tostring(e2Type)) end
+	return E2VguiCore["e2_types"][e2Type]
+end
+
+function E2VguiCore.registerCallback(callbackID,func)
+	if E2VguiCore.callbacks[callbackID] == nil then
+		E2VguiCore.callbacks[callbackID] = {}
+	end
+	table.insert(E2VguiCore.callbacks[callbackID],func)
+end
+
+function E2VguiCore.executeCallback(callbackID,...)
+	for _,func in pairs(E2VguiCore.callbacks[callbackID]) do
+		func(...)
+	end
 end
 
 

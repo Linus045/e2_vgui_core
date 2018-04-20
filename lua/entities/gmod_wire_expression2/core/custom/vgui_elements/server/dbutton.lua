@@ -9,22 +9,22 @@ local function isValidDButton(panel)
 	return true
 end
 
-local function generateDefaultPanel(uniqueID,parentPnlID)
-	local pnl = {
-			["uniqueID"] = uniqueID,
-			["parentID"] = parentPnlID,
-			["typeID"] = "dbutton",
-			["posX"] = 0,
-			["posY"] = 0,
-			["width"] = 50,
-			["height"] = 22,
-			["text"] = "DButton",
-			["visible"] = true,
-			["color"] = nil //set no default color to use the default skin
-		}
-	return pnl
-end
-
+//register this default table creation function so we can use it anywhere
+E2VguiCore.AddDefaultPanelTable("dbutton",function(uniqueID,parentPnlID)
+	local tbl = {
+		["uniqueID"] = uniqueID,
+		["parentID"] = parentPnlID,
+		["typeID"] = "dbutton",
+		["posX"] = 0,
+		["posY"] = 0,
+		["width"] = 50,
+		["height"] = 22,
+		["text"] = "DButton",
+		["visible"] = true,
+		["color"] = nil //set no default color to use the default skin
+	}
+	return tbl
+end)
 --6th argument type checker without return,
 --7th arguement type checker with return. False for valid type and True for invalid
 registerType("dbutton", "xdb", {["players"] = {}, ["paneldata"] = {},["changes"] = {}},
@@ -38,6 +38,9 @@ registerType("dbutton", "xdb", {["players"] = {}, ["paneldata"] = {},["changes"]
 		return !isValidDButton(v)
 	end
 )
+
+//TESTING
+E2VguiCore.RegisterTypeWithID("dbutton","xdb")
 
 --[[------------------------------------------------------------
 						E2 Functions
@@ -71,6 +74,19 @@ e2function number operator==(xdb ldata, xdb rdata)
 	return ldata["paneldata"]["uniqueID"] == rdata["paneldata"]["uniqueID"] and 1 or 0
 end
 
+--- B == number --check if the uniqueID matches
+e2function number operator==(xdb ldata, n index)
+	if !isValidDButton(ldata) then return 0 end
+	return ldata["paneldata"]["uniqueID"] == index and 1 or 0
+end
+
+--- number == B --check if the uniqueID matches
+e2function number operator==(n index,xdb rdata)
+	if !isValidDButton(rdata) then return 0 end
+	return rdata["paneldata"]["uniqueID"] == index and 1 or 0
+end
+
+
 --- B != B
 --TODO: Check if the entire pnl data is equal (each attribute of the panel)
 e2function number operator!=(xdb ldata, xdb rdata)
@@ -79,11 +95,26 @@ e2function number operator!=(xdb ldata, xdb rdata)
 	return ldata["paneldata"]["uniqueID"] == rdata["paneldata"]["uniqueID"] and 0 or 1
 end
 
+
+--- B != number --check if the uniqueID matches
+e2function number operator!=(xdb ldata, n index)
+	if !isValidDButton(ldata) then return 0 end
+	return ldata["paneldata"]["uniqueID"] == index and 0 or 1
+end
+
+--- number != B --check if the uniqueID matches
+e2function number operator!=(n index,xdb rdata)
+	if !isValidDButton(rdata) then return 0 end
+	return rdata["paneldata"]["uniqueID"] == index and 0 or 1
+end
+
 --[[-------------------------------------------------------------------------
 	Desc: Creates a dbutton element
 	Args:
 	Return: dbutton
 ---------------------------------------------------------------------------]]
+
+
 e2function dbutton dbutton(number uniqueID)
 	local players = {self.player}
 	if self.entity.e2_vgui_core_default_players != nil and self.entity.e2_vgui_core_default_players[self.entity:EntIndex()] != nil then
@@ -91,7 +122,7 @@ e2function dbutton dbutton(number uniqueID)
 	end
 	return {
 		["players"] =  players,
-		["paneldata"] = generateDefaultPanel(uniqueID),
+		["paneldata"] = E2VguiCore.GetDefaultPanelTable("dbutton",uniqueID,nil),
 		["changes"] = {}
 	}
 end
@@ -103,7 +134,7 @@ e2function dbutton dbutton(number uniqueID,number parentID)
 	end
 	return {
 		["players"] =  players,
-		["paneldata"] = generateDefaultPanel(uniqueID,parentID),
+		["paneldata"] = E2VguiCore.GetDefaultPanelTable("dbutton",uniqueID,parentID),
 		["changes"] = {}
 	}
 end

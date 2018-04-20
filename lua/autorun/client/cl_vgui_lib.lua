@@ -15,7 +15,7 @@ E2VguiLib = {
         parent = function(panel,value) panel:SetParent(value) end,
         posX = function(panel,value) local old_posX,old_posY = panel:GetPos() panel:SetPos(value,old_posY) end,
         posY = function(panel,value) local old_posX,old_posY = panel:GetPos() panel:SetPos(old_posX,value) end,
-        visible = function(panel,value) panel:SetVisible(value) end, //this gets dealed with diffently
+        visible = function(panel,value) panel:SetVisible(value) end,
         putCenter = function(panel,value) if value == true then panel:Center() end end,
         sizable = function(panel,value) panel:SetSizable(value) end,
         deleteOnClose = function(panel,value) panel:SetDeleteOnClose(value) end,
@@ -38,7 +38,7 @@ function E2VguiLib.RegisterNewPanel(e2EntityID ,uniqueID, pnl)
 end
 
 function E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
-    if E2VguiPanels.panels[e2EntityID] == nil then return end
+    if E2VguiPanels["panels"][e2EntityID] == nil then return end
     local pnl = E2VguiPanels["panels"][e2EntityID][uniqueID]
     return pnl
 end
@@ -102,6 +102,7 @@ function E2VguiLib.convertToE2Table(tbl)
     return e2table
 end
 
+//Maybe optimise this by creating a 'children' table for each panel ?
 function E2VguiLib.GetChildPanelIDs(uniqueID,e2EntityID,pnlList)
     local tbl = pnlList or {uniqueID}
     local pnl = E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
@@ -165,6 +166,25 @@ function E2VguiLib.GetBlockedPlayers()
         table.insert(tbl,player.GetBySteamID(k))
     end
     return tbl
+end
+
+function E2VguiLib.RemovePanelWithChilds(panel,e2EntityID)
+    local name = panel["uniqueID"]
+    local pnlData = panel["pnlData"]
+    local panels = E2VguiLib.GetChildPanelIDs(name,e2EntityID)
+
+    for k,v in pairs(panels) do
+        --remove the panel on clientside table
+        E2VguiPanels["panels"][e2EntityID][v] = nil
+    end
+
+    --notify the server of removal
+    net.Start("E2Vgui.NotifyPanelRemove")
+        -- -2 : none -1: single / 0 : multiple / 1 : all
+        net.WriteInt(0,2)
+        net.WriteInt(e2EntityID,32)
+        net.WriteTable(panels)
+    net.SendToServer()
 end
 
 --[[-------------------------------------------------------------------------
