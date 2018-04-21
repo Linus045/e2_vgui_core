@@ -1,9 +1,9 @@
 E2VguiPanels["vgui_elements"]["functions"]["dpanel"] = {}
-E2VguiPanels["vgui_elements"]["functions"]["dpanel"]["createFunc"] = function(uniqueID, pnlData, e2EntityID)
+E2VguiPanels["vgui_elements"]["functions"]["dpanel"]["createFunc"] = function(uniqueID, pnlData, e2EntityID,changes)
 	local parent = E2VguiLib.GetPanelByID(pnlData["parentID"],e2EntityID)
 	local panel = vgui.Create("DPanel",parent)
-	panel:SetSize(pnlData["width"],pnlData["height"])
-	panel:SetPos(pnlData["posX"],pnlData["posY"])
+	local data = E2VguiLib.applyAttributes(panel,changes)
+	table.Merge(pnlData,data)
 
 	--notify server of removal and also update client table
 	function panel:OnRemove()
@@ -24,29 +24,24 @@ E2VguiPanels["vgui_elements"]["functions"]["dpanel"]["createFunc"] = function(un
 	return true
 end
 
-E2VguiPanels["vgui_elements"]["functions"]["dpanel"]["modifyFunc"] = function(uniqueID, changesTable, e2EntityID)
+E2VguiPanels["vgui_elements"]["functions"]["dpanel"]["modifyFunc"] = function(uniqueID, e2EntityID, changes)
 	local panel = E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
 	if panel == nil or !IsValid(panel)  then return end
 
-	for attribute,value in pairs(changesTable) do
-		if E2VguiLib.panelFunctions[attribute] then
-			E2VguiLib.panelFunctions[attribute](panel,value)
-			panel.pnlData[attribute] = value
-			changesTable[attribute] = nil
-		end
-	end
+	local data = E2VguiLib.applyAttributes(panel,changes)
+	table.Merge(panel["pnlData"],data)
 
-	if changesTable["parentID"] ~= nil then
-		local parentPnl = E2E2VguiLib.GetPanelByID(changesTable["parentID"],e2EntityID)
+	if data["parentID"] != nil then //TODO:implement e2function setParent()
+		local parentPnl = E2VguiLib.GetPanelByID(data["parentID"],e2EntityID)
 		if parentPnl != nil then
 			panel:SetParent(parentPnl)
 		end
 	end
 
 	--TODO: optimize the contrast setting
-	if changesTable["color"] ~= nil then
+	if data["color"] ~= nil then
 		function panel:Paint(w,h)
-			local col = changesTable["color"]
+			local col = data["color"]
 			draw.RoundedBox(3,0,0,w,h,col)
 		end
 	end

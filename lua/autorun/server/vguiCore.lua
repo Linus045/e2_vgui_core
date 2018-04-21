@@ -241,7 +241,6 @@ function E2VguiCore.CreatePanel(e2self, panel)
 	local paneldata = panel["paneldata"]
 	local changes = panel["changes"]
 	local uniqueID = math.Round(paneldata["uniqueID"])
-	table.Merge(paneldata,changes) //implement changes from the changes table
 
 	local pnlType = paneldata["typeID"]
 	if pnlType == nil or !E2VguiCore.vgui_types[string.lower(pnlType)..".lua"] then
@@ -263,7 +262,14 @@ function E2VguiCore.CreatePanel(e2self, panel)
 		net.WriteInt(uniqueID,32)
 		net.WriteInt(e2EntityID,32)
 		net.WriteTable(paneldata)
+		net.WriteTable(changes)
 	net.Send(players)
+
+	for _,values in pairs(changes) do
+		local key = values[1]
+		local value = values[2]
+		paneldata[key] = value
+	end
 
 	local panel = {
 		["players"] = players,
@@ -313,9 +319,17 @@ function E2VguiCore.ModifyPanel(e2self, panel)
 		net.WriteTable(changes)
 	net.Send(players)
 
+	//convert changes table format to paneldata's table's format
+	local simplifiedChanges = {}
+	for _,values in pairs(changes) do
+		local key = values[1]
+		local value = values[2]
+		simplifiedChanges[key] = value
+	end
+
 	local panel = {
 		["players"] = players,
-		["paneldata"] = table.Merge(paneldata,changes), //integrate changes into paneldata
+		["paneldata"] = table.Merge(paneldata,simplifiedChanges), //integrate changes into paneldata
 		["changes"] = {}	//changes are send to the player with pnl_modify() so reset them
 	}
 
@@ -331,7 +345,7 @@ end
 function E2VguiCore.registerAttributeChange(panel,attributeName, attributeValue)
 	//TODO: check if the attributeName exists for this panel type
 	//print("Attribute added: "..attributeName .. " Value: " .. tostring(attributeValue))
-	panel["changes"][attributeName] = attributeValue
+	table.insert(panel["changes"],{attributeName,attributeValue})
 end
 
 //TESTING

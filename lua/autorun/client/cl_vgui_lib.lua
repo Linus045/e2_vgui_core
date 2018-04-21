@@ -12,7 +12,7 @@ E2VguiLib = {
         width = function(panel,value) panel:SetWidth(value) end,
         height = function(panel,value) panel:SetHeight(value) end,
         title = function(panel,value) panel:SetTitle(value) end,
-        parent = function(panel,value) panel:SetParent(value) end,
+        //parent = function(panel,value) panel:SetParent(value) end,
         posX = function(panel,value) local old_posX,old_posY = panel:GetPos() panel:SetPos(value,old_posY) end,
         posY = function(panel,value) local old_posX,old_posY = panel:GetPos() panel:SetPos(old_posX,value) end,
         visible = function(panel,value) panel:SetVisible(value) end,
@@ -27,9 +27,23 @@ E2VguiLib = {
         decimals = function(panel,value) panel:SetDecimals(value) end,
         max = function(panel,value) panel:SetMax(value) end,
         min = function(panel,value) panel:SetMin(value) end,
-        value = function(panel,value) panel:SetValue(value) end
+        value = function(panel,value) panel:SetValue(value) end,
+        dock = function(panel,value) panel:Dock(value) end
     }
 }
+
+function E2VguiLib.applyAttributes(panel,attributes)
+    local pnlData = {}
+    for _,values in pairs(attributes) do
+        local key = values[1]
+        local value = values[2]
+        if E2VguiLib.panelFunctions[key] != nil and value != nil then
+			E2VguiLib.panelFunctions[key](panel,value)
+		end
+        pnlData[key] = value
+	end
+    return pnlData
+end
 
 function E2VguiLib.RegisterNewPanel(e2EntityID ,uniqueID, pnl)
     E2VguiPanels.panels[e2EntityID][uniqueID] = pnl

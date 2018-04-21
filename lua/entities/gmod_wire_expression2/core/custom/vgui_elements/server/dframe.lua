@@ -19,15 +19,15 @@ local pnl = {
 		["width"] = 150,
 		["height"] = 150,
 		["title"] = "DFrame",
-		["color"] = nil, //set no default color to use the default skin
-		["putCenter"] = false,
+		["showCloseButton"] = true,
 		["sizable"] = false,
-		["deleteOnClose"] = true,
-		["visible"] = true,
-		["makepopup"] = true,
-		["mouseinput"] = true,
-		["keyboardinput"] = true,
-		["showCloseButton"] = true
+		["deleteOnClose"] = nil,
+		["visible"] = nil,
+		["color"] = nil, //set no default color to use the default skin
+		["keyboardinput"] = nil,
+		["mouseinput"] = nil,
+		["makepopup"] = nil,
+		["putCenter"] = nil
 	}
 return pnl
 end
@@ -157,6 +157,14 @@ do--[[setter]]--
 		E2VguiCore.registerAttributeChange(this,"height", pnlSize[2])
 	end
 
+	e2function void dframe:setWidth(number width)
+		E2VguiCore.registerAttributeChange(this,"width", width)
+	end
+
+	e2function void dframe:setHeight(number height)
+		E2VguiCore.registerAttributeChange(this,"height", height)
+	end
+
 	e2function void dframe:setColor(vector col)
 		E2VguiCore.registerAttributeChange(this,"color", Color(col[1],col[2],col[3],255))
 	end
@@ -173,8 +181,6 @@ do--[[setter]]--
 		E2VguiCore.registerAttributeChange(this,"color", Color(red,green,blue,alpha))
 	end
 
-//TODO: Why do we use an extra function for visibility again ??? and not just the default pnl:modify() ?
-//		was it because we didn't only set changes but every attribute back then ?
 	e2function void dframe:setVisible(number visible)
 		local vis = visible > 0
 		E2VguiCore.registerAttributeChange(this,"visible", vis)
@@ -195,6 +201,10 @@ do--[[setter]]--
 	e2function void dframe:setDeleteOnClose(number delete)
 		E2VguiCore.registerAttributeChange(this,"deleteOnClose",  delete > 0 )
 	end
+
+	e2function void dframe:dock(number dockType)
+		E2VguiCore.registerAttributeChange(this,"dock", dockType)
+	end
 -- setter
 end
 
@@ -206,6 +216,14 @@ do--[[getter]]--
 
 	e2function vector2 dframe:getSize()
 		return {this["paneldata"]["width"],this["paneldata"]["height"]}
+	end
+
+	e2function number dframe:getWidth()
+		return this["paneldata"]["width"]
+	end
+
+	e2function number dframe:getHeight()
+		return this["paneldata"]["height"]
 	end
 
 	--TODO: look up catch color

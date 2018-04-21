@@ -1,25 +1,14 @@
 E2VguiPanels["vgui_elements"]["functions"]["dframe"] = {}
-E2VguiPanels["vgui_elements"]["functions"]["dframe"]["createFunc"] = function(uniqueID, pnlData, e2EntityID)
+E2VguiPanels["vgui_elements"]["functions"]["dframe"]["createFunc"] = function(uniqueID, pnlData, e2EntityID,changes)
 	local panel = vgui.Create("DFrame")
-
-	for attribute,value in pairs(pnlData) do
-		if E2VguiLib.panelFunctions[attribute] then
-			E2VguiLib.panelFunctions[attribute](panel,value)
-		end
-	end
-	if pnlData["putCenter"] == true then //center() gets priorized
-		//call center() again because setPos() gets called after center() in the loop above
-		//and therefore center() had no effect
-		panel:Center()
-	end
+	local data = E2VguiLib.applyAttributes(panel,changes)
+	table.Merge(pnlData,data)
 
 	--notify server of removal and also update client table
 	function panel:OnRemove()
-//		if not panel:GetDeleteOnClose() then return end
 		E2VguiLib.RemovePanelWithChilds(self,e2EntityID)
 	end
 
-	--TODO: optimize the contrast setting
 	if pnlData["color"] ~= nil then
 		function panel:Paint(w,h)
 			local col = pnlData["color"]
@@ -27,11 +16,11 @@ E2VguiPanels["vgui_elements"]["functions"]["dframe"]["createFunc"] = function(un
 			local col3 = Color(col.r*0.4%255,col.g*0.4%255,col.b*0.4%255)
 
 			draw.RoundedBox(5,0,0,w,h,col3)
-
 			draw.RoundedBox(5,1,1,w-2,h-2,col)
 			draw.RoundedBoxEx(5,1,1,w-2,25-2,col2,true,true,false,false)
 		end
 	end
+
 	panel["uniqueID"] = uniqueID
 	panel["pnlData"] = pnlData
 	E2VguiLib.RegisterNewPanel(e2EntityID ,uniqueID, panel)
@@ -39,26 +28,17 @@ E2VguiPanels["vgui_elements"]["functions"]["dframe"]["createFunc"] = function(un
 end
 
 
-E2VguiPanels["vgui_elements"]["functions"]["dframe"]["modifyFunc"] = function(uniqueID, changesTable, e2EntityID)
+E2VguiPanels["vgui_elements"]["functions"]["dframe"]["modifyFunc"] = function(uniqueID, e2EntityID, changes)
 	local panel = E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
 	if panel == nil or !IsValid(panel)  then return end
 
-	for attribute,value in pairs(changesTable) do
-		if E2VguiLib.panelFunctions[attribute] then
-			E2VguiLib.panelFunctions[attribute](panel,value)
-			panel.pnlData[attribute] = value
-		end
-	end
-	if changesTable["putCenter"] == true then //center() gets priorized
-		//call center() again because setPos() gets called after center() in the loop above
-		//and therefore center() had no effect
-		panel:Center()
-	end
+	local data = E2VguiLib.applyAttributes(panel,changes)
+	table.Merge(panel["pnlData"],data)
 
 	--TODO: optimize the contrast setting
-	if changesTable["color"] ~= nil then
+	if data["color"] ~= nil then
 		function panel:Paint(w,h)
-			local col = changesTable["color"]
+			local col = data["pnlData"]["color"]
 			local col2 = Color(col.r*0.8%255,col.g*0.8%255,col.b*0.8%255)
 			local col3 = Color(col.r*0.4%255,col.g*0.4%255,col.b*0.4%255)
 			draw.RoundedBox(5,0,0,w,h,col3)

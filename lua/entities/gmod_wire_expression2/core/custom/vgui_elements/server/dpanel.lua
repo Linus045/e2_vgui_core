@@ -20,7 +20,8 @@ E2VguiCore.AddDefaultPanelTable("dpanel",function(uniqueID,parentPnlID)
 		["width"] = 80,
 		["height"] = 80,
 		["color"] = nil, //set no default color to use the default skin
-		["visible"] = true
+		["visible"] = nil,
+		["dock"] = nil
 	}
 	return tbl
 end)
@@ -157,6 +158,14 @@ do--[[setter]]--
 		E2VguiCore.registerAttributeChange(this,"height", pnlSize[2])
 	end
 
+	e2function void dpanel:setWidth(number width)
+		E2VguiCore.registerAttributeChange(this,"width", width)
+	end
+
+	e2function void dpanel:setHeight(number height)
+		E2VguiCore.registerAttributeChange(this,"height", height)
+	end
+
 	e2function void dpanel:setColor(vector col)
 		E2VguiCore.registerAttributeChange(this,"color", Color(col[1],col[2],col[3],255))
 	end
@@ -178,6 +187,10 @@ do--[[setter]]--
 		E2VguiCore.registerAttributeChange(this,"visible", vis)
 	end
 
+	e2function void dpanel:dock(number dockType)
+		E2VguiCore.registerAttributeChange(this,"dock", dockType)
+	end
+
 	e2function void dpanel:sizeToContents(number sizeToContents)
 
 	end
@@ -191,6 +204,14 @@ do--[[getter]]--
 
 	e2function vector2 dpanel:getSize()
 		return {this["paneldata"]["width"],this["paneldata"]["height"]}
+	end
+
+	e2function number dpanel:getWidth()
+		return this["paneldata"]["width"]
+	end
+
+	e2function number dpanel:getHeight()
+		return this["paneldata"]["height"]
 	end
 
 	--TODO: look up catch color

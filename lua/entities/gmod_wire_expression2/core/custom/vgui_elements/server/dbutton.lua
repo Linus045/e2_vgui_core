@@ -13,6 +13,7 @@ end
 E2VguiCore.AddDefaultPanelTable("dbutton",function(uniqueID,parentPnlID)
 	local tbl = {
 		["uniqueID"] = uniqueID,
+		["uniqueID"] = uniqueID,
 		["parentID"] = parentPnlID,
 		["typeID"] = "dbutton",
 		["posX"] = 0,
@@ -160,6 +161,14 @@ do--[[setter]]--
 		E2VguiCore.registerAttributeChange(this,"height", pnlSize[2])
 	end
 
+	e2function void dbutton:setWidth(number width)
+		E2VguiCore.registerAttributeChange(this,"width", width)
+	end
+
+	e2function void dbutton:setHeight(number height)
+		E2VguiCore.registerAttributeChange(this,"height", height)
+	end
+
 	e2function void dbutton:setColor(vector col)
 		E2VguiCore.registerAttributeChange(this,"color", Color(col[1],col[2],col[3],255))
 	end
@@ -188,6 +197,10 @@ do--[[setter]]--
 		local vis = visible > 0
 		E2VguiCore.registerAttributeChange(this,"visible", vis)
 	end
+
+	e2function void dbutton:dock(number dockType)
+		E2VguiCore.registerAttributeChange(this,"dock", dockType)
+	end
 -- setter
 end
 
@@ -200,6 +213,13 @@ do--[[getter]]--
 		return {this["paneldata"]["width"],this["paneldata"]["height"]}
 	end
 
+	e2function number dbutton:getWidth()
+		return this["paneldata"]["width"]
+	end
+
+	e2function number dbutton:getHeight()
+		return this["paneldata"]["height"]
+	end
 	--TODO: look up catch color
 	e2function vector dbutton:getColor()
 		local col = this["paneldata"]["color"]

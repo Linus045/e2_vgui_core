@@ -1,13 +1,9 @@
 E2VguiPanels["vgui_elements"]["functions"]["dbutton"] = {}
-E2VguiPanels["vgui_elements"]["functions"]["dbutton"]["createFunc"] = function(uniqueID, pnlData, e2EntityID)
+E2VguiPanels["vgui_elements"]["functions"]["dbutton"]["createFunc"] = function(uniqueID, pnlData, e2EntityID,changes)
 	local parent = E2VguiLib.GetPanelByID(pnlData["parentID"],e2EntityID)
 	local panel = vgui.Create("DButton",parent)
-
-	for attribute,value in pairs(pnlData) do
-		if E2VguiLib.panelFunctions[attribute] then
-			E2VguiLib.panelFunctions[attribute](panel,value)
-		end
-	end
+	local data = E2VguiLib.applyAttributes(panel,changes)
+	table.Merge(pnlData,data)
 
 	--notify server of removal and also update client table
 	function panel:OnRemove()
@@ -42,20 +38,16 @@ E2VguiPanels["vgui_elements"]["functions"]["dbutton"]["createFunc"] = function(u
 end
 
 
-E2VguiPanels["vgui_elements"]["functions"]["dbutton"]["modifyFunc"] = function(uniqueID, changesTable, e2EntityID)
+E2VguiPanels["vgui_elements"]["functions"]["dbutton"]["modifyFunc"] = function(uniqueID, e2EntityID, changes)
 	local panel = E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
 	if panel == nil or !IsValid(panel)  then return end
 
-	for attribute,value in pairs(changesTable) do
-		if E2VguiLib.panelFunctions[attribute] then
-			E2VguiLib.panelFunctions[attribute](panel,value)
-			panel["pnlData"][attribute] = value
-		end
-	end
+	local data = E2VguiLib.applyAttributes(panel,changes)
+	table.Merge(panel["pnlData"],data)
 
-	if changesTable["color"] ~= nil then
+	if data["color"] ~= nil then
 		function panel:Paint(w,h)
-			surface.SetDrawColor(changesTable["color"])
+			surface.SetDrawColor(data["color"])
 			surface.DrawRect(0,0,w,h)
 		end
 	end

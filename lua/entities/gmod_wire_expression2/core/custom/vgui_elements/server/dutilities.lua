@@ -1,3 +1,10 @@
+E2Lib.registerConstant("DOCK_NODOCK", 0) --NODOCK
+E2Lib.registerConstant("DOCK_FILL", 1) --FILL
+E2Lib.registerConstant("DOCK_LEFT", 2) --LEFT
+E2Lib.registerConstant("DOCK_RIGHT", 3) --RIGHT
+E2Lib.registerConstant("DOCK_TOP", 4) --TOP
+E2Lib.registerConstant("DOCK_BOTTOM", 5) --BOTTOM
+
 e2function number vguiCanSend()
 	local available = E2VguiCore.CanUpdateVgui(self.player)
 	return (available==true) and 1 or 0

@@ -26,6 +26,7 @@ E2VguiCore.AddDefaultPanelTable("dslider",function(uniqueID,parentPnlID)
 		["max"] = 1,
 		["min"] = 0,
 		["value"] = 0,
+		["dock"] = nil
 	}
 	return tbl
 end)
@@ -162,6 +163,14 @@ do--[[setter]]--
 		E2VguiCore.registerAttributeChange(this,"height", pnlSize[2])
 	end
 
+	e2function void dslider:setWidth(number width)
+		E2VguiCore.registerAttributeChange(this,"width", width)
+	end
+
+	e2function void dslider:setHeight(number height)
+		E2VguiCore.registerAttributeChange(this,"height", height)
+	end
+
 	e2function void dslider:setColor(vector col)
 		E2VguiCore.registerAttributeChange(this,"color", Color(col[1],col[2],col[3],255))
 	end
@@ -204,7 +213,6 @@ do--[[setter]]--
 	end
 
 	e2function void dslider:setValue(number value)
-		E2VguiCore.registerAttributeChange(this,"decimals", decimals)
 		E2VguiCore.registerAttributeChange(this,"value", value)
 	end
 
@@ -221,6 +229,14 @@ do--[[getter]]--
 
 	e2function vector2 dslider:getSize()
 		return {this["paneldata"]["width"],this["paneldata"]["height"]}
+	end
+
+	e2function number dslider:getWidth()
+		return this["paneldata"]["width"]
+	end
+
+	e2function number dslider:getHeight()
+		return this["paneldata"]["height"]
 	end
 
 	--TODO: look up catch color
@@ -254,6 +270,10 @@ do--[[getter]]--
 
 	e2function number dslider:getMax()
 		return this["paneldata"]["max"]
+	end
+
+	e2function void dslider:dock(number dockType)
+		E2VguiCore.registerAttributeChange(this,"dock", dockType)
 	end
 -- getter
 end
