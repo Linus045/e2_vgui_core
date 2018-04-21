@@ -53,7 +53,6 @@ E2VguiPanels["vgui_elements"]["functions"]["dslider"]["createFunc"] = function(u
 	return true
 end
 
-
 E2VguiPanels["vgui_elements"]["functions"]["dslider"]["modifyFunc"] = function(uniqueID, changesTable, e2EntityID)
 	local panel = E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
 	for attribute,value in pairs(changesTable) do
@@ -62,40 +61,6 @@ E2VguiPanels["vgui_elements"]["functions"]["dslider"]["modifyFunc"] = function(u
 			panel.pnlData[attribute] = value
 		end
 	end
-
-	-- if panel["pnlData"]["width"] != pnlData["width"] then
-	-- 	panel:SetWidth(pnlData["width"])
-	-- end
-	-- if panel["pnlData"]["height"] != pnlData["height"] then
-	-- 	panel:SetHeight(pnlData["height"])
-	-- end
-	--
-	-- if panel["pnlData"]["posX"] != pnlData["posX"] or panel["pnlData"]["posY"] != pnlData["posY"] then
-	-- 	panel:SetPos(pnlData["posX"],pnlData["posY"])
-	-- end
-	--
-	-- if panel["pnlData"]["text"] != pnlData["text"] then
-	-- 	panel:SetText(pnlData["text"])
-	-- end
-	--
-	-- if panel["pnlData"]["dark"] != pnlData["dark"] then
-	-- 	panel:SetDark(pnlData["dark"])
-	-- end
-	--
-	-- if panel["pnlData"]["decimals"] != pnlData["decimals"] then
-	-- 	panel:SetDecimals(pnlData["decimals"])
-	-- end
-	--
-	-- if panel["pnlData"]["max"] != pnlData["max"] then
-	-- 	panel:SetMax(pnlData["max"])
-	-- end
-	--
-	-- if panel["pnlData"]["min"] != pnlData["min"] then
-	-- 	panel:SetMin(pnlData["min"])
-	-- end
-	-- if panel["pnlData"]["value"] != pnlData["value"] then
-	-- 	panel:SetValue(pnlData["value"])
-	-- end
 
 	if changesTable["color"] ~= nil then
 		function panel:Paint(w,h)
@@ -109,7 +74,7 @@ end
 --[[-------------------------------------------------------------------------
 	HELPER FUNCTIONS
 ---------------------------------------------------------------------------]]
-E2Helper.Descriptions["DSlider"] = "Creates a DSlider."
+E2Helper.Descriptions["dslider"] = "Creates a DSlider."
 E2Helper.Descriptions["xdf:setPos(nn)"] = "Sets the X and Y position of the panel."
 E2Helper.Descriptions["xdf:setSize(nn)"] = "Sets the width and height of the panel."
 E2Helper.Descriptions["xdf:center()"] = "Centers the panel in the middle of the screen."

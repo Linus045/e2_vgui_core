@@ -253,7 +253,7 @@ function E2VguiCore.CreatePanel(e2self, panel)
 	if !E2VguiCore.CanUpdateVgui(e2self.player) then return end
 	e2self.player.e2vgui_tempPanels = e2self.player.e2vgui_tempPanels + 1
 
-	local players = E2VguiCore.FilterPlayers(players) //remove redundant names and not-player entries
+	players = E2VguiCore.FilterPlayers(players) //remove redundant names and not-player entries
 	players = E2VguiCore.FilterBlocklist(players,e2self.player) //has anyone e2self.player in their block list ?
 	players = E2VguiCore.FilterPermission(players,e2self.player) //check if e2self.player is allowed to use vguicore
 	if table.Count(players) == 0 then return end //there are no players to create the panel for therefore return
@@ -277,7 +277,6 @@ function E2VguiCore.CreatePanel(e2self, panel)
 		ply.e2_vgui_core[e2EntityID] = ply.e2_vgui_core[e2EntityID] or {}
 		ply.e2_vgui_core[e2EntityID][uniqueID] = panel
 	end
-
 	return panel
 end
 
