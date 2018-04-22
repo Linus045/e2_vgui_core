@@ -71,8 +71,7 @@ e2function table vguiClkValuesTable()
 	return E2VguiCore.Trigger[self.entity:EntIndex()].triggerValuesTable
 end
 
-
-
+//TODO:Move this stuff elsewhere
 local function addFunction(panelName,panelID,OtherPanelID)
 	registerFunction( panelName, "n"..OtherPanelID, panelID, function(self,args)
 		local op1, op2 = args[2], args[3]
@@ -90,6 +89,7 @@ local function addFunction(panelName,panelID,OtherPanelID)
 end
 
 //TESTING
+//TODO:Move this stuff elsewhere
 E2VguiCore.registerCallback("loaded_elements",function()
 	for _,otherpanelid in pairs(E2VguiCore.e2_types) do
 		for panelName,id in pairs(E2VguiCore.e2_types) do

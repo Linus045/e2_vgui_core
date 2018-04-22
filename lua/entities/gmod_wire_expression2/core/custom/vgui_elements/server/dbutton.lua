@@ -250,12 +250,10 @@ end
 do--[[utility]]--
 	e2function void dbutton:create()
 		E2VguiCore.CreatePanel(self,this)
-		this["changes"] = {}
 	end
 
 	e2function void dbutton:modify()
 		E2VguiCore.ModifyPanel(self,this)
-		this["changes"] = {}
 	end
 
 	e2function void dbutton:closePlayer(entity ply)
@@ -271,6 +269,7 @@ do--[[utility]]--
 	end
 
 	--TODO: Fix player table stuff, check dframe and dslider
+	--TODO this inserts it directly into the players table, do we want this ?
 	e2function void dbutton:addPlayer(entity ply)
 		if ply != nil and ply:IsPlayer() then
 			table.insert(this["players"],ply)

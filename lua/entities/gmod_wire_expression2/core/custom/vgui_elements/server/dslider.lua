@@ -281,19 +281,24 @@ end
 do--[[utility]]--
 	e2function void dslider:create()
 		E2VguiCore.CreatePanel(self,this)
-		this["changes"] = {}
 	end
 
 	e2function void dslider:modify()
 		E2VguiCore.ModifyPanel(self,this)
-		this["changes"] = {}
 	end
 
-	e2function void dslider:close()
+	e2function void dslider:closePlayer(entity ply)
+		if IsValid(ply) and ply:IsPlayer() then
+			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
+		end
+	end
+
+	e2function void dslider:closeAll()
 		for _,ply in pairs(this["players"]) do
 			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
 		end
 	end
+
 
 	e2function void dslider:addPlayer(entity ply)
 		if ply != nil and ply:IsPlayer() then

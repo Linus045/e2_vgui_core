@@ -191,9 +191,6 @@ do--[[setter]]--
 		E2VguiCore.registerAttributeChange(this,"dock", dockType)
 	end
 
-	e2function void dpanel:sizeToContents(number sizeToContents)
-
-	end
 -- setter
 end
 
@@ -215,7 +212,7 @@ do--[[getter]]--
 	end
 
 	--TODO: look up catch color
-	e2function vector dbutton:getColor()
+	e2function vector dpanel:getColor()
 		local col = this["paneldata"]["color"]
 		if col == nil then
 			return {0,0,0}
@@ -223,7 +220,7 @@ do--[[getter]]--
 		return {col.r,col.g,col.b}
 	end
 
-	e2function vector4 dbutton:getColor4()
+	e2function vector4 dpanel:getColor4()
 		local col = this["paneldata"]["color"]
 		if col == nil then
 			return {0,0,0,255}
@@ -241,7 +238,6 @@ end
 do--[[utility]]--
 	e2function void dpanel:create()
 		E2VguiCore.CreatePanel(self,this)
-		this["changes"] = {}
 	end
 
 	e2function void dpanel:modify()

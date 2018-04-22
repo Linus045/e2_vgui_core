@@ -9,28 +9,29 @@ local function isValidDFrame(panel)
 	return true
 end
 
-local function generateDefaultPanel(uniqueID,parentPnlID)
-local pnl = {
-		["uniqueID"] = uniqueID,
-		["parentID"] = parentPnlID,
-		["typeID"] = "dframe",
-		["posX"] = 0,
-		["posY"] = 0,
-		["width"] = 150,
-		["height"] = 150,
-		["title"] = "DFrame",
-		["showCloseButton"] = true,
-		["sizable"] = false,
-		["deleteOnClose"] = nil,
-		["visible"] = nil,
-		["color"] = nil, //set no default color to use the default skin
-		["keyboardinput"] = nil,
-		["mouseinput"] = nil,
-		["makepopup"] = nil,
-		["putCenter"] = nil
-	}
-return pnl
-end
+
+E2VguiCore.AddDefaultPanelTable("dframe",function(uniqueID,parentPnlID)
+	local tbl = {
+			["uniqueID"] = uniqueID,
+			["parentID"] = parentPnlID,
+			["typeID"] = "dframe",
+			["posX"] = 0,
+			["posY"] = 0,
+			["width"] = 150,
+			["height"] = 150,
+			["title"] = "DFrame",
+			["showCloseButton"] = true,
+			["sizable"] = false,
+			["deleteOnClose"] = nil,
+			["visible"] = nil,
+			["color"] = nil, //set no default color to use the default skin
+			["keyboardinput"] = nil,
+			["mouseinput"] = nil,
+			["makepopup"] = nil,
+			["putCenter"] = nil
+		}
+	return tbl
+end)
 
 --6th argument type checker without return,
 --7th arguement type checker with return. False for valid type and True for invalid
@@ -268,13 +269,11 @@ end
 do--[[utility]]--
 	e2function void dframe:create()
 		E2VguiCore.CreatePanel(self,this)
-		this["changes"] = {}
 	end
 
 	--TODO: make it update it child panels when the parent is modified ?
 	e2function void dframe:modify()
 		E2VguiCore.ModifyPanel(self,this)
-		this["changes"] = {}
 	end
 
 	e2function void dframe:makePopup(number popup)

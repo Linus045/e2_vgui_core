@@ -244,7 +244,7 @@ function E2VguiCore.CreatePanel(e2self, panel)
 
 	local pnlType = paneldata["typeID"]
 	if pnlType == nil or !E2VguiCore.vgui_types[string.lower(pnlType)..".lua"] then
-		error("[E2VguiCore] Paneltype is invalid or not registered! type: ".. tostring(pnlType)..", received value: "..tostring(E2VguiCore.vgui_types[pnlType]))
+		error("[E2VguiCore] Paneltype is invalid or not registered! type: ".. tostring(pnlType)..", received value: "..tostring(E2VguiCore.vgui_types[pnlType]).."\nTry to use 'wire_expression2_reload'")
 		return
 	end
 
@@ -257,33 +257,36 @@ function E2VguiCore.CreatePanel(e2self, panel)
 	players = E2VguiCore.FilterPermission(players,e2self.player) //check if e2self.player is allowed to use vguicore
 	if table.Count(players) == 0 then return end //there are no players to create the panel for therefore return
 
-	net.Start("E2Vgui.CreatePanel")
-		net.WriteString(pnlType)
-		net.WriteInt(uniqueID,32)
-		net.WriteInt(e2EntityID,32)
-		net.WriteTable(paneldata)
-		net.WriteTable(changes)
-	net.Send(players)
-
 	for _,values in pairs(changes) do
 		local key = values[1]
 		local value = values[2]
 		paneldata[key] = value
 	end
 
-	local panel = {
-		["players"] = players,
-		["paneldata"] = paneldata,
-		["changes"] = {}
-	}
+	//update panels values
+	panel["players"] = players
+	panel["paneldata"] = paneldata
+	panel["changes"] = {}
 
+	local notCreatedYet = {}
 	//update server table with new values
 	for k,ply in pairs(players) do
+		if ply.e2_vgui_core == nil or ply.e2_vgui_core[e2EntityID] == nil
+			or ply.e2_vgui_core[e2EntityID][uniqueID] == nil then
+			notCreatedYet[#notCreatedYet+1] = ply
+		end
 		ply.e2_vgui_core = ply.e2_vgui_core or {}
 		ply.e2_vgui_core[e2EntityID] = ply.e2_vgui_core[e2EntityID] or {}
 		ply.e2_vgui_core[e2EntityID][uniqueID] = panel
 	end
-	return panel
+
+	net.Start("E2Vgui.CreatePanel")
+		net.WriteString(pnlType)
+		net.WriteInt(uniqueID,32)
+		net.WriteInt(e2EntityID,32)
+		net.WriteTable(paneldata)
+		net.WriteTable(changes)
+	net.Send(notCreatedYet)
 end
 
 
@@ -299,7 +302,7 @@ function E2VguiCore.ModifyPanel(e2self, panel)
 
 	local pnlType = paneldata["typeID"]
 	if pnlType == nil or !E2VguiCore.vgui_types[string.lower(pnlType)..".lua"] then
-		error("[E2VguiCore] Paneltype is invalid or not registered! type: ".. tostring(pnlType)..", received value: "..tostring(E2VguiCore.vgui_types[pnlType]))
+		error("[E2VguiCore] Paneltype is invalid or not registered! type: ".. tostring(pnlType)..", received value: "..tostring(E2VguiCore.vgui_types[pnlType]).."\nTry to use 'wire_expression2_reload'")
 		return
 	end
 
@@ -312,13 +315,6 @@ function E2VguiCore.ModifyPanel(e2self, panel)
 	players = E2VguiCore.FilterPermission(players,e2self.player) //check if e2self.player is allowed to use vguicore
 	if table.Count(players) == 0 then return end //there are no players to create the panel for therefore return
 
-	net.Start("E2Vgui.ModifyPanel")
-		net.WriteString(pnlType)
-		net.WriteInt(uniqueID,32)
-		net.WriteInt(e2EntityID,32)
-		net.WriteTable(changes)
-	net.Send(players)
-
 	//convert changes table format to paneldata's table's format
 	local simplifiedChanges = {}
 	for _,values in pairs(changes) do
@@ -327,25 +323,32 @@ function E2VguiCore.ModifyPanel(e2self, panel)
 		simplifiedChanges[key] = value
 	end
 
-	local panel = {
-		["players"] = players,
-		["paneldata"] = table.Merge(paneldata,simplifiedChanges), //integrate changes into paneldata
-		["changes"] = {}	//changes are send to the player with pnl_modify() so reset them
-	}
+	panel["players"] = players
+	panel["paneldata"] = table.Merge(paneldata,simplifiedChanges) //integrate changes into paneldata
+	panel["changes"] = {}	//changes are send to the player with pnl_modify() so reset them
 
+	local stillOpen = {}
 	//update server table with new values
 	for k,ply in pairs(players) do
-		ply.e2_vgui_core = ply.e2_vgui_core or {}
-		ply.e2_vgui_core[e2EntityID] = ply.e2_vgui_core[e2EntityID] or {}
+		if ply.e2_vgui_core == nil then continue end //the player closed the panel already, no need to update
+		if ply.e2_vgui_core[e2EntityID] == nil then continue end
 		ply.e2_vgui_core[e2EntityID][uniqueID] = panel
+		table.insert(stillOpen,ply)
 	end
-	return panel
+
+	net.Start("E2Vgui.ModifyPanel")
+		net.WriteString(pnlType)
+		net.WriteInt(uniqueID,32)
+		net.WriteInt(e2EntityID,32)
+		net.WriteTable(changes)
+	net.Send(stillOpen)
+
 end
 
 function E2VguiCore.registerAttributeChange(panel,attributeName, attributeValue)
 	//TODO: check if the attributeName exists for this panel type
 	//print("Attribute added: "..attributeName .. " Value: " .. tostring(attributeValue))
-	table.insert(panel["changes"],{attributeName,attributeValue})
+	panel.changes[#panel["changes"]+1] = {attributeName,attributeValue}
 end
 
 //TESTING
@@ -576,7 +579,7 @@ end
 
 
 function E2VguiCore.RemovePanel(e2EntityID,uniqueID,ply)
-	if e2EntityID == nil or uniqueID == nil or ply == nil or !ply:IsPlayer()then return end
+	if e2EntityID == nil or uniqueID == nil or ply == nil or !ply:IsPlayer() then return end
 	if ply.e2_vgui_core[e2EntityID] == nil then return end
 
 	local panels = {uniqueID}
