@@ -128,7 +128,7 @@ e2function dframe dframe(number uniqueID)
 	end
 	return {
 		["players"] =  players,
-		["paneldata"] = generateDefaultPanel(uniqueID),
+		["paneldata"] = E2VguiCore.GetDefaultPanelTable("dframe",uniqueID,nil),
 		["changes"] = {}
 	}
 end

@@ -32,17 +32,28 @@ E2VguiLib = {
     }
 }
 
-function E2VguiLib.applyAttributes(panel,attributes)
-    local pnlData = {}
-    for _,values in pairs(attributes) do
-        local key = values[1]
-        local value = values[2]
-        if E2VguiLib.panelFunctions[key] != nil and value != nil then
-			E2VguiLib.panelFunctions[key](panel,value)
-		end
-        pnlData[key] = value
-	end
-    return pnlData
+function E2VguiLib.applyAttributes(panel,attributes,otherFormat)
+    if otherFormat == true then
+        local pnlData = {}
+        for key,value in pairs(attributes) do
+            if E2VguiLib.panelFunctions[key] != nil and value != nil then
+        		E2VguiLib.panelFunctions[key](panel,value)
+        	end
+            pnlData[key] = value
+        end
+        return pnlData
+    else
+        local pnlData = {}
+        for _,values in pairs(attributes) do
+            local key = values[1]
+            local value = values[2]
+            if E2VguiLib.panelFunctions[key] != nil and value != nil then
+        		E2VguiLib.panelFunctions[key](panel,value)
+        	end
+            pnlData[key] = value
+        end
+        return pnlData
+    end
 end
 
 function E2VguiLib.RegisterNewPanel(e2EntityID ,uniqueID, pnl)

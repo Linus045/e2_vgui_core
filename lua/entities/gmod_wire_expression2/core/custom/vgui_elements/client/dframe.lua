@@ -1,6 +1,7 @@
 E2VguiPanels["vgui_elements"]["functions"]["dframe"] = {}
 E2VguiPanels["vgui_elements"]["functions"]["dframe"]["createFunc"] = function(uniqueID, pnlData, e2EntityID,changes)
 	local panel = vgui.Create("DFrame")
+	E2VguiLib.applyAttributes(panel,pnlData,true)
 	local data = E2VguiLib.applyAttributes(panel,changes)
 	table.Merge(pnlData,data)
 
