@@ -20,12 +20,13 @@ E2VguiCore.AddDefaultPanelTable("dslider",function(uniqueID,parentPnlID)
 		["width"] = 130,
 		["height"] = 22,
 		["text"] = "DSlider",
-		["color"] = nil, //set no default color to use the default skin
 		["dark"] = false,
 		["decimals"] = 2,
 		["max"] = 1,
 		["min"] = 0,
 		["value"] = 0,
+		["visible"] = true,
+		["color"] = nil, //set no default color to use the default skin
 		["dock"] = nil
 	}
 	return tbl
@@ -38,13 +39,12 @@ registerType("dslider", "xds", {["players"] = {}, ["paneldata"] = {},["changes"]
 	nil,
 	function(retval)
 		if !istable(retval) then error("Return value is not a table, but a "..type(retval).."!",0) end
-		if #retval ~= 3 then error("Return value does not have exactly 2 entries!",0) end
+		if #retval ~= 3 then error("Return value does not have exactly 3 entries!",0) end
 	end,
 	function(v)
 		return !isValidDSlider(v)
 	end
 )
-//TESTING
 E2VguiCore.RegisterTypeWithID("dslider","xds")
 
 --[[------------------------------------------------------------
@@ -192,8 +192,7 @@ do--[[setter]]--
 	end
 
 	e2function void dslider:setVisible(number visible)
-		local vis = visible > 0
-		E2VguiCore.registerAttributeChange(this,"visible", vis)
+		E2VguiCore.registerAttributeChange(this,"visible", visible > 0 and true or false)
 	end
 
 	e2function void dslider:setText(string text)
@@ -217,30 +216,29 @@ do--[[setter]]--
 	end
 
 	e2function void dslider:setDark(number dark)
-		E2VguiCore.registerAttributeChange(this,"dark", dark>0 and true or false)
+		E2VguiCore.registerAttributeChange(this,"dark", dark > 0 and true or false)
 	end
 -- setter
 end
 
 do--[[getter]]--
 	e2function vector2 dslider:getPos()
-		return {this["paneldata"]["posX"],this["paneldata"]["posY"]}
+		return {this["paneldata"]["posX"] or 0,this["paneldata"]["posY"] or 0}
 	end
 
 	e2function vector2 dslider:getSize()
-		return {this["paneldata"]["width"],this["paneldata"]["height"]}
+		return {this["paneldata"]["width"] or 0,this["paneldata"]["height"] or 0}
 	end
 
 	e2function number dslider:getWidth()
-		return this["paneldata"]["width"]
+		return this["paneldata"]["width"] or 0
 	end
 
 	e2function number dslider:getHeight()
-		return this["paneldata"]["height"]
+		return this["paneldata"]["height"] or 0
 	end
 
-	--TODO: look up catch color
-	e2function vector dbutton:getColor()
+	e2function vector dslider:getColor()
 		local col = this["paneldata"]["color"]
 		if col == nil then
 			return {0,0,0}
@@ -248,7 +246,7 @@ do--[[getter]]--
 		return {col.r,col.g,col.b}
 	end
 
-	e2function vector4 dbutton:getColor4()
+	e2function vector4 dslider:getColor4()
 		local col = this["paneldata"]["color"]
 		if col == nil then
 			return {0,0,0,255}
@@ -260,16 +258,16 @@ do--[[getter]]--
 		return this["paneldata"]["visible"] and 1 or 0
 	end
 
-	e2function number dslider:setValue()
-		return this["paneldata"]["value"]
+	e2function number dslider:getValue()
+		return this["paneldata"]["value"] or 0
 	end
 
 	e2function number dslider:getMin()
-		return this["paneldata"]["min"]
+		return this["paneldata"]["min"] or 0
 	end
 
 	e2function number dslider:getMax()
-		return this["paneldata"]["max"]
+		return this["paneldata"]["max"] or 0
 	end
 
 	e2function void dslider:dock(number dockType)
@@ -283,6 +281,7 @@ do--[[utility]]--
 		E2VguiCore.CreatePanel(self,this)
 	end
 
+	--TODO: make it update it child panels when the parent is modified ?
 	e2function void dslider:modify()
 		E2VguiCore.ModifyPanel(self,this)
 	end
@@ -299,9 +298,10 @@ do--[[utility]]--
 		end
 	end
 
-
 	e2function void dslider:addPlayer(entity ply)
-		if ply != nil and ply:IsPlayer() then
+		//check for redundant players will be done in CreatePanel or ModifyPanel
+		//maybe change that ?
+		if IsValid(ply) and ply:IsPlayer() then
 			table.insert(this["players"],ply)
 		end
 	end

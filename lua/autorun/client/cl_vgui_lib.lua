@@ -12,7 +12,8 @@ E2VguiLib = {
         width = function(panel,value) panel:SetWidth(value) end,
         height = function(panel,value) panel:SetHeight(value) end,
         title = function(panel,value) panel:SetTitle(value) end,
-        //parent = function(panel,value) panel:SetParent(value) end,
+        //TODO implement parenting functions
+        //parent = function(panel,value,...) panel:SetParent(E2VguiLib.GetPanelByID(value,panel["pnlData"]["e2EntityID"])) end, 
         posX = function(panel,value) local old_posX,old_posY = panel:GetPos() panel:SetPos(value,old_posY) end,
         posY = function(panel,value) local old_posX,old_posY = panel:GetPos() panel:SetPos(old_posX,value) end,
         visible = function(panel,value) panel:SetVisible(value) end,

@@ -13,7 +13,6 @@ end
 E2VguiCore.AddDefaultPanelTable("dbutton",function(uniqueID,parentPnlID)
 	local tbl = {
 		["uniqueID"] = uniqueID,
-		["uniqueID"] = uniqueID,
 		["parentID"] = parentPnlID,
 		["typeID"] = "dbutton",
 		["posX"] = 0,
@@ -33,14 +32,13 @@ registerType("dbutton", "xdb", {["players"] = {}, ["paneldata"] = {},["changes"]
 	nil,
 	function(retval)
 		if !istable(retval) then error("Return value is not a table, but a "..type(retval).."!",0) end
-		if #retval ~= 3 then error("Return value does not have exactly 2 entries!",0) end
+		if #retval ~= 3 then error("Return value does not have exactly 3 entries!",0) end
 	end,
 	function(v)
 		return !isValidDButton(v)
 	end
 )
 
-//TESTING
 E2VguiCore.RegisterTypeWithID("dbutton","xdb")
 
 --[[------------------------------------------------------------
@@ -206,19 +204,19 @@ end
 
 do--[[getter]]--
 	e2function vector2 dbutton:getPos()
-		return {this["paneldata"]["posX"],this["paneldata"]["posY"]}
+		return {this["paneldata"]["posX"] or 0,this["paneldata"]["posY"] or 0}
 	end
 
 	e2function vector2 dbutton:getSize()
-		return {this["paneldata"]["width"],this["paneldata"]["height"]}
+		return {this["paneldata"]["width"] or 0,this["paneldata"]["height"] or 0}
 	end
 
 	e2function number dbutton:getWidth()
-		return this["paneldata"]["width"]
+		return this["paneldata"]["width"] or 0
 	end
 
 	e2function number dbutton:getHeight()
-		return this["paneldata"]["height"]
+		return this["paneldata"]["height"] or 0
 	end
 	--TODO: look up catch color
 	e2function vector dbutton:getColor()
@@ -238,7 +236,7 @@ do--[[getter]]--
 	end
 
 	e2function string dbutton:getText()
-		return this["paneldata"]["text"]
+		return this["paneldata"]["text"] or ""
 	end
 
 	e2function number dbutton:isVisible()
@@ -252,6 +250,7 @@ do--[[utility]]--
 		E2VguiCore.CreatePanel(self,this)
 	end
 
+	--TODO: make it update it child panels when the parent is modified ?
 	e2function void dbutton:modify()
 		E2VguiCore.ModifyPanel(self,this)
 	end
@@ -268,10 +267,10 @@ do--[[utility]]--
 		end
 	end
 
-	--TODO: Fix player table stuff, check dframe and dslider
-	--TODO this inserts it directly into the players table, do we want this ?
 	e2function void dbutton:addPlayer(entity ply)
-		if ply != nil and ply:IsPlayer() then
+		if IsValid(ply) and ply:IsPlayer() then
+			//check for redundant players will be done in CreatePanel or ModifyPanel
+			//maybe change that ?
 			table.insert(this["players"],ply)
 		end
 	end

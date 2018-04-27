@@ -1,6 +1,5 @@
 E2VguiCore = {
 	["vgui_types"] = {},
-	//TESTING
 	["defaultPanelTable"] = {},
 	["e2_types"] = {},
 	["callbacks"] = {},
@@ -262,7 +261,6 @@ function E2VguiCore.CreatePanel(e2self, panel)
 		local value = values[2]
 		paneldata[key] = value
 	end
-
 	//update panels values
 	panel["players"] = players
 	panel["paneldata"] = paneldata
@@ -351,25 +349,21 @@ function E2VguiCore.registerAttributeChange(panel,attributeName, attributeValue)
 	panel.changes[#panel["changes"]+1] = {attributeName,attributeValue}
 end
 
-//TESTING
 function E2VguiCore.AddDefaultPanelTable(pnlType,func)
 	E2VguiCore["defaultPanelTable"][pnlType] = func
 end
 
-//TESTING
 function E2VguiCore.GetDefaultPanelTable(pnlType,uniqueID,parentID)
 	if E2VguiCore["defaultPanelTable"][pnlType] == nil then error("E2VguiCore.GetDefaultPanelTable : No valid paneltype!\n"..tostring(pnlType)) return nil end
 	local tbl = E2VguiCore["defaultPanelTable"][pnlType](uniqueID,parentID)
 	return tbl
 end
 
-//TESTING
-// dButton = xdb used to create the constructors later
+// dButton = xdb, used to create the constructors later
 function E2VguiCore.RegisterTypeWithID(e2Type,id)
 	E2VguiCore["e2_types"][e2Type] = id
 end
 
-//TESTING
 function E2VguiCore.GetIDofType(e2Type)
 	if E2VguiCore["e2_types"][e2Type] == nil then error("No such type: "..tostring(e2Type)) end
 	return E2VguiCore["e2_types"][e2Type]
@@ -680,7 +674,7 @@ net.Receive("E2Vgui.TriggerE2",function(len,ply)
 	E2VguiCore.TriggerE2(e2EntityID,uniqueID, ply, tableData)
 end)
 
---TODO: Refine this function.
+--TODO: Refine this function. Add the updated value to the trigger player's paneldata table
 function E2VguiCore.TriggerE2(e2EntityID,uniqueID, triggerPly, tableData)
 	if E2VguiCore.Trigger[e2EntityID] == nil then
 		E2VguiCore.Trigger[e2EntityID] = {}

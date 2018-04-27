@@ -68,7 +68,6 @@ e2_include_init()
 --e2_include()
 -- Load serverside files here, they need additional parsing
 -- see top of this file
-//TESTING
 E2VguiCore.registerCallback("before_loading_elements",function()
 	E2VguiCore.callbacks["loaded_elements"] = {}
 end)
@@ -90,7 +89,6 @@ end
 print("\\###########################################################/")
 
 e2_include_finalize()
-//TESTING
 E2VguiCore.executeCallback("loaded_elements")
 --wire_expression2_CallHook("postinit")
 --wire_expression2_PostLoadExtensions()

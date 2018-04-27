@@ -19,9 +19,11 @@ E2VguiCore.AddDefaultPanelTable("dpanel",function(uniqueID,parentPnlID)
 		["posY"] = 0,
 		["width"] = 80,
 		["height"] = 80,
+		["visible"] = true,
 		["color"] = nil, //set no default color to use the default skin
-		["visible"] = nil,
-		["dock"] = nil
+		["dock"] = nil,
+		["mouseinput"] = nil,
+		["keyboardinput"] = nil
 	}
 	return tbl
 end)
@@ -39,7 +41,6 @@ registerType("dpanel", "xdp", {["players"] = {}, ["paneldata"] = {},["changes"] 
 		return !isValidDPanel(v)
 	end
 )
-//TESTING
 E2VguiCore.RegisterTypeWithID("dpanel","xdp")
 --[[------------------------------------------------------------
 						E2 Functions
@@ -196,19 +197,19 @@ end
 
 do--[[getter]]--
 	e2function vector2 dpanel:getPos()
-		return {this["paneldata"]["posX"],this["paneldata"]["posY"]}
+		return {this["paneldata"]["posX"] or 0,this["paneldata"]["posY"] or 0}
 	end
 
 	e2function vector2 dpanel:getSize()
-		return {this["paneldata"]["width"],this["paneldata"]["height"]}
+		return {this["paneldata"]["width"] or 0,this["paneldata"]["height"] or 0}
 	end
 
 	e2function number dpanel:getWidth()
-		return this["paneldata"]["width"]
+		return this["paneldata"]["width"] or 0
 	end
 
 	e2function number dpanel:getHeight()
-		return this["paneldata"]["height"]
+		return this["paneldata"]["height"] or 0
 	end
 
 	--TODO: look up catch color
@@ -240,6 +241,7 @@ do--[[utility]]--
 		E2VguiCore.CreatePanel(self,this)
 	end
 
+	--TODO: make it update it child panels when the parent is modified ?
 	e2function void dpanel:modify()
 		E2VguiCore.ModifyPanel(self,this)
 	end
@@ -268,6 +270,14 @@ do--[[utility]]--
 				table.remove(this["players"],k)
 			end
 		end
+	end
+
+	e2function void dpanel:enableMouseInput(number mouseInput)
+		E2VguiCore.registerAttributeChange(this,"mouseinput",  mouseInput > 0 )
+	end
+
+	e2function void dpanel:enableKeyboardInput(number keyboardInput)
+		E2VguiCore.registerAttributeChange(this,"keyboardinput",  keyboardInput > 0 )
 	end
 -- utility
 end

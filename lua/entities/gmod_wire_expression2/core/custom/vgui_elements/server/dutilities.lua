@@ -62,12 +62,12 @@ e2function entity vguiClkPlayer()
 end
 
 e2function array vguiClkValues()
-	if E2VguiCore.Trigger[self.entity:EntIndex()] == nil then return -1 end
+	if E2VguiCore.Trigger[self.entity:EntIndex()] == nil then return {} end
 	return E2VguiCore.Trigger[self.entity:EntIndex()].triggerValues
 end
 
 e2function table vguiClkValuesTable()
-	if E2VguiCore.Trigger[self.entity:EntIndex()] == nil then return -1 end
+	if E2VguiCore.Trigger[self.entity:EntIndex()] == nil then return {n={},ntypes={},s={},stypes={},size=0} end
 	return E2VguiCore.Trigger[self.entity:EntIndex()].triggerValuesTable
 end
 
@@ -88,7 +88,6 @@ local function addFunction(panelName,panelID,OtherPanelID)
 	end)
 end
 
-//TESTING
 //TODO:Move this stuff elsewhere
 E2VguiCore.registerCallback("loaded_elements",function()
 	for _,otherpanelid in pairs(E2VguiCore.e2_types) do

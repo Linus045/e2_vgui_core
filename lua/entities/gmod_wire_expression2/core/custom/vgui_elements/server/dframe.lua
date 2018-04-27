@@ -22,8 +22,8 @@ E2VguiCore.AddDefaultPanelTable("dframe",function(uniqueID,parentPnlID)
 			["title"] = "DFrame",
 			["showCloseButton"] = true,
 			["sizable"] = false,
+			["visible"] = true,
 			["deleteOnClose"] = nil,
-			["visible"] = nil,
 			["color"] = nil, //set no default color to use the default skin
 			["keyboardinput"] = nil,
 			["mouseinput"] = nil,
@@ -47,7 +47,6 @@ registerType("dframe", "xdf", {["players"] = {}, ["paneldata"] = {},["changes"] 
 	end
 )
 
-//TESTING
 E2VguiCore.RegisterTypeWithID("dframe","xdf")
 
 --[[------------------------------------------------------------
@@ -212,19 +211,19 @@ end
 do--[[getter]]--
 
 	e2function vector2 dframe:getPos()
-		return {this["paneldata"]["posX"],this["paneldata"]["posY"]}
+		return {this["paneldata"]["posX"] or 0,this["paneldata"]["posY"] or 0}
 	end
 
 	e2function vector2 dframe:getSize()
-		return {this["paneldata"]["width"],this["paneldata"]["height"]}
+		return {this["paneldata"]["width"] or 0,this["paneldata"]["height"] or 0}
 	end
 
 	e2function number dframe:getWidth()
-		return this["paneldata"]["width"]
+		return this["paneldata"]["width"] or 0
 	end
 
 	e2function number dframe:getHeight()
-		return this["paneldata"]["height"]
+		return this["paneldata"]["height"] or 0
 	end
 
 	--TODO: look up catch color
@@ -249,7 +248,7 @@ do--[[getter]]--
 	end
 
 	e2function string dframe:getTitle()
-		return this["paneldata"]["title"]
+		return this["paneldata"]["title"] or ""
 	end
 
 	e2function number dframe:getSizable()
@@ -293,7 +292,9 @@ do--[[utility]]--
 	end
 
 	e2function void dframe:addPlayer(entity ply)
-		if ply != nil and ply:IsPlayer() then
+		if IsValid(ply) and ply:IsPlayer() then
+			//check for redundant players will be done in CreatePanel or ModifyPanel
+			//maybe change that ?
 			table.insert(this["players"],ply)
 		end
 	end

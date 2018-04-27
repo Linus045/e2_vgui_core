@@ -39,7 +39,7 @@ E2VguiPanels["vgui_elements"]["functions"]["dframe"]["modifyFunc"] = function(un
 	--TODO: optimize the contrast setting
 	if data["color"] ~= nil then
 		function panel:Paint(w,h)
-			local col = data["pnlData"]["color"]
+			local col = data["color"]
 			local col2 = Color(col.r*0.8%255,col.g*0.8%255,col.b*0.8%255)
 			local col3 = Color(col.r*0.4%255,col.g*0.4%255,col.b*0.4%255)
 			draw.RoundedBox(5,0,0,w,h,col3)
