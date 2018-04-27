@@ -288,7 +288,7 @@ function E2VguiCore.CreatePanel(e2self, panel)
 end
 
 
-function E2VguiCore.ModifyPanel(e2self, panel)
+function E2VguiCore.ModifyPanel(e2self, panel,updateChildsToo)
 	if e2self == nil then return end
 	if panel == nil then return end
 
@@ -325,6 +325,13 @@ function E2VguiCore.ModifyPanel(e2self, panel)
 	panel["paneldata"] = table.Merge(paneldata,simplifiedChanges) //integrate changes into paneldata
 	panel["changes"] = {}	//changes are send to the player with pnl_modify() so reset them
 
+	//TODO: prevent recursion - Infinite loops
+	if updateChildsToo == true then
+		local childpanels = E2VguiCore.GetChildren(e2self,panel)
+		for _,childpnl in pairs(childpanels) do
+			E2VguiCore.ModifyPanel(e2self, childpnl, true)
+		end
+	end
 	local stillOpen = {}
 	//update server table with new values
 	for k,ply in pairs(players) do
@@ -351,6 +358,19 @@ end
 
 function E2VguiCore.AddDefaultPanelTable(pnlType,func)
 	E2VguiCore["defaultPanelTable"][pnlType] = func
+end
+
+//TODO: prevent recursion - Infinite loops
+function E2VguiCore.GetChildren(e2self,panel)
+	local children = {}
+	for _,ply in pairs(panel["players"]) do
+		for _,value in pairs(ply.e2_vgui_core[e2self.entity:EntIndex()]) do
+			if value["paneldata"] and value["paneldata"]["parentID"] == panel["paneldata"]["uniqueID"] then
+				table.insert(children,value)
+			end
+		end
+	end
+	return children
 end
 
 function E2VguiCore.GetDefaultPanelTable(pnlType,uniqueID,parentID)

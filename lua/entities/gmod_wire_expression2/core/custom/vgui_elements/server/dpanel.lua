@@ -246,6 +246,10 @@ do--[[utility]]--
 		E2VguiCore.ModifyPanel(self,this)
 	end
 
+	e2function void dpanel:modify(n updateChildsToo)
+		E2VguiCore.ModifyPanel(self,this,updateChildsToo > 0)
+	end
+
 	e2function void dpanel:closePlayer(entity ply)
 		if IsValid(ply) and ply:IsPlayer() then
 			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)

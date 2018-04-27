@@ -275,6 +275,10 @@ do--[[utility]]--
 		E2VguiCore.ModifyPanel(self,this)
 	end
 
+	e2function void dframe:modify(n updateChildsToo)
+		E2VguiCore.ModifyPanel(self,this,updateChildsToo > 0)
+	end
+
 	e2function void dframe:makePopup(number popup)
 		E2VguiCore.registerAttributeChange(this,"makepopup",  popup > 0 )
 	end
