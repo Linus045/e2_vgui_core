@@ -296,6 +296,9 @@ function E2VguiCore.ModifyPanel(e2self, panel,updateChildsToo)
 	local players = panel["players"]
 	local paneldata = panel["paneldata"]
 	local changes = panel["changes"]
+	if #players == 0 then return end
+	if #players == 0 then return end
+	if #changes == 0 then return end
 	local uniqueID = math.Round(paneldata["uniqueID"])
 
 	local pnlType = paneldata["typeID"]

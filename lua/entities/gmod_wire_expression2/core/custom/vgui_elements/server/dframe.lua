@@ -170,6 +170,10 @@ do--[[setter]]--
 	end
 
 	e2function void dframe:setColor(vector col,number alpha)
+		E2VguiCore.registerAttributeChange(this,"color", Color(col[1],col[2],col[3],alpha))
+	end
+
+	e2function void dframe:setColor(vector4 col)
 		E2VguiCore.registerAttributeChange(this,"color", Color(col[1],col[2],col[3],col[4]))
 	end
 

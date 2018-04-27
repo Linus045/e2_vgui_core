@@ -1,4 +1,4 @@
-concommand.Add( "wire_expression2_vgui_close_all", function( ply, cmd, args )
+concommand.Add( "wire_vgui_close_all", function( ply, cmd, args )
 	print("[E2VguiCore] Closing all vgui panels!")
 	for _,e2 in pairs(E2VguiPanels.panels) do
 		for __,pnl in pairs(e2) do
