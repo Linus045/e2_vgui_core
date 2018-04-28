@@ -13,7 +13,7 @@ E2VguiLib = {
         height = function(panel,value) panel:SetHeight(value) end,
         title = function(panel,value) panel:SetTitle(value) end,
         //TODO implement parenting functions
-        //parent = function(panel,value,...) panel:SetParent(E2VguiLib.GetPanelByID(value,panel["pnlData"]["e2EntityID"])) end, 
+        //parent = function(panel,value,...) panel:SetParent(E2VguiLib.GetPanelByID(value,panel["pnlData"]["e2EntityID"])) end,
         posX = function(panel,value) local old_posX,old_posY = panel:GetPos() panel:SetPos(value,old_posY) end,
         posY = function(panel,value) local old_posX,old_posY = panel:GetPos() panel:SetPos(old_posX,value) end,
         visible = function(panel,value) panel:SetVisible(value) end,
@@ -28,7 +28,18 @@ E2VguiLib = {
         decimals = function(panel,value) panel:SetDecimals(value) end,
         max = function(panel,value) panel:SetMax(value) end,
         min = function(panel,value) panel:SetMin(value) end,
+        textcolor = function(panel,value) panel:SetTextColor(value) end,
+        font = function(panel,value) panel:SetFont(value) end,
+        checked = function(panel,value) panel:SetChecked(value) end,
         value = function(panel,value) panel:SetValue(value) end,
+        choice = function(panel,value) panel:AddChoice(value[1],value[2]) end,
+        clear = function(panel,value) panel:Clear() end,
+        indent = function(panel,value) panel:SetIndent(value) end,
+        showpalette = function(panel,value) panel:SetPalette(value) end,
+        showalphabar = function(panel,value) panel:SetAlphaBar(value) end,
+        showwangs = function(panel,value) panel:SetWangs(value) end,
+        colorvalue = function(panel,value) panel:SetColor(value) end,
+        textwrap = function(panel,value) panel:SetWrap(value) end,
         dock = function(panel,value) panel:Dock(value) end
     }
 }
@@ -127,6 +138,34 @@ function E2VguiLib.convertToE2Table(tbl)
     e2table.size = size
     return e2table
 end
+
+//Converts a e2table into a lua table
+function E2VguiLib.convertToLuaTable(tbl)
+    /*	{n={},ntypes={},s={},stypes={},size=0}
+    n 			- table for number keys
+    ntypes 	- number indics
+    s 			- table for string keys
+    stypes 	- string indices
+    */
+    local luatable = {}
+	for key,value in pairs(tbl.s) do
+		if istable(value) then
+			luatable[key] = E2VguiLib.convertToLuaTable(value)
+		else
+			luatable[key] = value
+		end
+	end
+	for key,value in pairs(tbl.n) do
+		if istable(value) then
+			luatable[key] = E2VguiLib.convertToLuaTable(value)
+		else
+			luatable[key] = value
+		end
+	end
+    return luatable
+end
+
+
 
 //Maybe optimise this by creating a 'children' table for each panel ?
 function E2VguiLib.GetChildPanelIDs(uniqueID,e2EntityID,pnlList)

@@ -367,9 +367,11 @@ end
 function E2VguiCore.GetChildren(e2self,panel)
 	local children = {}
 	for _,ply in pairs(panel["players"]) do
-		for _,value in pairs(ply.e2_vgui_core[e2self.entity:EntIndex()]) do
-			if value["paneldata"] and value["paneldata"]["parentID"] == panel["paneldata"]["uniqueID"] then
-				table.insert(children,value)
+		if ply.e2_vgui_core != nil and ply.e2_vgui_core[e2self.entity:EntIndex()] != nil then
+			for _,value in pairs(ply.e2_vgui_core[e2self.entity:EntIndex()]) do
+				if value["paneldata"] and value["paneldata"]["parentID"] == panel["paneldata"]["uniqueID"] then
+					table.insert(children,value)
+				end
 			end
 		end
 	end
@@ -520,7 +522,7 @@ function E2VguiCore.convertToE2Table(tbl)
                 e2table[indextype][k] = {v.r,v.g,v.b,v.a}
             else
                 //TODO:implement protection against recursive tables. Infinite loops!
-                e2table[indextype][k] = E2VguiLib.convertToE2Table(v)
+                e2table[indextype][k] = E2VguiCore.convertToE2Table(v)
             end
         elseif vtype == "boolean" then
             //booleans have no type in e2 so parse them as number
@@ -534,6 +536,64 @@ function E2VguiCore.convertToE2Table(tbl)
     end
     e2table.size = size
     return e2table
+end
+function E2VguiCore.IsE2Table(tbl)
+	if tbl.s == nil then return false end
+	if tbl.n == nil then return false end
+	if tbl.stype == nil then return false end
+	if tbl.ntype == nil then return false end
+	if tbl.size == nil then return false end
+	return true
+end
+//Converts a e2table into a lua table
+function E2VguiCore.convertToLuaTable(tbl)
+    /*	{n={},ntypes={},s={},stypes={},size=0}
+    n 			- table for number keys
+    ntypes 	- number indics
+    s 			- table for string keys
+    stypes 	- string indices
+    */
+	PrintTable(tbl)
+    local luatable = {}
+	for key,value in pairs(tbl.s) do
+		if istable(value) then
+			if E2VguiCore.IsE2Table(value) then
+				luatable[key] = E2VguiCore.convertToLuaTable(value)
+			else
+--				luatable[key] = E2VguiCore.convertToLuaTable(E2VguiCore.convertToE2Table(value))
+				luatable[key] = value
+			end
+		else
+			luatable[key] = value
+		end
+	end
+	for key,value in pairs(tbl.n) do
+		if istable(value) and not IsColor(value) then
+			print("n: Calling again for ",value)
+			luatable[key] = E2VguiCore.convertToLuaTable(value)
+		else
+			luatable[key] = value
+		end
+	end
+	return luatable
+end
+
+function E2VguiCore.convertLuaTableToArray(tbl)
+	local array = {}
+	for _,value in pairs(tbl) do
+		if istable(value) and not IsColor(value) then
+			//remove table
+		elseif IsColor(value) then
+			print("Color",value)
+			array[#array + 1] = value.r
+			array[#array + 1] = value.g
+			array[#array + 1] = value.b
+			array[#array + 1] = value.a
+		else
+			array[#array + 1] = value
+		end
+	end
+	return array
 end
 
 --[[-------------------------------------------------------------------------
@@ -710,7 +770,7 @@ function E2VguiCore.TriggerE2(e2EntityID,uniqueID, triggerPly, tableData)
 
 	local value = value and tostring(value) or ""
 	E2VguiCore.Trigger[e2EntityID].triggeredByClient = triggerPly
-	E2VguiCore.Trigger[e2EntityID].triggerValues = table.ClearKeys(tableData)
+	E2VguiCore.Trigger[e2EntityID].triggerValues = E2VguiCore.convertLuaTableToArray(tableData)
 	E2VguiCore.Trigger[e2EntityID].triggerValuesTable = E2VguiCore.convertToE2Table(tableData)
 	E2VguiCore.Trigger[e2EntityID].triggerUniqueID = uniqueID
 	E2VguiCore.Trigger[e2EntityID].run = true

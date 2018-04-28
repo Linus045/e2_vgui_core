@@ -94,7 +94,7 @@ E2VguiCore.registerCallback("loaded_elements",function()
 		for panelName,id in pairs(E2VguiCore.e2_types) do
 			//change this to something like E2VguiCore.e2_types.parentable == true instead of hardcoded identifiers
 			//only parent to dframes and dpanels for now
-			if (otherpanelid == "xdf" or otherpanelid == "xdp") and otherpanelid != id then
+			if (otherpanelid == "xdf" or otherpanelid == "xdp") and not (otherpanelid == "xdf" and id == "xdf" ) then
 				addFunction(panelName,id,otherpanelid)
 				--print("Created function: "..panelName.."(number,".. otherpanelid ..")")
 			end
