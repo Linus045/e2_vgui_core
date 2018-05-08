@@ -21,7 +21,9 @@ E2VguiCore.AddDefaultPanelTable("dbutton",function(uniqueID,parentPnlID)
 		["height"] = 22,
 		["text"] = "DButton",
 		["visible"] = true,
-		["color"] = nil //set no default color to use the default skin
+		["color"] = nil, //set no default color to use the default skin
+		["textcolors"] = {Disabled=nil,Down=nil,Hover=nil,Normal=nil},
+		["radius"] = nil
 	}
 	return tbl
 end)
@@ -187,9 +189,21 @@ do--[[setter]]--
 		E2VguiCore.registerAttributeChange(this,"color", Color(red,green,blue,alpha))
 	end
 
+	e2function void dbutton:setTextColors(table col)
+		local xDisabled = col.s.Disabled and Color(col.s.Disabled[1],col.s.Disabled[2],col.s.Disabled[3],255)
+		local xDown = col.s.Down and Color(col.s.Down[1],col.s.Down[2],col.s.Down[3],255)
+		local xHover = col.s.Hover and Color(col.s.Hover[1],col.s.Hover[2],col.s.Hover[3],255)
+		local xNormal = col.s.Normal and Color(col.s.Normal[1],col.s.Normal[2],col.s.Normal[3],255)
+		E2VguiCore.registerAttributeChange(this,"textcolors",{Disabled=xDisabled,Down=xDown,Hover=xHover,Normal=xNormal})
+	end
+
 	e2function void dbutton:setText(string text)
 		E2VguiCore.registerAttributeChange(this,"text", text)
 	end
+
+	e2function void dbutton:setRadius(number radius)
+		E2VguiCore.registerAttributeChange(this,"radius", radius)
+	end	
 
 	e2function void dbutton:setVisible(number visible)
 		local vis = visible > 0
@@ -230,7 +244,7 @@ do--[[getter]]--
 	e2function vector4 dbutton:getColor4()
 		local col = this["paneldata"]["color"]
 		if col == nil then
-			return {0,0,0,255}
+			return {100,100,100,255}
 		end
 		return {col.r,col.g,col.b,col.a}
 	end
