@@ -91,6 +91,13 @@ end
 //TODO:Move this stuff elsewhere
 E2VguiCore.registerCallback("loaded_elements",function()
 	for _,otherpanelid in pairs(E2VguiCore.e2_types) do
+		//add getPlayers() function for every panel
+		registerFunction( "getPlayers", otherpanelid..":", "r", function(self,args)
+			local op1 = args[2]
+			local panel = op1[1](self,op1)
+			return panel.players
+		end)
+
 		for panelName,id in pairs(E2VguiCore.e2_types) do
 			//change this to something like E2VguiCore.e2_types.parentable == true instead of hardcoded identifiers
 			//only parent to dframes and dpanels for now

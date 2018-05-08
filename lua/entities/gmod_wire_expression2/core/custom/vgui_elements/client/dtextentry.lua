@@ -1,10 +1,8 @@
-E2VguiPanels["vgui_elements"]["functions"]["dcombobox"] = {}
-E2VguiPanels["vgui_elements"]["functions"]["dcombobox"]["createFunc"] = function(uniqueID, pnlData, e2EntityID,changes)
+E2VguiPanels["vgui_elements"]["functions"]["dtextentry"] = {}
+E2VguiPanels["vgui_elements"]["functions"]["dtextentry"]["createFunc"] = function(uniqueID, pnlData, e2EntityID,changes)
 	local parent = E2VguiLib.GetPanelByID(pnlData["parentID"],e2EntityID)
-	local panel = vgui.Create("DComboBox",parent)
-	pnlData["choice"] = nil //remove it otherwise it will get added twice
-	E2VguiLib.applyAttributes(panel,pnlData,true) //don't execute default table, choices will get duplicated
-
+	local panel = vgui.Create("DTextEntry",parent)
+	E2VguiLib.applyAttributes(panel,pnlData,true)
 	local data = E2VguiLib.applyAttributes(panel,changes)
 	table.Merge(pnlData,data)
 
@@ -13,22 +11,21 @@ E2VguiPanels["vgui_elements"]["functions"]["dcombobox"]["createFunc"] = function
 		E2VguiLib.RemovePanelWithChilds(self,e2EntityID)
 	end
 
-	function panel:OnSelect(index,value,data)
+	//might be called unnecessarily often at the same time
+	function panel:OnLoseFocus()
 		local uniqueID = self["uniqueID"]
 		if uniqueID != nil then
-//			E2VguiLib.GetPanelByID(uniqueID,e2EntityID) = nil
 			net.Start("E2Vgui.TriggerE2")
 				net.WriteInt(e2EntityID,32)
 				net.WriteInt(uniqueID,32)
-				net.WriteString("DComboBox")
+				net.WriteString("DTextEntry")
 				net.WriteTable({
-					["index"] = index,
-					["value"] = value,
-					["data"] = data
+					text = self:GetValue()
 				})
 			net.SendToServer()
 		end
 	end
+
 	panel["uniqueID"] = uniqueID
 	panel["pnlData"] = pnlData
 	E2VguiLib.RegisterNewPanel(e2EntityID ,uniqueID, panel)
@@ -36,7 +33,7 @@ E2VguiPanels["vgui_elements"]["functions"]["dcombobox"]["createFunc"] = function
 end
 
 
-E2VguiPanels["vgui_elements"]["functions"]["dcombobox"]["modifyFunc"] = function(uniqueID, e2EntityID, changes)
+E2VguiPanels["vgui_elements"]["functions"]["dtextentry"]["modifyFunc"] = function(uniqueID, e2EntityID, changes)
 	local panel = E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
 	if panel == nil or !IsValid(panel)  then return end
 
@@ -49,8 +46,8 @@ end
 --[[-------------------------------------------------------------------------
 	HELPER FUNCTIONS
 ---------------------------------------------------------------------------]]
-E2Helper.Descriptions["dcombobox(n)"] = "Creates a Dbutton element. Use xdb:create() to create the panel."
-E2Helper.Descriptions["dcombobox(nn)"] = "Creates a Dbutton element with parent id. Use xdb:create() to create the panel."
+E2Helper.Descriptions["dtextentry(n)"] = "Creates a Dbutton element. Use xdb:create() to create the panel."
+E2Helper.Descriptions["dtextentry(nn)"] = "Creates a Dbutton element with parent id. Use xdb:create() to create the panel."
 E2Helper.Descriptions["setVisible(xdb:n)"] = "Makes the panel invisible or visible."
 E2Helper.Descriptions["isVisible(xdb:)"] = "Returns wheather the panel is visible or not."
 E2Helper.Descriptions["addPlayer(xdb:e)"] = "Adds a player to the panel's player list. To create the panel use <panel>:create(). See addPlayer()/removePlayer() and vguiDefaultPlayers()."

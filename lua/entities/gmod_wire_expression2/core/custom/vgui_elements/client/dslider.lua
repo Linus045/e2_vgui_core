@@ -14,7 +14,7 @@ E2VguiPanels["vgui_elements"]["functions"]["dslider"]["createFunc"] = function(u
 
 	function panel:Think()
 		if panel["changed"] == false then
-			if self:IsEditing() == nil then //Returns nil instead of false if not editing
+			if input.IsMouseDown(MOUSE_LEFT) == false then //send data to server when the mouse is released
 				local uniqueID = self["uniqueID"]
 				if uniqueID != nil then
 					net.Start("E2Vgui.TriggerE2")

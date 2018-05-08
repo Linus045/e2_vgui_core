@@ -553,7 +553,6 @@ function E2VguiCore.convertToLuaTable(tbl)
     s 			- table for string keys
     stypes 	- string indices
     */
-	PrintTable(tbl)
     local luatable = {}
 	for key,value in pairs(tbl.s) do
 		if istable(value) then
@@ -569,7 +568,6 @@ function E2VguiCore.convertToLuaTable(tbl)
 	end
 	for key,value in pairs(tbl.n) do
 		if istable(value) and not IsColor(value) then
-			print("n: Calling again for ",value)
 			luatable[key] = E2VguiCore.convertToLuaTable(value)
 		else
 			luatable[key] = value
@@ -584,7 +582,6 @@ function E2VguiCore.convertLuaTableToArray(tbl)
 		if istable(value) and not IsColor(value) then
 			//remove table
 		elseif IsColor(value) then
-			print("Color",value)
 			array[#array + 1] = value.r
 			array[#array + 1] = value.g
 			array[#array + 1] = value.b

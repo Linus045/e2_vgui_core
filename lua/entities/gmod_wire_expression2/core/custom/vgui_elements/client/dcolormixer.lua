@@ -10,21 +10,48 @@ E2VguiPanels["vgui_elements"]["functions"]["dcolormixer"]["createFunc"] = functi
 	function panel:OnRemove()
 		E2VguiLib.RemovePanelWithChilds(self,e2EntityID)
 	end
+	panel["changed"] = true
 
-	function panel:ValueChanged(c)
-		local uniqueID = self["uniqueID"]
-		if uniqueID != nil then
-//			E2VguiLib.GetPanelByID(uniqueID,e2EntityID) = nil
-			net.Start("E2Vgui.TriggerE2")
-				net.WriteInt(e2EntityID,32)
-				net.WriteInt(uniqueID,32)
-				net.WriteString("DColorMixer")
-				net.WriteTable({
-					["color"] = Color(c.r,c.g,c.b,c.a)
-				})
-			net.SendToServer()
+	function panel:Think()
+		if panel["changed"] == false then
+			if input.IsMouseDown(MOUSE_LEFT) == false then //send the data to the server when the mouse is released
+				local uniqueID = self["uniqueID"]
+				if uniqueID != nil then
+					net.Start("E2Vgui.TriggerE2")
+						net.WriteInt(e2EntityID,32)
+						net.WriteInt(uniqueID,32)
+						net.WriteString("DColorMixer")
+						local c = self:GetColor()
+						net.WriteTable({
+							["color"] = Color(c.r,c.g,c.b,c.a)
+						})
+					net.SendToServer()
+				end
+				panel["changed"] = true
+			end
 		end
 	end
+
+	function panel:ValueChanged(number)
+		panel["changed"] = false //set flag to false so it waits until you
+								 //stopped editing before sending net-messages
+	end
+
+	-- 	local uniqueID = self["uniqueID"]
+	-- 	if self.HSV and self.HSV.IsEditing() == false then
+	-- 		if uniqueID != nil then
+	-- //			E2VguiLib.GetPanelByID(uniqueID,e2EntityID) = nil
+	-- 			net.Start("E2Vgui.TriggerE2")
+	-- 				net.WriteInt(e2EntityID,32)
+	-- 				net.WriteInt(uniqueID,32)
+	-- 				net.WriteString("DColorMixer")
+	-- 				net.WriteTable({
+	-- 					["color"] = Color(c.r,c.g,c.b,c.a)
+	-- 				})
+	-- 			net.SendToServer()
+	-- 		end
+	-- 	end
+	-- end
 	panel["uniqueID"] = uniqueID
 	panel["pnlData"] = pnlData
 	E2VguiLib.RegisterNewPanel(e2EntityID ,uniqueID, panel)
