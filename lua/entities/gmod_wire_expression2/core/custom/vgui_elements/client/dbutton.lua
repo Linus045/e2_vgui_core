@@ -10,23 +10,22 @@ E2VguiPanels["vgui_elements"]["functions"]["dbutton"]["createFunc"] = function(u
 	function panel:OnRemove()
 		E2VguiLib.RemovePanelWithChilds(self,e2EntityID)
 	end
-	
+
 
 	if data["color"] ~= nil or data["radius"] ~= nil then
 		function panel:Paint(w,h)
-			data["color"] = data["color"] or Color(200,200,200,255)
-			draw.RoundedBox( math.Clamp(data["radius"] or 5,0,36),0,0,w,h,data["color"])
-		
+			local color = pnlData["color"] or Color(200,200,200,255)
+			draw.RoundedBox(math.Clamp(pnlData["radius"],0,36),0,0,w,h,color)
 		end
 	end
 
 	function panel:UpdateColours( skin )
 		data["textcolors"] = data["textcolors"] or {Disabled=nil,Down=nil,Hover=nil,Normal=nil}
 
-		local Disabled = data["textcolors"].Disabled or skin.Colours.Button.Disabled 
-		local Down = data["textcolors"].Down or skin.Colours.Button.Down 
-		local Hover = data["textcolors"].Hover or skin.Colours.Button.Hover 
-		local Normal = data["textcolors"].Normal or skin.Colours.Button.Normal 
+		local Disabled = data["textcolors"].Disabled or skin.Colours.Button.Disabled
+		local Down = data["textcolors"].Down or skin.Colours.Button.Down
+		local Hover = data["textcolors"].Hover or skin.Colours.Button.Hover
+		local Normal = data["textcolors"].Normal or skin.Colours.Button.Normal
 
 		if ( !self:IsEnabled() )					then return self:SetTextStyleColor( Disabled ) end
 		if ( self:IsDown() || self.m_bSelected )	then return self:SetTextStyleColor( Down ) end
@@ -66,19 +65,18 @@ E2VguiPanels["vgui_elements"]["functions"]["dbutton"]["modifyFunc"] = function(u
 
 	if data["color"] ~= nil or data["radius"] ~= nil then
 		function panel:Paint(w,h)
-			data["color"] = data["color"] or Color(200,200,200,255)
-			draw.RoundedBox( math.Clamp(data["radius"] or 5,0,36),0,0,w,h,data["color"])
-		
+			local color = data["color"] or Color(200,200,200,255)
+			draw.RoundedBox( math.Clamp(data["radius"],0,36),0,0,w,h,color)
 		end
 	end
 
 	function panel:UpdateColours( skin )
-		data["textcolors"] = data["textcolors"] or {Disabled=nil,Down=nil,Hover=nil,Normal=nil}
+		local textcolors = data["textcolors"] or {Disabled=nil,Down=nil,Hover=nil,Normal=nil}
 
-		local Disabled = data["textcolors"].Disabled or skin.Colours.Button.Disabled 
-		local Down = data["textcolors"].Down or skin.Colours.Button.Down 
-		local Hover = data["textcolors"].Hover or skin.Colours.Button.Hover 
-		local Normal = data["textcolors"].Normal or skin.Colours.Button.Normal 
+		local Disabled = data["textcolors"].Disabled or skin.Colours.Button.Disabled
+		local Down = data["textcolors"].Down or skin.Colours.Button.Down
+		local Hover = data["textcolors"].Hover or skin.Colours.Button.Hover
+		local Normal = data["textcolors"].Normal or skin.Colours.Button.Normal
 
 		if ( !self:IsEnabled() )					then return self:SetTextStyleColor( Disabled ) end
 		if ( self:IsDown() || self.m_bSelected )	then return self:SetTextStyleColor( Down ) end

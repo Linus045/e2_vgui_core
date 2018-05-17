@@ -19,11 +19,11 @@ E2VguiCore.AddDefaultPanelTable("dbutton",function(uniqueID,parentPnlID)
 		["posY"] = 0,
 		["width"] = 50,
 		["height"] = 22,
+		["radius"] = 5,
 		["text"] = "DButton",
 		["visible"] = true,
 		["color"] = nil, //set no default color to use the default skin
-		["textcolors"] = {Disabled=nil,Down=nil,Hover=nil,Normal=nil},
-		["radius"] = nil
+		["textcolors"] = {Disabled=nil,Down=nil,Hover=nil,Normal=nil}
 	}
 	return tbl
 end)
@@ -203,7 +203,7 @@ do--[[setter]]--
 
 	e2function void dbutton:setRadius(number radius)
 		E2VguiCore.registerAttributeChange(this,"radius", radius)
-	end	
+	end
 
 	e2function void dbutton:setVisible(number visible)
 		local vis = visible > 0

@@ -246,7 +246,7 @@ function E2VguiLib.RemovePanelWithChilds(panel,e2EntityID)
     --notify the server of removal
     net.Start("E2Vgui.NotifyPanelRemove")
         -- -2 : none -1: single / 0 : multiple / 1 : all
-        net.WriteInt(0,2)
+        net.WriteInt(0,3)
         net.WriteInt(e2EntityID,32)
         net.WriteTable(panels)
     net.SendToServer()

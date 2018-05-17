@@ -6,7 +6,7 @@ concommand.Add( "wire_vgui_close_all", function( ply, cmd, args )
 		end
 	end
 	net.Start("E2Vgui.NotifyPanelRemove")
-		net.WriteInt(1,2)
+		net.WriteInt(1,3)
 	net.SendToServer()
 end )
 
@@ -75,7 +75,7 @@ net.Receive("E2Vgui.ModifyPanel",function()
 
 	if modifiedSuccess ~= nil then
 		net.Start("E2Vgui.ConfirmModification")
-			net.WriteString(uniqueID)
+			net.WriteInt(uniqueID,32)
 			net.WriteInt(e2EntityID,32)
 			net.WriteBool(modifiedSuccess)
 			net.WriteTable(pnlData)
@@ -85,7 +85,7 @@ end)
 
 net.Receive("E2Vgui.ClosePanels",function()
 	-- -2 : none -1: all of e2 / 0 : multiple / 1 : all
-	local mode = net.ReadInt(2)
+	local mode = net.ReadInt(3)
 	if mode == -1 then
 		local e2Index = net.ReadInt(32)
 		if e2Index == 0 then return end

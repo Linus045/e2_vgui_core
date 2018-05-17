@@ -627,7 +627,7 @@ Args:
 function E2VguiCore.RemoveAllPanelsOfE2(e2EntityID)
 	if e2EntityID == nil then return end
 		net.Start("E2Vgui.ClosePanels")
-			net.WriteInt(-1,2)
+			net.WriteInt(-1,3)
 			net.WriteInt(e2EntityID,32)
 		net.Broadcast()
 		for k,v in pairs(player.GetAll()) do
@@ -644,7 +644,7 @@ function E2VguiCore.RemovePanelsOnPlayer(e2EntityID,ply)
 
 	local panels = {uniqueID}
 	net.Start("E2Vgui.ClosePanels")
-		net.WriteInt(-1,2)
+		net.WriteInt(-1,3)
 		net.WriteInt(e2EntityID,32)
 	net.Send(ply)
 
@@ -658,7 +658,7 @@ function E2VguiCore.RemovePanel(e2EntityID,uniqueID,ply)
 
 	local panels = {uniqueID}
 	net.Start("E2Vgui.ClosePanels")
-		net.WriteInt(0,2)
+		net.WriteInt(0,3)
 		net.WriteInt(e2EntityID,32)
 		net.WriteTable(panels)
 	net.Send(ply)
@@ -708,7 +708,7 @@ end)
 						NETMESSAGES
 ---------------------------------------------------------------------------]]
 net.Receive("E2Vgui.NotifyPanelRemove",function(len, ply)
-	local mode = net.ReadInt(2)
+	local mode = net.ReadInt(3)
 	-- -2 : none -1: single / 0 : multiple / 1 : all
 	if mode == -2 then
 		return
@@ -745,6 +745,17 @@ net.Receive("E2Vgui.ConfirmCreation",function(len,ply)
 	end
 end)
 
+net.Receive("E2Vgui.ConfirmModification",function(len,ply)
+	local uniqueID = net.ReadInt(32)
+	local e2EntityID = net.ReadInt(32)
+	local success = net.ReadBool()
+	local paneldata = net.ReadTable()
+	if success then
+		--do nothing
+	else
+		--do nothing
+	end
+end)
 
 net.Receive("E2Vgui.TriggerE2",function(len,ply)
 	local e2EntityID = net.ReadInt(32)
