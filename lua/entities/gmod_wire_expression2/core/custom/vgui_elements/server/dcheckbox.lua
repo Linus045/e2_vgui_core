@@ -1,5 +1,5 @@
 E2VguiCore.RegisterVguiElementType("dcheckbox.lua",true)
-
+__e2setcost(5)
 local function isValidDCheckBox(panel)
 	if !istable(panel) then return false end
 	if table.Count(panel) != 3 then return false end

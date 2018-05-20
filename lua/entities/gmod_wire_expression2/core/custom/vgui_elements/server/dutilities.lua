@@ -4,7 +4,7 @@ E2Lib.registerConstant("DOCK_LEFT", 2) --LEFT
 E2Lib.registerConstant("DOCK_RIGHT", 3) --RIGHT
 E2Lib.registerConstant("DOCK_TOP", 4) --TOP
 E2Lib.registerConstant("DOCK_BOTTOM", 5) --BOTTOM
-
+__e2setcost(5)
 e2function number vguiCanSend()
 	local available = E2VguiCore.CanUpdateVgui(self.player)
 	return (available==true) and 1 or 0
@@ -85,7 +85,8 @@ local function addFunction(panelName,panelID,OtherPanelID)
 			["paneldata"] = E2VguiCore.GetDefaultPanelTable(panelName,uniqueID,panel["paneldata"]["uniqueID"]),
 			["changes"] = {}
 		}
-	end)
+	end
+	,5)
 end
 
 //TODO:Move this stuff elsewhere
@@ -96,7 +97,9 @@ E2VguiCore.registerCallback("loaded_elements",function()
 			local op1 = args[2]
 			local panel = op1[1](self,op1)
 			return panel.players
-		end)
+		end
+		,5)
+
 
 		for panelName,id in pairs(E2VguiCore.e2_types) do
 			//change this to something like E2VguiCore.e2_types.parentable == true instead of hardcoded identifiers

@@ -1,5 +1,5 @@
 E2VguiCore.RegisterVguiElementType("dbutton.lua",true)
-
+__e2setcost(5)
 local function isValidDButton(panel)
 	if !istable(panel) then return false end
 	if table.Count(panel) != 3 then return false end
@@ -115,7 +115,7 @@ end
 	Return: dbutton
 ---------------------------------------------------------------------------]]
 
-
+__e2setcost(5)
 e2function dbutton dbutton(number uniqueID)
 	local players = {self.player}
 	if self.entity.e2_vgui_core_default_players != nil and self.entity.e2_vgui_core_default_players[self.entity:EntIndex()] != nil then
