@@ -353,10 +353,9 @@ function E2VguiCore.ModifyPanel(e2self, panel,updateChildsToo)
 
 end
 
-function E2VguiCore.registerAttributeChange(panel,attributeName, attributeValue)
+function E2VguiCore.registerAttributeChange(panel,attributeName, ...)
 	//TODO: check if the attributeName exists for this panel type
-	//print("Attribute added: "..attributeName .. " Value: " .. tostring(attributeValue))
-	panel.changes[#panel["changes"]+1] = {attributeName,attributeValue}
+	panel.changes[#panel["changes"]+1] = {attributeName,...}
 end
 
 function E2VguiCore.AddDefaultPanelTable(pnlType,func)
@@ -502,7 +501,7 @@ function E2VguiCore.convertToE2Table(tbl)
             //handle booleans beforehand because they have no type in e2
             e2Type = wire_expression_types["NORMAL"][1]
         else
-            ErrorNoHalt("Unknown type detected key:"..vtype.." value:"..tostring(v))
+            ErrorNoHalt("[SERVER VGUI LIB] Unknown type detected key:"..vtype.." value:"..tostring(v))
             continue
         end
 
@@ -520,6 +519,12 @@ function E2VguiCore.convertToE2Table(tbl)
             if IsColor(v) then
                 e2table[indextype.."types"][indextype == "n" and k or tostring(k)] = wire_expression_types["VECTOR4"][1]
                 e2table[indextype][k] = {v.r,v.g,v.b,v.a}
+			elseif #v==3 and table.IsSequential(v) then --its a vector
+                e2table[indextype.."types"][indextype == "n" and k or tostring(k)] = wire_expression_types["VECTOR"][1]
+                e2table[indextype][k] = v
+            elseif #v==4 and table.IsSequential(v) then --its a vector4
+                e2table[indextype.."types"][indextype == "n" and k or tostring(k)] = wire_expression_types["VECTOR4"][1]
+                e2table[indextype][k] = v
             else
                 //TODO:implement protection against recursive tables. Infinite loops!
                 e2table[indextype][k] = E2VguiCore.convertToE2Table(v)
