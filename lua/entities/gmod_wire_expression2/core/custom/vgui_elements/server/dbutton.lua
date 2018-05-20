@@ -19,9 +19,9 @@ E2VguiCore.AddDefaultPanelTable("dbutton",function(uniqueID,parentPnlID)
 		["posY"] = 0,
 		["width"] = 50,
 		["height"] = 22,
-		["radius"] = 5,
 		["text"] = "DButton",
 		["visible"] = true,
+		["radius"] = nil,
 		["color"] = nil, //set no default color to use the default skin
 		["textcolors"] = {Disabled=nil,Down=nil,Hover=nil,Normal=nil}
 	}

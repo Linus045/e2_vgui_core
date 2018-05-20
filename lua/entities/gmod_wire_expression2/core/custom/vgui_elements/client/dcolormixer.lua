@@ -66,9 +66,9 @@ E2VguiPanels["vgui_elements"]["functions"]["dcolormixer"]["modifyFunc"] = functi
 	local data = E2VguiLib.applyAttributes(panel,changes)
 	table.Merge(panel["pnlData"],data)
 
-	if data["color"] ~= nil then
+	if pnlData["color"] ~= nil then
 		function panel:Paint(w,h)
-			surface.SetDrawColor(data["color"])
+			surface.SetDrawColor(pnlData["color"])
 			surface.DrawRect(0,0,w,h)
 		end
 	end
