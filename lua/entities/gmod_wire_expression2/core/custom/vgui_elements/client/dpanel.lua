@@ -32,17 +32,17 @@ E2VguiPanels["vgui_elements"]["functions"]["dpanel"]["modifyFunc"] = function(un
 	local data = E2VguiLib.applyAttributes(panel,changes)
 	table.Merge(panel["pnlData"],data)
 
-	if pnlData["parentID"] != nil then //TODO:implement e2function setParent()
-		local parentPnl = E2VguiLib.GetPanelByID(pnlData["parentID"],e2EntityID)
+	if panel["pnlData"]["parentID"] != nil then //TODO:implement e2function setParent()
+		local parentPnl = E2VguiLib.GetPanelByID(panel["pnlData"]["parentID"],e2EntityID)
 		if parentPnl != nil then
 			panel:SetParent(parentPnl)
 		end
 	end
 
 	--TODO: optimize the contrast setting
-	if pnlData["color"] ~= nil then
+	if panel["pnlData"]["color"] ~= nil then
 		function panel:Paint(w,h)
-			local col = pnlData["color"]
+			local col = panel["pnlData"]["color"]
 			draw.RoundedBox(3,0,0,w,h,col)
 		end
 	end

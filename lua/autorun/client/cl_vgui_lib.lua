@@ -40,6 +40,9 @@ E2VguiLib = {
         showwangs = function(panel,value) panel:SetWangs(value) end,
         colorvalue = function(panel,value) panel:SetColor(value) end,
         textwrap = function(panel,value) panel:SetWrap(value) end,
+        addsheet = function(panel,values)
+            panel:AddSheet(values["name"],E2VguiLib.GetPanelByID(values["panelID"],panel["pnlData"]["e2EntityID"]),values["icon"])
+        end,
         dock = function(panel,value) panel:Dock(value) end
     }
 }

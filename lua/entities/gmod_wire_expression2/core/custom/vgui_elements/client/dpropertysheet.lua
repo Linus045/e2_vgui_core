@@ -1,54 +1,15 @@
-E2VguiPanels["vgui_elements"]["functions"]["dbutton"] = {}
-E2VguiPanels["vgui_elements"]["functions"]["dbutton"]["createFunc"] = function(uniqueID, pnlData, e2EntityID,changes)
+E2VguiPanels["vgui_elements"]["functions"]["dpropertysheet"] = {}
+E2VguiPanels["vgui_elements"]["functions"]["dpropertysheet"]["createFunc"] = function(uniqueID, pnlData, e2EntityID,changes)
 	local parent = E2VguiLib.GetPanelByID(pnlData["parentID"],e2EntityID)
-	local panel = vgui.Create("DButton",parent)
+	local panel = vgui.Create("DPropertySheet",parent)
 	E2VguiLib.applyAttributes(panel,pnlData,true)
 	local data = E2VguiLib.applyAttributes(panel,changes)
 	table.Merge(pnlData,data)
-
 	--notify server of removal and also update client table
 	function panel:OnRemove()
 		E2VguiLib.RemovePanelWithChilds(self,e2EntityID)
 	end
 
-
-	if pnlData["color"] ~= nil or pnlData["radius"] ~= nil then
-		function panel:Paint(w,h)
-			local color = pnlData["color"] or Color(200,200,200,255)
-			draw.RoundedBox(math.Clamp(pnlData["radius"] or 3,0,36),0,0,w,h,color)
-		end
-	end
-
-	function panel:UpdateColours( skin )
-		pnlData["textcolors"] = pnlData["textcolors"] or {Disabled=nil,Down=nil,Hover=nil,Normal=nil}
-
-		local Disabled = pnlData["textcolors"].Disabled or skin.Colours.Button.Disabled
-		local Down = pnlData["textcolors"].Down or skin.Colours.Button.Down
-		local Hover = pnlData["textcolors"].Hover or skin.Colours.Button.Hover
-		local Normal = pnlData["textcolors"].Normal or skin.Colours.Button.Normal
-
-		if ( !self:IsEnabled() )					then return self:SetTextStyleColor( Disabled ) end
-		if ( self:IsDown() || self.m_bSelected )	then return self:SetTextStyleColor( Down ) end
-		if ( self.Hovered )							then return self:SetTextStyleColor( Hover ) end
-
-		return self:SetTextStyleColor( Normal )
-	end
-
-
-	function panel:DoClick()
-		local uniqueID = self["uniqueID"]
-		if uniqueID != nil then
-//			E2VguiLib.GetPanelByID(uniqueID,e2EntityID) = nil
-			net.Start("E2Vgui.TriggerE2")
-				net.WriteInt(e2EntityID,32)
-				net.WriteInt(uniqueID,32)
-				net.WriteString("DButton")
-				net.WriteTable({
-					text = self:GetText()
-				})
-			net.SendToServer()
-		end
-	end
 	panel["uniqueID"] = uniqueID
 	panel["pnlData"] = pnlData
 	E2VguiLib.RegisterNewPanel(e2EntityID ,uniqueID, panel)
@@ -56,34 +17,12 @@ E2VguiPanels["vgui_elements"]["functions"]["dbutton"]["createFunc"] = function(u
 end
 
 
-E2VguiPanels["vgui_elements"]["functions"]["dbutton"]["modifyFunc"] = function(uniqueID, e2EntityID, changes)
+E2VguiPanels["vgui_elements"]["functions"]["dpropertysheet"]["modifyFunc"] = function(uniqueID, e2EntityID, changes)
 	local panel = E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
 	if panel == nil or !IsValid(panel)  then return end
 
 	local data = E2VguiLib.applyAttributes(panel,changes)
 	table.Merge(panel["pnlData"],data)
-
-	if panel["pnlData"]["color"] ~= nil or panel["pnlData"]["radius"] ~= nil then
-		function panel:Paint(w,h)
-			local color = panel["pnlData"]["color"] or Color(200,200,200,255)
-			draw.RoundedBox( math.Clamp(panel["pnlData"]["radius"] or 3,0,36),0,0,w,h,color)
-		end
-	end
-
-	function panel:UpdateColours( skin )
-		local textcolors = panel["pnlData"]["textcolors"] or {Disabled=nil,Down=nil,Hover=nil,Normal=nil}
-
-		local Disabled = textcolors.Disabled or skin.Colours.Button.Disabled
-		local Down = textcolors.Down or skin.Colours.Button.Down
-		local Hover = textcolors.Hover or skin.Colours.Button.Hover
-		local Normal = textcolors.Normal or skin.Colours.Button.Normal
-
-		if ( !self:IsEnabled() )					then return self:SetTextStyleColor( Disabled ) end
-		if ( self:IsDown() || self.m_bSelected )	then return self:SetTextStyleColor( Down ) end
-		if ( self.Hovered )							then return self:SetTextStyleColor( Hover ) end
-
-		return self:SetTextStyleColor( Normal )
-	end
 
 	return true
 end
@@ -91,8 +30,8 @@ end
 --[[-------------------------------------------------------------------------
 	HELPER FUNCTIONS
 ---------------------------------------------------------------------------]]
-E2Helper.Descriptions["dbutton(n)"] = "Creates a Dbutton element. Use xdb:create() to create the panel."
-E2Helper.Descriptions["dbutton(nn)"] = "Creates a Dbutton element with parent id. Use xdb:create() to create the panel."
+E2Helper.Descriptions["dpropertysheet(n)"] = "Creates a Dbutton element. Use xdb:create() to create the panel."
+E2Helper.Descriptions["dpropertysheet(nn)"] = "Creates a Dbutton element with parent id. Use xdb:create() to create the panel."
 E2Helper.Descriptions["setVisible(xdb:n)"] = "Makes the panel invisible or visible."
 E2Helper.Descriptions["isVisible(xdb:)"] = "Returns wheather the panel is visible or not."
 E2Helper.Descriptions["addPlayer(xdb:e)"] = "Adds a player to the panel's player list. To create the panel use <panel>:create(). See addPlayer()/removePlayer() and vguiDefaultPlayers()."

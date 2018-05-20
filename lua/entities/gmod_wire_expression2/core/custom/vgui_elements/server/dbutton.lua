@@ -189,12 +189,28 @@ do--[[setter]]--
 		E2VguiCore.registerAttributeChange(this,"color", Color(red,green,blue,alpha))
 	end
 
-	e2function void dbutton:setTextColors(table col)
-		local xDisabled = col.s.Disabled and Color(col.s.Disabled[1],col.s.Disabled[2],col.s.Disabled[3],255)
-		local xDown = col.s.Down and Color(col.s.Down[1],col.s.Down[2],col.s.Down[3],255)
-		local xHover = col.s.Hover and Color(col.s.Hover[1],col.s.Hover[2],col.s.Hover[3],255)
-		local xNormal = col.s.Normal and Color(col.s.Normal[1],col.s.Normal[2],col.s.Normal[3],255)
-		E2VguiCore.registerAttributeChange(this,"textcolors",{Disabled=xDisabled,Down=xDown,Hover=xHover,Normal=xNormal})
+	e2function void dbutton:setTextColor(table col)
+		local Disabled = col.s.Disabled and Color(col.s.Disabled[1],col.s.Disabled[2],col.s.Disabled[3],255)
+		local Down = col.s.Down and Color(col.s.Down[1],col.s.Down[2],col.s.Down[3],255)
+		local Hover = col.s.Hover and Color(col.s.Hover[1],col.s.Hover[2],col.s.Hover[3],255)
+		local Normal = col.s.Normal and Color(col.s.Normal[1],col.s.Normal[2],col.s.Normal[3],255)
+		E2VguiCore.registerAttributeChange(this,"textcolors",{["Disabled"]=Disabled,["Down"]=Down,["Hover"]=Hover,["Normal"]=Normal})
+	end
+
+	e2function void dbutton:setTextColor(vector normal,vector pressed, vector hover,vector disabled)
+		local Disabled = Color(disabled[1],disabled[2],disabled[3],255)
+		local Down = Color(pressed[1],pressed[2],pressed[3],255)
+		local Hover = Color(hover[1],hover[2],hover[3],255)
+		local Normal = Color(normal[1],normal[2],normal[3],255)
+		E2VguiCore.registerAttributeChange(this,"textcolors",{["Disabled"]=Disabled,["Down"]=Down,["Hover"]=Hover,["Normal"]=Normal})
+	end
+
+	e2function void dbutton:setTextColor(vector4 normal,vector4 pressed, vector4 hover,vector4 disabled)
+		local Disabled = Color(disabled[1],disabled[2],disabled[3],disabled[4])
+		local Down = Color(pressed[1],pressed[2],pressed[3],pressed[4])
+		local Hover = Color(hover[1],hover[2],hover[3],hover[4])
+		local Normal = Color(normal[1],normal[2],normal[3],normal[4])
+		E2VguiCore.registerAttributeChange(this,"textcolors",{["Disabled"]=Disabled,["Down"]=Down,["Hover"]=Hover,["Normal"]=Normal})
 	end
 
 	e2function void dbutton:setText(string text)
