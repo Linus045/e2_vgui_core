@@ -203,45 +203,52 @@ do--[[setter]]--
 end
 
 do--[[getter]]--
-	e2function vector2 dlistview:getPos()
-		return {this["paneldata"]["posX"] or 0,this["paneldata"]["posY"] or 0}
+	e2function vector2 dlistview:getPos(entity ply)
+		return {
+			E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"posX") or 0,
+			E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"posY") or 0
+		}
 	end
 
-	e2function vector2 dlistview:getSize()
-		return {this["paneldata"]["width"] or 0,this["paneldata"]["height"] or 0}
+	e2function vector2 dlistview:getSize(entity ply)
+		return {
+			E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"width") or 0,
+			E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"height") or 0
+		}
 	end
 
-	e2function number dlistview:getWidth()
-		return this["paneldata"]["width"] or 0
+	e2function number dlistview:getWidth(entity ply)
+		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"width") or 0
 	end
 
-	e2function number dlistview:getHeight()
-		return this["paneldata"]["height"] or 0
+	e2function number dlistview:getHeight(entity ply)
+		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"height") or 0
 	end
-	--TODO: look up catch color
-	e2function vector dlistview:getColor()
-		local col = this["paneldata"]["color"]
+
+	e2function vector dlistview:getColor(entity ply)
+		local col =  E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"color")
 		if col == nil then
 			return {0,0,0}
 		end
 		return {col.r,col.g,col.b}
 	end
 
-	e2function vector4 dlistview:getColor4()
-		local col = this["paneldata"]["color"]
+	e2function vector4 dlistview:getColor4(entity ply)
+		local col =  E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"color")
 		if col == nil then
-			return {100,100,100,255}
+			return {0,0,0,255}
 		end
 		return {col.r,col.g,col.b,col.a}
 	end
 
-	e2function string dlistview:getText()
-		return this["paneldata"]["text"] or ""
+	e2function number dlistview:isVisible(entity ply)
+		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"visible") and 1 or 0
 	end
 
-	e2function number dlistview:isVisible()
-		return this["paneldata"]["visible"] and 1 or 0
+	e2function string dlistview:getText(entity ply)
+		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"text") or ""
 	end
+
 -- getter
 end
 
@@ -282,5 +289,24 @@ do--[[utility]]--
 			end
 		end
 	end
+
+	e2function void dlistview:remove(entity ply)
+		if IsValid(ply) and ply:IsPlayer() then
+			for key,pnlPly in pairs(this["players"]) do
+				if pnlPly == ply then
+					this["players"][key] = nil
+				end
+			end
+			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
+		end
+	end
+
+	e2function void dlistview:removeAll()
+		for _,ply in pairs(this["players"]) do
+			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
+		end
+		this["players"] = {}
+	end
+
 -- utility
 end

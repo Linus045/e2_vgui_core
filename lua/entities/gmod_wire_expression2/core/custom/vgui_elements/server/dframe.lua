@@ -213,58 +213,62 @@ do--[[setter]]--
 end
 
 do--[[getter]]--
-
-	e2function vector2 dframe:getPos()
-		return {this["paneldata"]["posX"] or 0,this["paneldata"]["posY"] or 0}
+	e2function vector2 dframe:getPos(entity ply)
+		return {
+			E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"posX") or 0,
+			E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"posY") or 0
+		}
 	end
 
-	e2function vector2 dframe:getSize()
-		return {this["paneldata"]["width"] or 0,this["paneldata"]["height"] or 0}
+	e2function vector2 dframe:getSize(entity ply)
+		return {
+			E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"width") or 0,
+			E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"height") or 0
+		}
 	end
 
-	e2function number dframe:getWidth()
-		return this["paneldata"]["width"] or 0
+	e2function number dframe:getWidth(entity ply)
+		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"width") or 0
 	end
 
-	e2function number dframe:getHeight()
-		return this["paneldata"]["height"] or 0
+	e2function number dframe:getHeight(entity ply)
+		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"height") or 0
 	end
 
-	--TODO: look up catch color
-	e2function vector dframe:getColor()
-		local col = this["paneldata"]["color"]
+	e2function vector dframe:getColor(entity ply)
+		local col =  E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"color")
 		if col == nil then
 			return {0,0,0}
 		end
 		return {col.r,col.g,col.b}
 	end
 
-	e2function vector4 dframe:getColor4()
-		local col = this["paneldata"]["color"]
+	e2function vector4 dframe:getColor4(entity ply)
+		local col =  E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"color")
 		if col == nil then
 			return {0,0,0,255}
 		end
 		return {col.r,col.g,col.b,col.a}
 	end
 
-	e2function number dframe:isVisible()
-		return this["paneldata"]["visible"] and 1 or 0
+	e2function number dframe:isVisible(entity ply)
+		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"visible") and 1 or 0
 	end
 
-	e2function string dframe:getTitle()
-		return this["paneldata"]["title"] or ""
+	e2function string dframe:getTitle(entity ply)
+		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"title") or ""
 	end
 
-	e2function number dframe:getSizable()
-		return this["paneldata"]["sizable"] and 1 or 0
+	e2function number dframe:getSizable(entity ply)
+		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"sizable") or 0
 	end
 
-	e2function number dframe:getShowCloseButton()
-		return this["paneldata"]["showCloseButton"] and 1 or 0
+	e2function number dframe:getShowCloseButton(entity ply)
+		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"showCloseButton") or 0
 	end
 
-	e2function number dframe:getDeleteOnClose()
-		return this["paneldata"]["deleteOnClose"] and 1 or 0
+	e2function number dframe:getDeleteOnClose(entity ply)
+		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"deleteOnClose") or 0
 	end
 -- getter
 end
@@ -314,6 +318,25 @@ do--[[utility]]--
 			end
 		end
 	end
+
+	e2function void dframe:remove(entity ply)
+		if IsValid(ply) and ply:IsPlayer() then
+			for key,pnlPly in pairs(this["players"]) do
+				if pnlPly == ply then
+					this["players"][key] = nil
+				end
+			end
+			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
+		end
+	end
+
+	e2function void dframe:removeAll()
+		for _,ply in pairs(this["players"]) do
+			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
+		end
+		this["players"] = {}
+	end
+
 
 	e2function void dframe:enableMouseInput(number mouseInput)
 		E2VguiCore.registerAttributeChange(this,"mouseinput",  mouseInput > 0 )

@@ -200,41 +200,46 @@ do--[[setter]]--
 end
 
 do--[[getter]]--
-	e2function vector2 dpanel:getPos()
-		return {this["paneldata"]["posX"] or 0,this["paneldata"]["posY"] or 0}
+	e2function vector2 dpanel:getPos(entity ply)
+		return {
+			E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"posX") or 0,
+			E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"posY") or 0
+		}
 	end
 
-	e2function vector2 dpanel:getSize()
-		return {this["paneldata"]["width"] or 0,this["paneldata"]["height"] or 0}
+	e2function vector2 dpanel:getSize(entity ply)
+		return {
+			E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"width") or 0,
+			E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"height") or 0
+		}
 	end
 
-	e2function number dpanel:getWidth()
-		return this["paneldata"]["width"] or 0
+	e2function number dpanel:getWidth(entity ply)
+		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"width") or 0
 	end
 
-	e2function number dpanel:getHeight()
-		return this["paneldata"]["height"] or 0
+	e2function number dpanel:getHeight(entity ply)
+		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"height") or 0
 	end
 
-	--TODO: look up catch color
-	e2function vector dpanel:getColor()
-		local col = this["paneldata"]["color"]
+	e2function vector dpanel:getColor(entity ply)
+		local col =  E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"color")
 		if col == nil then
 			return {0,0,0}
 		end
 		return {col.r,col.g,col.b}
 	end
 
-	e2function vector4 dpanel:getColor4()
-		local col = this["paneldata"]["color"]
+	e2function vector4 dpanel:getColor4(entity ply)
+		local col =  E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"color")
 		if col == nil then
 			return {0,0,0,255}
 		end
 		return {col.r,col.g,col.b,col.a}
 	end
 
-	e2function number dpanel:isVisible()
-		return this["paneldata"]["visible"] and 1 or 0
+	e2function number dpanel:isVisible(entity ply)
+		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"visible") and 1 or 0
 	end
 
 -- getter
@@ -264,6 +269,24 @@ do--[[utility]]--
 		for _,ply in pairs(this["players"]) do
 			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
 		end
+	end
+
+	e2function void dpanel:remove(entity ply)
+		if IsValid(ply) and ply:IsPlayer() then
+			for key,pnlPly in pairs(this["players"]) do
+				if pnlPly == ply then
+					this["players"][key] = nil
+				end
+			end
+			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
+		end
+	end
+
+	e2function void dpanel:removeAll()
+		for _,ply in pairs(this["players"]) do
+			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
+		end
+		this["players"] = {}
 	end
 
 	e2function void dpanel:addPlayer(entity ply)

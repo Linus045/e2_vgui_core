@@ -19,7 +19,6 @@ E2VguiCore.AddDefaultPanelTable("dcolormixer",function(uniqueID,parentPnlID)
 		["posY"] = 0,
 		["width"] = nil,
 		["height"] = nil,
-		["text"] = "DColorMixer",
 		["visible"] = true,
 		["showpalette"] = nil,
 		["showalphabar"] = nil,
@@ -218,45 +217,48 @@ do--[[setter]]--
 end
 
 do--[[getter]]--
-	e2function vector2 dcolormixer:getPos()
-		return {this["paneldata"]["posX"] or 0,this["paneldata"]["posY"] or 0}
+	e2function vector2 dcolormixer:getPos(entity ply)
+		return {
+			E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"posX") or 0,
+			E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"posY") or 0
+		}
 	end
 
-	e2function vector2 dcolormixer:getSize()
-		return {this["paneldata"]["width"] or 0,this["paneldata"]["height"] or 0}
+	e2function vector2 dcolormixer:getSize(entity ply)
+		return {
+			E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"width") or 0,
+			E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"height") or 0
+		}
 	end
 
-	e2function number dcolormixer:getWidth()
-		return this["paneldata"]["width"] or 0
+	e2function number dcolormixer:getWidth(entity ply)
+		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"width") or 0
 	end
 
-	e2function number dcolormixer:getHeight()
-		return this["paneldata"]["height"] or 0
+	e2function number dcolormixer:getHeight(entity ply)
+		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"height") or 0
 	end
-	--TODO: look up catch color
-	e2function vector dcolormixer:getColor()
-		local col = this["paneldata"]["color"]
+
+	e2function vector dcolormixer:getColor(entity ply)
+		local col =  E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"color")
 		if col == nil then
 			return {0,0,0}
 		end
 		return {col.r,col.g,col.b}
 	end
 
-	e2function vector4 dcolormixer:getColor4()
-		local col = this["paneldata"]["color"]
+	e2function vector4 dcolormixer:getColor4(entity ply)
+		local col =  E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"color")
 		if col == nil then
 			return {0,0,0,255}
 		end
 		return {col.r,col.g,col.b,col.a}
 	end
 
-	e2function string dcolormixer:getText()
-		return this["paneldata"]["text"] or ""
+	e2function number dcolormixer:isVisible(entity ply)
+		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"visible") and 1 or 0
 	end
 
-	e2function number dcolormixer:isVisible()
-		return this["paneldata"]["visible"] and 1 or 0
-	end
 -- getter
 end
 
@@ -297,5 +299,24 @@ do--[[utility]]--
 			end
 		end
 	end
+
+	e2function void dcolormixer:remove(entity ply)
+		if IsValid(ply) and ply:IsPlayer() then
+			for key,pnlPly in pairs(this["players"]) do
+				if pnlPly == ply then
+					this["players"][key] = nil
+				end
+			end
+			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
+		end
+	end
+
+	e2function void dcolormixer:removeAll()
+		for _,ply in pairs(this["players"]) do
+			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
+		end
+		this["players"] = {}
+	end
+
 -- utility
 end

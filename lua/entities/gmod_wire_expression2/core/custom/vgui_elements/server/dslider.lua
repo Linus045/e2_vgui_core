@@ -222,52 +222,58 @@ do--[[setter]]--
 end
 
 do--[[getter]]--
-	e2function vector2 dslider:getPos()
-		return {this["paneldata"]["posX"] or 0,this["paneldata"]["posY"] or 0}
+	e2function vector2 dslider:getPos(entity ply)
+		return {
+			E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"posX") or 0,
+			E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"posY") or 0
+		}
 	end
 
-	e2function vector2 dslider:getSize()
-		return {this["paneldata"]["width"] or 0,this["paneldata"]["height"] or 0}
+	e2function vector2 dslider:getSize(entity ply)
+		return {
+			E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"width") or 0,
+			E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"height") or 0
+		}
 	end
 
-	e2function number dslider:getWidth()
-		return this["paneldata"]["width"] or 0
+	e2function number dslider:getWidth(entity ply)
+		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"width") or 0
 	end
 
-	e2function number dslider:getHeight()
-		return this["paneldata"]["height"] or 0
+	e2function number dslider:getHeight(entity ply)
+		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"height") or 0
 	end
 
-	e2function vector dslider:getColor()
-		local col = this["paneldata"]["color"]
+	e2function vector dslider:getColor(entity ply)
+		local col =  E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"color")
 		if col == nil then
 			return {0,0,0}
 		end
 		return {col.r,col.g,col.b}
 	end
 
-	e2function vector4 dslider:getColor4()
-		local col = this["paneldata"]["color"]
+	e2function vector4 dslider:getColor4(entity ply)
+		local col =  E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"color")
 		if col == nil then
 			return {0,0,0,255}
 		end
 		return {col.r,col.g,col.b,col.a}
 	end
 
-	e2function number dslider:isVisible()
-		return this["paneldata"]["visible"] and 1 or 0
+	e2function number dslider:isVisible(entity ply)
+		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"visible") and 1 or 0
 	end
 
-	e2function number dslider:getValue()
-		return this["paneldata"]["value"] or 0
+	e2function number dslider:getValue(entity ply)
+		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"value") or 0
 	end
 
-	e2function number dslider:getMin()
-		return this["paneldata"]["min"] or 0
+	e2function number dslider:getMin(entity ply)
+		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"min") or 0
 	end
 
-	e2function number dslider:getMax()
-		return this["paneldata"]["max"] or 0
+	e2function number dslider:getMax(entity ply)
+		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"max") or 0
 	end
 
 	e2function void dslider:dock(number dockType)
@@ -304,6 +310,24 @@ do--[[utility]]--
 		if IsValid(ply) and ply:IsPlayer() then
 			table.insert(this["players"],ply)
 		end
+	end
+
+	e2function void dslider:remove(entity ply)
+		if IsValid(ply) and ply:IsPlayer() then
+			for key,pnlPly in pairs(this["players"]) do
+				if pnlPly == ply then
+					this["players"][key] = nil
+				end
+			end
+			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
+		end
+	end
+
+	e2function void dslider:removeAll()
+		for _,ply in pairs(this["players"]) do
+			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
+		end
+		this["players"] = {}
 	end
 
 	e2function void dslider:removePlayer(entity ply)

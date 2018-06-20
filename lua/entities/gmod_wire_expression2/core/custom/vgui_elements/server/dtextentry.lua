@@ -198,8 +198,8 @@ do--[[getter]]--
 		return this["paneldata"]["height"] or 0
 	end
 
-	e2function string dtextentry:getText()
-		return this["paneldata"]["text"] or ""
+	e2function string dtextentry:getText(entity ply)
+		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"text") or ""
 	end
 
 	e2function number dtextentry:isVisible()
@@ -228,6 +228,24 @@ do--[[utility]]--
 		for _,ply in pairs(this["players"]) do
 			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
 		end
+	end
+
+	e2function void dtextentry:remove(entity ply)
+		if IsValid(ply) and ply:IsPlayer() then
+			for key,pnlPly in pairs(this["players"]) do
+				if pnlPly == ply then
+					this["players"][key] = nil
+				end
+			end
+			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
+		end
+	end
+
+	e2function void dtextentry:removeAll()
+		for _,ply in pairs(this["players"]) do
+			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
+		end
+		this["players"] = {}
 	end
 
 	e2function void dtextentry:addPlayer(entity ply)

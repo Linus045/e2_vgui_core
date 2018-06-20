@@ -20,7 +20,7 @@ E2VguiPanels["vgui_elements"]["functions"]["dcheckboxlabel"]["createFunc"] = fun
 				net.WriteInt(uniqueID,32)
 				net.WriteString("DCheckBoxLabel")
 				net.WriteTable({
-					checked = bVal and 1 or 0
+					checked = bVal
 				})
 			net.SendToServer()
 		end

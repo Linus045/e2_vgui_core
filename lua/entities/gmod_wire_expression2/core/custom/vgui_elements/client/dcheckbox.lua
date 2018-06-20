@@ -20,7 +20,7 @@ E2VguiPanels["vgui_elements"]["functions"]["dcheckbox"]["createFunc"] = function
 				net.WriteInt(uniqueID,32)
 				net.WriteString("DCheckBox")
 				net.WriteTable({
-					checked = bVal and 1 or 0
+					checked = bVal
 				})
 			net.SendToServer()
 		end
@@ -38,7 +38,7 @@ E2VguiPanels["vgui_elements"]["functions"]["dcheckbox"]["modifyFunc"] = function
 
 	local data = E2VguiLib.applyAttributes(panel,changes)
 	table.Merge(panel["pnlData"],data)
-	
+
 	return true
 end
 

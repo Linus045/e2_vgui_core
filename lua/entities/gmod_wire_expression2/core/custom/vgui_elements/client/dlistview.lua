@@ -30,7 +30,7 @@ E2VguiPanels["vgui_elements"]["functions"]["dlistview"]["createFunc"] = function
 						values[row][header] = text
 					end
 				end
-				net.WriteTable({
+				net.WriteTable({ --TODO:PROBLEM WRONG KEYS
 					["index"] = lineID,
 					["values"] = values
 				})

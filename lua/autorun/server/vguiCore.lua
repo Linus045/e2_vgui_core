@@ -477,6 +477,15 @@ function E2VguiCore.GetPanelByID(ply,e2EntityID, uniqueID)
 	return ply.e2_vgui_core[e2EntityID][uniqueID]
 end
 
+function E2VguiCore.GetPanelAttribute(ply,e2EntityID,pnlVar,attributeName)
+	local pnl = E2VguiCore.GetPanelByID(ply,e2EntityID, pnlVar["paneldata"]["uniqueID"])
+	if pnl != nil then
+		return pnl["paneldata"][attributeName]
+	end
+	return nil
+end
+
+
 //Converts a normal lua table into an e2Table
 function E2VguiCore.convertToE2Table(tbl)
     /*	{n={},ntypes={},s={},stypes={},size=0}
@@ -591,6 +600,8 @@ function E2VguiCore.convertLuaTableToArray(tbl)
 			array[#array + 1] = value.g
 			array[#array + 1] = value.b
 			array[#array + 1] = value.a
+		elseif isbool(value) then
+			array[#array + 1] = value and 1 or 0
 		else
 			array[#array + 1] = value
 		end
@@ -787,6 +798,12 @@ function E2VguiCore.TriggerE2(e2EntityID,uniqueID, triggerPly, tableData)
 	E2VguiCore.Trigger[e2EntityID].triggerValuesTable = E2VguiCore.convertToE2Table(tableData)
 	E2VguiCore.Trigger[e2EntityID].triggerUniqueID = uniqueID
 	E2VguiCore.Trigger[e2EntityID].run = true
+
+	--Set the attribute values on the server correct
+	for attributeName,value in pairs(tableData) do
+		E2VguiCore.GetPanelByID(triggerPly,e2EntityID, uniqueID)["paneldata"][attributeName] = value
+	end
+
 
 	e2Entity:Execute()
 
