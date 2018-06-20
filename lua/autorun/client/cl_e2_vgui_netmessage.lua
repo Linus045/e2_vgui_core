@@ -24,8 +24,11 @@ net.Receive("E2Vgui.CreatePanel",function()
 		end
 
 		if E2VguiPanels["panels"][e2EntityID][uniqueID] == nil then
-			local createFunc = E2VguiPanels["vgui_elements"]["functions"][pnlType]["createFunc"]
-			createSuccessful = createFunc(uniqueID,pnlData,e2EntityID,changes)
+			local panelParentID = pnlData["parentID"]
+			if panelParentID == nil or (panelParentID != nil and E2VguiPanels["panels"][e2EntityID][panelParentID]) then
+				local createFunc = E2VguiPanels["vgui_elements"]["functions"][pnlType]["createFunc"]
+				createSuccessful = createFunc(uniqueID,pnlData,e2EntityID,changes)
+			end
 		else
 			--panel already exists. How to deal that on serverside ? maybe overwrite/modify it ?
 			return
