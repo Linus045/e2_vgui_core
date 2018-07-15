@@ -312,9 +312,11 @@ do--[[utility]]--
 	end
 
 	e2function void dframe:removePlayer(entity ply)
-		for k,v in pairs(this["players"]) do
-			if ply == v then
-				table.remove(this["players"],k)
+		if IsValid(ply) and ply:IsPlayer() then
+			for k,v in pairs(this["players"]) do
+				if ply == v then
+					this["players"][k] = nil
+				end
 			end
 		end
 	end

@@ -311,10 +311,12 @@ do--[[utility]]--
 		end
 	end
 
-	e2function void dbutton:removePlayer(entity ply)
-		for k,v in pairs(this["players"]) do
-			if ply == v then
-				table.remove(this["players"],k)
+	e2function void dpanel:removePlayer(entity ply)
+		if IsValid(ply) and ply:IsPlayer() then
+			for k,v in pairs(this["players"]) do
+				if ply == v then
+					this["players"][k] = nil
+				end
 			end
 		end
 	end

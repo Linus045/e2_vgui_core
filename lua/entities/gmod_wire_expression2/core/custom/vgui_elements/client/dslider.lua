@@ -91,7 +91,7 @@ E2Helper.Descriptions["removePlayer(xds:e)"] = "Removes a player from the Panel'
 E2Helper.Descriptions["create(xds:)"] = "Creates the Panel on all players of the players's list"
 E2Helper.Descriptions["modify(xds:)"] = "Modifies the Panel on all players of the player's list.\nDoes not create the Panel again if it got removed!."
 E2Helper.Descriptions["closePlayer(xds:e)"] = "Closes the Panel on the specified player."
-E2Helper.Descriptions["closeAll(xds:)"] = "Closes the Panel on all players of player's list"+
+E2Helper.Descriptions["closeAll(xds:)"] = "Closes the Panel on all players of player's list"
 
 E2Helper.Descriptions["xds:setText(s)"] = "Sets the text of the Slider."
 E2Helper.Descriptions["xds:setMin(n)"] = "Sets the minimum Value"
