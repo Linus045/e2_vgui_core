@@ -2,6 +2,8 @@ E2VguiPanels["vgui_elements"]["functions"]["dpropertysheet"] = {}
 E2VguiPanels["vgui_elements"]["functions"]["dpropertysheet"]["createFunc"] = function(uniqueID, pnlData, e2EntityID,changes)
 	local parent = E2VguiLib.GetPanelByID(pnlData["parentID"],e2EntityID)
 	local panel = vgui.Create("DPropertySheet",parent)
+	//remove copy here otherwise we add the last panel twice (because its also in the changes table)
+	pnlData["addsheet"] = nil
 	E2VguiLib.applyAttributes(panel,pnlData,true)
 	local data = E2VguiLib.applyAttributes(panel,changes)
 	table.Merge(pnlData,data)
@@ -54,4 +56,4 @@ E2Helper.Descriptions["modify(xdo:)"] = "Modifies created Panels on all players 
 E2Helper.Descriptions["closePlayer(xdo:e)"] = "Closes the Panel on the specified player."
 E2Helper.Descriptions["closeAll(xdo:)"] = "Closes the Panel on all players of player's list"
 
-E2Helper.Descriptions["addSheet(xdo:sxdps)"] = "name,panel,icon(material name)\nAdds a new tab."
+E2Helper.Descriptions["addSheet(xdo:sxdps)"] = "name,panel,icon(material name or icon)\nAdds a new tab.Icon names can be found here: http://wiki.garrysmod.com/page/Silkicons \nNote: use \"icon16/<Icon-name>.png\" as material name for icons. E.g. \"icon16/accept.png\""

@@ -18,7 +18,7 @@ E2VguiCore.AddDefaultPanelTable("dcheckboxlabel",function(uniqueID,parentPnlID)
 		["posX"] = 0,
 		["posY"] = 0,
 		["text"] = "DCheckBoxLabel",
-		["checked"] = "DCheckBoxLabel",
+		["checked"] = false,
 		["visible"] = true,
 		["width"] = nil,
 		["height"] = nil,

@@ -181,7 +181,7 @@ do--[[setter]]--
 	end
 
 	e2function void dlistview:addLine(...)
-			local line = {}
+		local line = {}
 		for k,v in pairs({...}) do
 			if type(v) == "string" or type(v) == "number" then --only allow strings and numbers
 				line[#line+1] = v
@@ -191,6 +191,20 @@ do--[[setter]]--
 		end
 		E2VguiCore.registerAttributeChange(this,"addLine", {unpack(line)})
 	end
+
+	e2function vector2 dlistview:getIndex(entity ply)
+		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"index") or 0
+	end
+
+	e2function table dlistview:getValues(entity ply)
+		local values = E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"values")
+		if values ~= nil and istable(values) then
+			local table = E2VgiCore.convertToE2Table(values)
+			return table
+		end
+		return {n={},ntypes={},s={},stypes={},size=0}
+	end
+
 
 	e2function void dlistview:setMultiSelect(number multiselect)
 		E2VguiCore.registerAttributeChange(this,"multiselect", multiselect > 0)

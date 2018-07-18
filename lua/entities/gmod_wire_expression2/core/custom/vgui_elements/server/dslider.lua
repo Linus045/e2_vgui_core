@@ -208,7 +208,7 @@ do--[[setter]]--
 	end
 
 	e2function void dslider:setDecimals(number decimals)
-		E2VguiCore.registerAttributeChange(this,"decimals", decimals)
+		E2VguiCore.registerAttributeChange(this,"decimals", math.Clamp(decimals,0,10))
 	end
 
 	e2function void dslider:setValue(number value)

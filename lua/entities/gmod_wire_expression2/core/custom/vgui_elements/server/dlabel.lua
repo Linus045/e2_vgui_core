@@ -21,6 +21,7 @@ E2VguiCore.AddDefaultPanelTable("dlabel",function(uniqueID,parentPnlID)
 		["height"] = nil,
 		["text"] = "DLabel",
 		["visible"] = true,
+		["autoStrechVertical"] = false,
 		["textwrap"] = true,
 		["textcolor"] = Color(255,255,255,255)
 	}
@@ -201,11 +202,15 @@ do--[[setter]]--
 		E2VguiCore.registerAttributeChange(this,"dock", dockType)
 	end
 
-	e2function void dlabel:setFont(string font)
+	e2function void dlabel:setFont(string font) --TODO:implement font system similar to wiremod's system for egp
 		if font == "" then
 			font = "Default"
 		end
 		E2VguiCore.registerAttributeChange(this,"font", font)
+	end
+
+	e2function void dlabel:setAutoStretchVertical(number enabled)
+		E2VguiCore.registerAttributeChange(this,"autoStrechVertical",enabled > 0)
 	end
 
 	e2function void dlabel:setWrap(number textwrap)

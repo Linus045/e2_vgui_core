@@ -234,6 +234,10 @@ end
 function E2VguiCore.CreatePanel(e2self, panel)
 	if e2self == nil then return end
 	if panel == nil then return end
+	--invalid panel, return
+	if #panel.players == 0 then return end
+	if table.Count(panel.paneldata) == 0 then return end
+
 
 	local e2EntityID = e2self.entity:EntIndex()
 	local players = panel["players"]
@@ -291,6 +295,9 @@ end
 function E2VguiCore.ModifyPanel(e2self, panel,updateChildsToo)
 	if e2self == nil then return end
 	if panel == nil then return end
+	--invalid panel, return
+	if #panel.players == 0 then return end
+	if table.Count(panel.paneldata) == 0 then return end
 
 	local e2EntityID = e2self.entity:EntIndex()
 	local players = panel["players"]
@@ -528,14 +535,26 @@ function E2VguiCore.convertToE2Table(tbl)
             if IsColor(v) then
                 e2table[indextype.."types"][indextype == "n" and k or tostring(k)] = wire_expression_types["VECTOR4"][1]
                 e2table[indextype][k] = {v.r,v.g,v.b,v.a}
-			elseif #v==3 and table.IsSequential(v) then --its a vector
+				--[[
+					First we check if its a nested table,
+					otherwise it's a normal table or vector-table
+				]]
+			--check if it contains sub-tables, so it's not a vector3 or vector4
+			elseif type(v[1]) == "table" then
+				--TODO:this check isn't 100% proof
+				--TODO:implement protection against recursive tables. Infinite loops!
+				e2table[indextype][k] = E2VguiCore.convertToE2Table(v)
+			elseif table.IsSequential(v) and #v==2 and type(v[1]) == "number" and type(v[2]) == "number" then
+                e2table[indextype.."types"][indextype == "n" and k or tostring(k)] = wire_expression_types["VECTOR2"][1]
+                e2table[indextype][k] = v
+			elseif table.IsSequential(v) and #v==3 and type(v[1]) == "number" and type(v[2]) == "number" and type(v[3]) == "number" then
                 e2table[indextype.."types"][indextype == "n" and k or tostring(k)] = wire_expression_types["VECTOR"][1]
                 e2table[indextype][k] = v
-            elseif #v==4 and table.IsSequential(v) then --its a vector4
+			elseif table.IsSequential(v) and #v==4 and type(v[1]) == "number" and type(v[2]) == "number" and type(v[3]) == "number" and type(v[4]) == "number" then --its a vector4
                 e2table[indextype.."types"][indextype == "n" and k or tostring(k)] = wire_expression_types["VECTOR4"][1]
                 e2table[indextype][k] = v
-            else
-                //TODO:implement protection against recursive tables. Infinite loops!
+			else
+				//TODO:implement protection against recursive tables. Infinite loops!
                 e2table[indextype][k] = E2VguiCore.convertToE2Table(v)
             end
         elseif vtype == "boolean" then

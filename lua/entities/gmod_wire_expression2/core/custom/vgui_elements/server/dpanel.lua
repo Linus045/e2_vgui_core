@@ -20,6 +20,7 @@ E2VguiCore.AddDefaultPanelTable("dpanel",function(uniqueID,parentPnlID)
 		["width"] = 80,
 		["height"] = 80,
 		["visible"] = true,
+		["putCenter"] = false,
 		["color"] = nil, //set no default color to use the default skin
 		["dock"] = nil,
 		["mouseinput"] = nil,
@@ -147,6 +148,10 @@ do--[[setter]]--
 	e2function void dpanel:setPos(vector2 pos)
 		E2VguiCore.registerAttributeChange(this,"posX", pos[1])
 		E2VguiCore.registerAttributeChange(this,"posY", pos[2])
+	end
+
+	e2function void dpanel:center()
+		E2VguiCore.registerAttributeChange(this,"putCenter", true)
 	end
 
 	e2function void dpanel:setSize(number width,number height)

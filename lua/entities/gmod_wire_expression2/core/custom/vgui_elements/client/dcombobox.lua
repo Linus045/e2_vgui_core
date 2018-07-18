@@ -21,8 +21,8 @@ E2VguiPanels["vgui_elements"]["functions"]["dcombobox"]["createFunc"] = function
 				net.WriteInt(e2EntityID,32)
 				net.WriteInt(uniqueID,32)
 				net.WriteString("DComboBox")
-				net.WriteTable({ --TODO:PROBLEM WRONG KEYS
-					["index"] = index,
+				net.WriteTable({
+					["valueid"] = index,
 					["value"] = value,
 					["data"] = data
 				})

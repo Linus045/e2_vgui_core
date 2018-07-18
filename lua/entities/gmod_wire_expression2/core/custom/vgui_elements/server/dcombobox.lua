@@ -203,8 +203,8 @@ do--[[setter]]--
 		E2VguiCore.registerAttributeChange(this,"clear", true)
 	end
 
-	e2function void dcombobox:setValue(string text)
-		E2VguiCore.registerAttributeChange(this,"value", text)
+	e2function void dcombobox:setText(string text)
+		E2VguiCore.registerAttributeChange(this,"text", text)
 	end
 
 	e2function void dcombobox:setVisible(number visible)
@@ -242,7 +242,15 @@ do--[[getter]]--
 	end
 
 	e2function string dcombobox:getValue(entity ply)
-	return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"value") or ""
+		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"value") or ""
+	end
+
+	e2function string dcombobox:getValueID(entity ply)
+		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"valueid") or 0
+	end
+
+	e2function string dcombobox:getData(entity ply)
+		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"data") or ""
 	end
 
 	e2function number dcombobox:isVisible(entity ply)

@@ -178,7 +178,7 @@ do--[[setter]]--
 	end
 
 	e2function void dpropertysheet:addSheet(string name,xdp panel,string icon)
-		E2VguiCore.registerAttributeChange(this,"addsheet",{["name"] = name,["panelID"] = panel["paneldata"]["uniqueID"],["icon"] = icon})
+		E2VguiCore.registerAttributeChange(this,"addsheet",{["name"] = name, ["panelID"] = panel["paneldata"]["uniqueID"], ["icon"] = icon, ["e2EntityID"] = self.entity:EntIndex() })
 	end
 -- setter
 end
