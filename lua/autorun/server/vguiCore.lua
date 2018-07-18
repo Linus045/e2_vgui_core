@@ -279,7 +279,9 @@ function E2VguiCore.CreatePanel(e2self, panel)
 		end
 		ply.e2_vgui_core = ply.e2_vgui_core or {}
 		ply.e2_vgui_core[e2EntityID] = ply.e2_vgui_core[e2EntityID] or {}
-		ply.e2_vgui_core[e2EntityID][uniqueID] = panel
+		--table.copy here because otherwise it sets the same table for every player
+		-- but we want every player to have a individual table
+		ply.e2_vgui_core[e2EntityID][uniqueID] = table.Copy(panel)
 	end
 
 	net.Start("E2Vgui.CreatePanel")
@@ -347,7 +349,9 @@ function E2VguiCore.ModifyPanel(e2self, panel,updateChildsToo)
 	for k,ply in pairs(players) do
 		if ply.e2_vgui_core == nil then continue end //the player closed the panel already, no need to update
 		if ply.e2_vgui_core[e2EntityID] == nil then continue end
-		ply.e2_vgui_core[e2EntityID][uniqueID] = panel
+		--table.copy here because otherwise it sets the same table for every player
+		-- but we want every player to have a individual table
+		ply.e2_vgui_core[e2EntityID][uniqueID] = table.Copy(panel)
 		table.insert(stillOpen,ply)
 	end
 

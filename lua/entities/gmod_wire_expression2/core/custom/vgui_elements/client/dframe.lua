@@ -13,8 +13,8 @@ E2VguiPanels["vgui_elements"]["functions"]["dframe"]["createFunc"] = function(un
 	if pnlData["color"] ~= nil then
 		function panel:Paint(w,h)
 			local col = pnlData["color"]
-			local col2 = Color(col.r*0.8%255,col.g*0.8%255,col.b*0.8%255)
-			local col3 = Color(col.r*0.4%255,col.g*0.4%255,col.b*0.4%255)
+			local col2 = Color(col.r*0.8%255,col.g*0.8%255,col.b*0.8%255,col.a)
+			local col3 = Color(col.r*0.4%255,col.g*0.4%255,col.b*0.4%255,col.a)
 
 			draw.RoundedBox(5,0,0,w,h,col3)
 			draw.RoundedBox(5,1,1,w-2,h-2,col)
@@ -40,8 +40,8 @@ E2VguiPanels["vgui_elements"]["functions"]["dframe"]["modifyFunc"] = function(un
 	if panel["pnlData"]["color"] ~= nil then
 		function panel:Paint(w,h)
 			local col = panel["pnlData"]["color"]
-			local col2 = Color(col.r*0.8%255,col.g*0.8%255,col.b*0.8%255)
-			local col3 = Color(col.r*0.4%255,col.g*0.4%255,col.b*0.4%255)
+			local col2 = Color(col.r*0.8%255,col.g*0.8%255,col.b*0.8%255,col.a)
+			local col3 = Color(col.r*0.4%255,col.g*0.4%255,col.b*0.4%255,col.a)
 			draw.RoundedBox(5,0,0,w,h,col3)
 			draw.RoundedBox(5,1,1,w-2,h-2,col)
 			draw.RoundedBoxEx(5,1,1,w-2,25-2,col2,true,true,false,false)
