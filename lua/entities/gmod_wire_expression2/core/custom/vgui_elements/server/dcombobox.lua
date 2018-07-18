@@ -204,7 +204,7 @@ do--[[setter]]--
 	end
 
 	e2function void dcombobox:setText(string text)
-		E2VguiCore.registerAttributeChange(this,"text", text)
+		E2VguiCore.registerAttributeChange(this,"value", text)
 	end
 
 	e2function void dcombobox:setVisible(number visible)
