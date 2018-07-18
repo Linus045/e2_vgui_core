@@ -246,7 +246,7 @@ do--[[getter]]--
 	end
 
 	e2function string dcombobox:getValueID(entity ply)
-		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"valueid") or 0
+		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"valueid") or ""
 	end
 
 	e2function string dcombobox:getData(entity ply)
