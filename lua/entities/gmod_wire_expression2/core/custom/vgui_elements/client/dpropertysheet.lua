@@ -11,7 +11,7 @@ E2VguiPanels["vgui_elements"]["functions"]["dpropertysheet"]["createFunc"] = fun
 	function panel:OnRemove()
 		E2VguiLib.RemovePanelWithChilds(self,e2EntityID)
 	end
-
+	--TODO: Add color hook to make it colorable
 	panel["uniqueID"] = uniqueID
 	panel["pnlData"] = pnlData
 	E2VguiLib.RegisterNewPanel(e2EntityID ,uniqueID, panel)

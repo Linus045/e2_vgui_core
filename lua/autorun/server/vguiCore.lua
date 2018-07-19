@@ -782,9 +782,11 @@ end)
 
 function E2VguiCore.UpdateServerValuesFromTable(ply,e2EntityID,uniqueID,tableData)
 	--Set the attribute values on the server correct
+	local pnl = E2VguiCore.GetPanelByID(ply,e2EntityID, uniqueID)
+	if pnl == nil then return end
 	for attributeName,value in pairs(tableData) do
-		E2VguiCore.GetPanelByID(ply,e2EntityID, uniqueID)["paneldata"][attributeName] = value
-	end
+		pnl["paneldata"][attributeName] = value
+end
 
 end
 

@@ -11,6 +11,19 @@ E2VguiPanels["vgui_elements"]["functions"]["dtextentry"]["createFunc"] = functio
 		E2VguiLib.RemovePanelWithChilds(self,e2EntityID)
 	end
 
+	function panel:OnGetFocus()
+		--we try to go up the parents to find the DFrame so we can request keyboardinput again
+		local frame = self
+		local inc = 0
+		while(frame:GetParent() != nil) do
+			if inc >= 10 then return end --protection against infinite loops
+			frame = frame:GetParent()
+			--if it has the keyboardinput attribute it must be a dframe element so break
+			if frame["pnlData"] != nil and frame["pnlData"]["keyboardinput"] != nil then break end
+		end
+		frame:SetKeyboardInputEnabled(true)
+	end
+
 	//might be called unnecessarily often at the same time
 	function panel:OnLoseFocus()
 		local uniqueID = self["uniqueID"]
@@ -24,6 +37,18 @@ E2VguiPanels["vgui_elements"]["functions"]["dtextentry"]["createFunc"] = functio
 				})
 			net.SendToServer()
 		end
+
+		--we try to go up the parents to find the DFrame so we can request keyboardinput again
+		local frame = self
+		local inc = 0
+		while(frame:GetParent() != nil) do
+			if inc >= 10 then return end --protection against infinite loops
+			frame = frame:GetParent()
+			if frame["pnlData"] != nil and frame["pnlData"]["keyboardinput"] != nil then break end
+		end
+		--read the setting defined for the dframe and set it back to its original value
+		frame:SetKeyboardInputEnabled(frame["pnlData"]["keyboardinput"])
+
 	end
 
 	panel["uniqueID"] = uniqueID

@@ -168,6 +168,26 @@ do--[[setter]]--
 		E2VguiCore.registerAttributeChange(this,"height", height)
 	end
 
+	e2function void dpropertysheet:setColor(vector col)
+		E2VguiCore.registerAttributeChange(this,"color", Color(col[1],col[2],col[3],255))
+	end
+
+	e2function void dpropertysheet:setColor(vector col,number alpha)
+		E2VguiCore.registerAttributeChange(this,"color", Color(col[1],col[2],col[3],alpha))
+	end
+
+	e2function void dpropertysheet:setColor(vector4 col)
+		E2VguiCore.registerAttributeChange(this,"color", Color(col[1],col[2],col[3],col[4]))
+	end
+
+	e2function void dpropertysheet:setColor(number red,number green,number blue)
+		E2VguiCore.registerAttributeChange(this,"color", Color(red,green,blue,255))
+	end
+
+	e2function void dpropertysheet:setColor(number red,number green,number blue,number alpha)
+		E2VguiCore.registerAttributeChange(this,"color", Color(red,green,blue,alpha))
+	end
+
 	e2function void dpropertysheet:setVisible(number visible)
 		local vis = visible > 0
 		E2VguiCore.registerAttributeChange(this,"visible", vis)
