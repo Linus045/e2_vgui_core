@@ -30,7 +30,7 @@ E2VguiCore.AddDefaultPanelTable("dcolormixer",function(uniqueID,parentPnlID)
 end)
 --6th argument type checker without return,
 --7th arguement type checker with return. False for valid type and True for invalid
-registerType("dcolormixer", "xdm", {["players"] = {}, ["paneldata"] = {},["changes"] = {}},
+registerType("dcolormixer", "xde", {["players"] = {}, ["paneldata"] = {},["changes"] = {}},
 	nil,
 	nil,
 	function(retval)
@@ -42,14 +42,14 @@ registerType("dcolormixer", "xdm", {["players"] = {}, ["paneldata"] = {},["chang
 	end
 )
 
-E2VguiCore.RegisterTypeWithID("dcolormixer","xdm")
+E2VguiCore.RegisterTypeWithID("dcolormixer","xde")
 
 --[[------------------------------------------------------------
 						E2 Functions
 ------------------------------------------------------------]]--
 
 --- B = B
-registerOperator("ass", "xdm", "xdm", function(self, args)
+registerOperator("ass", "xde", "xde", function(self, args)
     local op1, op2, scope = args[2], args[3], args[4]
     local      rv2 = op2[1](self, op2)
     self.Scopes[scope][op1] = rv2
@@ -59,31 +59,31 @@ end)
 
 --TODO: Check if the entire pnl data is valid
 -- if (B)
-e2function number operator_is(xdm pnldata)
+e2function number operator_is(xde pnldata)
 	return isValidDColorMixer(pnldata) and  1 or 0
 end
 
 -- if (!B)
-e2function number operator!(xdm pnldata)
+e2function number operator!(xde pnldata)
 	return isValidDColorMixer(pnldata) and  0 or 1
 end
 
 --- B == B --check if the names match
 --TODO: Check if the entire pnl data is equal (each attribute of the panel)
-e2function number operator==(xdm ldata, xdm rdata)
+e2function number operator==(xde ldata, xde rdata)
 	if not isValidDColorMixer(ldata) then return 0 end
 	if not isValidDColorMixer(rdata) then return 0 end
 	return ldata["paneldata"]["uniqueID"] == rdata["paneldata"]["uniqueID"] and 1 or 0
 end
 
 --- B == number --check if the uniqueID matches
-e2function number operator==(xdm ldata, n index)
+e2function number operator==(xde ldata, n index)
 	if not isValidDColorMixer(ldata) then return 0 end
 	return ldata["paneldata"]["uniqueID"] == index and 1 or 0
 end
 
 --- number == B --check if the uniqueID matches
-e2function number operator==(n index,xdm rdata)
+e2function number operator==(n index,xde rdata)
 	if not isValidDColorMixer(rdata) then return 0 end
 	return rdata["paneldata"]["uniqueID"] == index and 1 or 0
 end
@@ -91,7 +91,7 @@ end
 
 --- B != B
 --TODO: Check if the entire pnl data is equal (each attribute of the panel)
-e2function number operator!=(xdm ldata, xdm rdata)
+e2function number operator!=(xde ldata, xde rdata)
 	if not isValidDColorMixer(ldata) then return 1 end
 	if not isValidDColorMixer(rdata) then return 1 end
 	return ldata["paneldata"]["uniqueID"] == rdata["paneldata"]["uniqueID"] and 0 or 1
@@ -99,13 +99,13 @@ end
 
 
 --- B != number --check if the uniqueID matches
-e2function number operator!=(xdm ldata, n index)
+e2function number operator!=(xde ldata, n index)
 	if not isValidDColorMixer(ldata) then return 0 end
 	return ldata["paneldata"]["uniqueID"] == index and 0 or 1
 end
 
 --- number != B --check if the uniqueID matches
-e2function number operator!=(n index,xdm rdata)
+e2function number operator!=(n index,xde rdata)
 	if not isValidDColorMixer(rdata) then return 0 end
 	return rdata["paneldata"]["uniqueID"] == index and 0 or 1
 end
