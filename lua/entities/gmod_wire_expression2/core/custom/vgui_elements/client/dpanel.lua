@@ -22,6 +22,7 @@ E2VguiPanels["vgui_elements"]["functions"]["dpanel"]["createFunc"] = function(un
 	panel["uniqueID"] = uniqueID
 	panel["pnlData"] = pnlData
 	E2VguiLib.RegisterNewPanel(e2EntityID ,uniqueID, panel)
+	E2VguiLib.UpdatePosAndSizeServer(e2EntityID,uniqueID,panel)
 	return true
 end
 
@@ -46,6 +47,7 @@ E2VguiPanels["vgui_elements"]["functions"]["dpanel"]["modifyFunc"] = function(un
 			draw.RoundedBox(3,0,0,w,h,col)
 		end
 	end
+	E2VguiLib.UpdatePosAndSizeServer(e2EntityID,uniqueID,panel)
 	return true
 end
 

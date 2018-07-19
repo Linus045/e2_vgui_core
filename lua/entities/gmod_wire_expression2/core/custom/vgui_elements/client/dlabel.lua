@@ -13,6 +13,7 @@ E2VguiPanels["vgui_elements"]["functions"]["dlabel"]["createFunc"] = function(un
 	panel["uniqueID"] = uniqueID
 	panel["pnlData"] = pnlData
 	E2VguiLib.RegisterNewPanel(e2EntityID ,uniqueID, panel)
+	E2VguiLib.UpdatePosAndSizeServer(e2EntityID,uniqueID,panel)
 	return true
 end
 
@@ -24,6 +25,7 @@ E2VguiPanels["vgui_elements"]["functions"]["dlabel"]["modifyFunc"] = function(un
 	local data = E2VguiLib.applyAttributes(panel,changes)
 	table.Merge(panel["pnlData"],data)
 	
+	E2VguiLib.UpdatePosAndSizeServer(e2EntityID,uniqueID,panel)
 	return true
 end
 

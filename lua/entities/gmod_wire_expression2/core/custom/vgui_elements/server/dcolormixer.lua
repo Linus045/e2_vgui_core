@@ -17,6 +17,7 @@ E2VguiCore.AddDefaultPanelTable("dcolormixer",function(uniqueID,parentPnlID)
 		["typeID"] = "dcolormixer",
 		["posX"] = 0,
 		["posY"] = 0,
+		["label"] = nil,
 		["width"] = nil,
 		["height"] = nil,
 		["visible"] = true,
@@ -189,8 +190,8 @@ do--[[setter]]--
 		E2VguiCore.registerAttributeChange(this,"colorvalue", Color(red,green,blue,alpha))
 	end
 
-	e2function void dcolormixer:setText(string text)
-		E2VguiCore.registerAttributeChange(this,"text", text)
+	e2function void dcolormixer:setLabel(string label)
+		E2VguiCore.registerAttributeChange(this,"label", label)
 	end
 
 	e2function void dcolormixer:setVisible(number visible)

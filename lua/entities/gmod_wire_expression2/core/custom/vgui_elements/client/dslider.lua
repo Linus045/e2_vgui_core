@@ -46,6 +46,7 @@ E2VguiPanels["vgui_elements"]["functions"]["dslider"]["createFunc"] = function(u
 	panel["uniqueID"] = uniqueID
 	panel["pnlData"] = pnlData
 	E2VguiLib.RegisterNewPanel(e2EntityID ,uniqueID, panel)
+	E2VguiLib.UpdatePosAndSizeServer(e2EntityID,uniqueID,panel)
 	return true
 end
 
@@ -62,6 +63,7 @@ E2VguiPanels["vgui_elements"]["functions"]["dslider"]["modifyFunc"] = function(u
 			surface.DrawRect(0,0,w,h)
 		end
 	end
+	E2VguiLib.UpdatePosAndSizeServer(e2EntityID,uniqueID,panel)
 	return true
 end
 

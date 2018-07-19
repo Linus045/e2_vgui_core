@@ -32,6 +32,7 @@ E2VguiPanels["vgui_elements"]["functions"]["dcombobox"]["createFunc"] = function
 	panel["uniqueID"] = uniqueID
 	panel["pnlData"] = pnlData
 	E2VguiLib.RegisterNewPanel(e2EntityID ,uniqueID, panel)
+	E2VguiLib.UpdatePosAndSizeServer(e2EntityID,uniqueID,panel)
 	return true
 end
 
@@ -43,6 +44,7 @@ E2VguiPanels["vgui_elements"]["functions"]["dcombobox"]["modifyFunc"] = function
 	local data = E2VguiLib.applyAttributes(panel,changes)
 	table.Merge(panel["pnlData"],data)
 
+	E2VguiLib.UpdatePosAndSizeServer(e2EntityID,uniqueID,panel)
 	return true
 end
 

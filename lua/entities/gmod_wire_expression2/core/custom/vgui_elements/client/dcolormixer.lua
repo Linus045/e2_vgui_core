@@ -5,7 +5,6 @@ E2VguiPanels["vgui_elements"]["functions"]["dcolormixer"]["createFunc"] = functi
 	E2VguiLib.applyAttributes(panel,pnlData,true)
 	local data = E2VguiLib.applyAttributes(panel,changes)
 	table.Merge(pnlData,data)
-
 	--notify server of removal and also update client table
 	function panel:OnRemove()
 		E2VguiLib.RemovePanelWithChilds(self,e2EntityID)
@@ -55,6 +54,7 @@ E2VguiPanels["vgui_elements"]["functions"]["dcolormixer"]["createFunc"] = functi
 	panel["uniqueID"] = uniqueID
 	panel["pnlData"] = pnlData
 	E2VguiLib.RegisterNewPanel(e2EntityID ,uniqueID, panel)
+	E2VguiLib.UpdatePosAndSizeServer(e2EntityID,uniqueID,panel)
 	return true
 end
 
@@ -72,6 +72,7 @@ E2VguiPanels["vgui_elements"]["functions"]["dcolormixer"]["modifyFunc"] = functi
 			surface.DrawRect(0,0,w,h)
 		end
 	end
+	E2VguiLib.UpdatePosAndSizeServer(e2EntityID,uniqueID,panel)
 	return true
 end
 
@@ -79,7 +80,7 @@ end
 	HELPER FUNCTIONS
 ---------------------------------------------------------------------------]]
 E2Helper.Descriptions["dcolormixer(n)"] = "Index\ninits a new Colormixer."
-E2Helper.Descriptions["dcolormixer(nn)"] = "Index, Parent Id\ninits a new Colormixer." 
+E2Helper.Descriptions["dcolormixer(nn)"] = "Index, Parent Id\ninits a new Colormixer."
 E2Helper.Descriptions["setPos(xdm:nn)"] = "Sets the position of the Panel."
 E2Helper.Descriptions["setPos(xdm:xv2)"] = "Sets the position of the Panel."
 E2Helper.Descriptions["getPos(xdm:)"] = "Sets the position of the Panel."

@@ -50,7 +50,10 @@ E2VguiLib = {
         addColumn = function(panel,values) panel:AddColumn(values["column"],values["position"]) end,
         addLine = function(panel,...) panel:AddLine(unpack(...)) end,
         multiselect = function(panel,value) panel:SetMultiSelect(value) end,
-        dock = function(panel,value) panel:Dock(value) end
+        dock = function(panel,value) panel:Dock(value) end,
+        enabled = function(panel,value) panel:SetEnabled(value) end,
+        icon = function(panel,value) panel:SetIcon(value) end,
+        label = function(panel,value) panel:SetLabel(value) end
     }
 }
 
@@ -96,6 +99,21 @@ function E2VguiLib.applyAttributes(panel,attributes,otherFormat)
         end
         return pnlData
     end
+end
+
+function E2VguiLib.UpdatePosAndSizeServer(e2EntityID,uniqueID,panel)
+    net.Start("E2Vgui.UpdateServerValues")
+    net.WriteInt(e2EntityID,32)
+    net.WriteInt(uniqueID,32)
+    local posX,posY = panel:GetPos()
+    local width,height = panel:GetSize()
+    net.WriteTable({
+        posX = posX,
+        posY = posY,
+        width = width,
+        height = height
+    })
+    net.SendToServer()
 end
 
 

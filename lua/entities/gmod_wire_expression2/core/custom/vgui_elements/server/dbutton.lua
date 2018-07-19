@@ -22,6 +22,7 @@ E2VguiCore.AddDefaultPanelTable("dbutton",function(uniqueID,parentPnlID)
 		["text"] = "DButton",
 		["visible"] = true,
 		["radius"] = nil,
+		["icon"] = nil,
 		["color"] = nil, //set no default color to use the default skin
 		["textcolors"] = {Disabled=nil,Down=nil,Hover=nil,Normal=nil}
 	}
@@ -140,7 +141,9 @@ e2function dbutton dbutton(number uniqueID,number parentID)
 	}
 end
 
-do--[[setter]]--
+--[[------------------------------------------------------------------
+								setter
+------------------------------------------------------------------]]--
 	e2function void dbutton:setPos(number posX,number posY)
 		E2VguiCore.registerAttributeChange(this,"posX", posX)
 		E2VguiCore.registerAttributeChange(this,"posY", posY)
@@ -189,14 +192,6 @@ do--[[setter]]--
 		E2VguiCore.registerAttributeChange(this,"color", Color(red,green,blue,alpha))
 	end
 
-	e2function void dbutton:setTextColor(table col)
-		local Disabled = col.s.Disabled and Color(col.s.Disabled[1],col.s.Disabled[2],col.s.Disabled[3],255)
-		local Down = col.s.Down and Color(col.s.Down[1],col.s.Down[2],col.s.Down[3],255)
-		local Hover = col.s.Hover and Color(col.s.Hover[1],col.s.Hover[2],col.s.Hover[3],255)
-		local Normal = col.s.Normal and Color(col.s.Normal[1],col.s.Normal[2],col.s.Normal[3],255)
-		E2VguiCore.registerAttributeChange(this,"textcolors",{["Disabled"]=Disabled,["Down"]=Down,["Hover"]=Hover,["Normal"]=Normal})
-	end
-
 	e2function void dbutton:setTextColor(vector normal,vector pressed, vector hover,vector disabled)
 		local Disabled = Color(disabled[1],disabled[2],disabled[3],255)
 		local Down = Color(pressed[1],pressed[2],pressed[3],255)
@@ -217,8 +212,17 @@ do--[[setter]]--
 		E2VguiCore.registerAttributeChange(this,"text", text)
 	end
 
-	e2function void dbutton:setRadius(number radius)
+	e2function void dbutton:setCornerRadius(number radius)
 		E2VguiCore.registerAttributeChange(this,"radius", radius)
+	end
+
+	e2function void dbutton:setIcon(string image)
+		if image == "" then image = nil end
+		E2VguiCore.registerAttributeChange(this,"icon", image)
+	end
+
+	e2function void dbutton:setEnabled(number enabled)
+		E2VguiCore.registerAttributeChange(this,"enabled", enabled > 0)
 	end
 
 	e2function void dbutton:setVisible(number visible)
@@ -229,10 +233,10 @@ do--[[setter]]--
 	e2function void dbutton:dock(number dockType)
 		E2VguiCore.registerAttributeChange(this,"dock", dockType)
 	end
--- setter
-end
 
-do--[[getter]]--
+--[[------------------------------------------------------------------
+								getter
+------------------------------------------------------------------]]--
 	e2function vector2 dbutton:getPos(entity ply)
 	return {
 		E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"posX") or 0,
@@ -267,6 +271,10 @@ do--[[getter]]--
 		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"text") or ""
 	end
 
+	e2function number dbutton:getEnabled(entity ply)
+	return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"enabled") and 1 or 0
+	end
+
 	e2function vector4 dbutton:getColor4(entity ply)
 		local col =  E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"color")
 		if col == nil then
@@ -278,10 +286,10 @@ do--[[getter]]--
 	e2function number dbutton:isVisible(entity ply)
 		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"visible") and 1 or 0
 	end
--- getter
-end
 
-do--[[utility]]--
+--[[------------------------------------------------------------------
+								utility
+------------------------------------------------------------------]]--
 	e2function void dbutton:create()
 		E2VguiCore.CreatePanel(self,this)
 	end
@@ -338,6 +346,3 @@ do--[[utility]]--
 		end
 		this["players"] = {}
 	end
-
--- utility
-end

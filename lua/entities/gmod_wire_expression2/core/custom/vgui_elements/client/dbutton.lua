@@ -52,6 +52,7 @@ E2VguiPanels["vgui_elements"]["functions"]["dbutton"]["createFunc"] = function(u
 	panel["uniqueID"] = uniqueID
 	panel["pnlData"] = pnlData
 	E2VguiLib.RegisterNewPanel(e2EntityID ,uniqueID, panel)
+	E2VguiLib.UpdatePosAndSizeServer(e2EntityID,uniqueID,panel)
 	return true
 end
 
@@ -85,6 +86,7 @@ E2VguiPanels["vgui_elements"]["functions"]["dbutton"]["modifyFunc"] = function(u
 		return self:SetTextStyleColor( Normal )
 	end
 
+	E2VguiLib.UpdatePosAndSizeServer(e2EntityID,uniqueID,panel)
 	return true
 end
 
@@ -106,6 +108,8 @@ E2Helper.Descriptions["setColor(xdb:nnn)"] = "Sets the color of the Panel."
 E2Helper.Descriptions["setColor(xdb:nnnn)"] = "Sets the color of the Panel."
 E2Helper.Descriptions["getColor(xdb:)"] = "Returns the color of the Panel."
 E2Helper.Descriptions["getColor4(xdb:)"] = "Returns the color of the Panel."
+E2Helper.Descriptions["setEnabled(xdb:n)"] = "Enables/disables the button."
+E2Helper.Descriptions["getEnabled(xdb:e)"] = "Returns if the button is disabled or not."
 E2Helper.Descriptions["setVisible(xdb:n)"] = "Makes the Panel invisible or visible."
 E2Helper.Descriptions["isVisible(xdb:)"] = "Returns wheather the Panel is visible or not."
 E2Helper.Descriptions["addPlayer(xdb:e)"] = "Adds a player to the Panel's player list.\nthese players gonne see the Panel"
@@ -115,5 +119,7 @@ E2Helper.Descriptions["modify(xdb:)"] = "Modifies created Panels on all players 
 E2Helper.Descriptions["closePlayer(xdb:e)"] = "Closes the Panel on the specified player."
 E2Helper.Descriptions["closeAll(xdb:)"] = "Closes the Panel on all players of player's list"
 
+E2Helper.Descriptions["setCornerRadius(xdb:n)"] = "Radius of the rounded corners, works best with a multiple of 2."
+E2Helper.Descriptions["setIcon(xdb:s)"] = "The image file to use, relative to '/materials/'\nIcon names can be found here: http://wiki.garrysmod.com/page/Silkicons \nNote: use \"icon16/<Icon-name>.png\" as material name for icons. E.g. \"icon16/accept.png\""
 E2Helper.Descriptions["setText(xdb:s)"] = "Sets the label of the Button."
 E2Helper.Descriptions["getText(xdb:)"] = "Returns the label of the Button."
