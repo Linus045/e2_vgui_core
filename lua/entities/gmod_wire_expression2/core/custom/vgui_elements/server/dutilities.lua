@@ -15,7 +15,7 @@ e2function void vguiCloseAll()
 end
 
 e2function void vguiCloseOnPlayer(entity ply)
-	if ply == nil or !ply:IsPlayer() then return end
+	if ply == nil or not ply:IsPlayer() then return end
 	E2VguiCore.RemovePanelsOnPlayer(self.entity:EntIndex(),ply)
 end
 
@@ -47,7 +47,7 @@ end
 
 e2function number vguiClk(entity ply)
 	if E2VguiCore.Trigger[self.entity:EntIndex()] == nil then return 0 end
-	if ply == nil or !ply:IsPlayer() then return 0 end
+	if ply == nil or not ply:IsPlayer() then return 0 end
 	return (E2VguiCore.Trigger[self.entity:EntIndex()].triggeredByClient == ply) and 1 or 0
 end
 

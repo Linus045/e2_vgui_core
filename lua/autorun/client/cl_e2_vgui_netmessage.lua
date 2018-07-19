@@ -1,3 +1,4 @@
+--closes every panel ever created on this client
 concommand.Add( "wire_vgui_close_all", function( ply, cmd, args )
 	print("[E2VguiCore] Closing all vgui panels!")
 	for _,e2 in pairs(E2VguiPanels.panels) do
@@ -10,6 +11,8 @@ concommand.Add( "wire_vgui_close_all", function( ply, cmd, args )
 	net.SendToServer()
 end )
 
+
+--gets called when the server tries to create a panel on this player
 net.Receive("E2Vgui.CreatePanel",function()
 	local createSuccessful = false
 	local pnlType = net.ReadString()
@@ -43,15 +46,8 @@ net.Receive("E2Vgui.CreatePanel",function()
 	net.SendToServer()
 end)
 
--- net.Receive("E2Vgui.SetPanelVisibility",function()
--- 	local uniqueID = net.ReadInt(32)
--- 	local e2EntityID = net.ReadInt(32)
--- 	local visible = net.ReadBool()
--- 	local panel = E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
--- 	if panel == nil or !IsValid(panel) then return end
--- 	panel:SetVisible(visible)
--- end)
 
+--gets called when the server tries to modify a panel on this player
 net.Receive("E2Vgui.ModifyPanel",function()
 	local modifiedSuccess = nil
 	local createSuccessful = nil
@@ -69,7 +65,7 @@ net.Receive("E2Vgui.ModifyPanel",function()
 			local modifyFunc = E2VguiPanels["vgui_elements"]["functions"][pnlType]["modifyFunc"]
 			modifiedSuccess = modifyFunc(uniqueID,e2EntityID,changes)
 --[[ Don't recreate the panel when the player closed it
-		elseif !E2VguiPanels["panels"][e2EntityID][uniqueID] then
+		elseif not ["panels"][e2EntityID][uniqueID] then
 			local createFunc = E2VguiPanels["vgui_elements"]["functions"][pnlType]["createFunc"]
 			createSuccessful = createFunc(uniqueID,pnlData,e2EntityID)
 ]]
@@ -86,6 +82,8 @@ net.Receive("E2Vgui.ModifyPanel",function()
 	end
 end)
 
+
+--gets called when the server tries to close one or multiple panels on this player
 net.Receive("E2Vgui.ClosePanels",function()
 	-- -2 : none -1: all of e2 / 0 : multiple / 1 : all
 	local mode = net.ReadInt(3)

@@ -1,13 +1,13 @@
 E2VguiPanels = {
-    ["vgui_elements"] = {
+    ["vgui_elements"] = { --used to register the panel create/modify functions
         ["functions"] = {}
     },
-    ["panels"] = {}
+    ["panels"] = {} --used to store the panels of every e2 clientside for easier access
 }
 
 E2VguiLib = {
-    ["BlockedPlayers"] = {},
-    ["panelFunctions"] = {
+    ["BlockedPlayers"] = {}, --list of players this player blocked (they are not allowed to create panels for this player)
+    ["panelFunctions"] = { --functions for every attribute
         text = function(panel,value) panel:SetText(value) end,
         width = function(panel,value) panel:SetWidth(value) end,
         height = function(panel,value) panel:SetHeight(value) end,
@@ -54,6 +54,26 @@ E2VguiLib = {
     }
 }
 
+
+--used to register a new created panel
+function E2VguiLib.RegisterNewPanel(e2EntityID ,uniqueID, pnl)
+    E2VguiPanels.panels[e2EntityID][uniqueID] = pnl
+    pnl["pnlData"]["e2EntityID"] = e2EntityID
+    --  TODO:Add hooks later ?
+    --	hook.Run("E2VguiLib.RegisterNewPanel",LocalPlayer(),e2EntityID,pnl)
+end
+
+
+--function to retrieve a panel of a specified e2
+function E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
+    if E2VguiPanels["panels"][e2EntityID] == nil then return end
+    local pnl = E2VguiPanels["panels"][e2EntityID][uniqueID]
+    return pnl
+end
+
+
+--used to apply a table of changes
+--'otherFormat' indicates if it is a 'changes'-table or 'paneldata'-table
 function E2VguiLib.applyAttributes(panel,attributes,otherFormat)
     if otherFormat == true then
         local pnlData = {}
@@ -78,19 +98,174 @@ function E2VguiLib.applyAttributes(panel,attributes,otherFormat)
     end
 end
 
-function E2VguiLib.RegisterNewPanel(e2EntityID ,uniqueID, pnl)
-    E2VguiPanels.panels[e2EntityID][uniqueID] = pnl
-    pnl["pnlData"]["e2EntityID"] = e2EntityID
-    --  TODO:Add hooks later ?
-    --	hook.Run("E2VguiLib.RegisterNewPanel",LocalPlayer(),e2EntityID,pnl)
+
+//Maybe optimise this by creating a 'children' table for each panel ?
+function E2VguiLib.GetChildPanelIDs(uniqueID,e2EntityID,pnlList)
+    local tbl = pnlList or {uniqueID}
+    local pnl = E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
+    if pnl != nil then
+        if pnl:HasChildren() then
+            for k,v in pairs(pnl:GetChildren()) do
+                --if the pnl has childs get their child panels as well
+                if v:HasChildren() and table.HasValue(tbl,v.uniqueID) then
+                    local panels = E2VguiLib.GetChildPanelIDs(uniqueID,e2EntityID,tbl)
+                    table.Add(tbl,panels)
+                end
+                --Add the ID to the list
+                if v.uniqueID != nil then
+                    table.insert(tbl,v.uniqueID)
+                    --remove the OnRemove() function to prevent redundant calling and spamming with net-messages
+                    v.OnRemove = function() return end
+                end
+            end
+        end
+    end
+    return tbl
 end
 
-function E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
-    if E2VguiPanels["panels"][e2EntityID] == nil then return end
-    local pnl = E2VguiPanels["panels"][e2EntityID][uniqueID]
-    return pnl
+
+--function to block a player, will use name but actually blocks the steamID
+function E2VguiLib.BlockPlayer(name)
+    local target = nil
+    for k,v in pairs(player.GetAll()) do
+        if v:Nick() == name then
+            target = v
+            break
+        end
+    end
+    if target == nil or target:IsBot() then return end
+    net.Start("E2Vgui.BlockUnblockClient")
+    net.WriteBool(true)
+    net.WriteEntity(target)
+    net.SendToServer()
+    E2VguiLib.BlockedPlayers[target:SteamID()] = true
+    print("[E2VguiCore] Blocked "..target:Nick() .. "! He can't create derma panels on your client anymore!")
 end
 
+
+--function to unblock a player
+function E2VguiLib.UnblockPlayer(name)
+    local target = nil
+    for k,v in pairs(player.GetAll()) do
+        if v:Nick() == name then
+            target = v
+            break
+        end
+    end
+    if target == nil or target:IsBot() then return end
+    net.Start("E2Vgui.BlockUnblockClient")
+    net.WriteBool(false)
+    net.WriteEntity(target)
+    net.SendToServer()
+    E2VguiLib.BlockedPlayers[target:SteamID()] = false
+    print("[E2VguiCore] Unblocked "..target:Nick() .. "! He can now create derma panels on your client again!")
+end
+
+
+--function to return all blocked players
+function E2VguiLib.GetBlockedPlayers()
+    local tbl = {}
+    for k,v in pairs(E2VguiLib.BlockedPlayers) do
+        table.insert(tbl,player.GetBySteamID(k))
+    end
+    return tbl
+end
+
+
+--used to remove the panel clientside and automatically informs the server
+--e.g. when you close a Dframe with the close button
+function E2VguiLib.RemovePanelWithChilds(panel,e2EntityID)
+    local name = panel["uniqueID"]
+    local pnlData = panel["pnlData"]
+    local panels = E2VguiLib.GetChildPanelIDs(name,e2EntityID)
+
+    for k,v in pairs(panels) do
+        --remove the panel on clientside table
+        E2VguiPanels["panels"][e2EntityID][v] = nil
+    end
+
+    --notify the server of removal
+    net.Start("E2Vgui.NotifyPanelRemove")
+        -- -2 : none -1: single / 0 : multiple / 1 : all
+        net.WriteInt(0,3)
+        net.WriteInt(e2EntityID,32)
+        net.WriteTable(panels)
+    net.SendToServer()
+end
+
+
+
+
+
+
+
+
+--[[-------------------------------------------------------------------------
+CONSOLE COMMANDS
+---------------------------------------------------------------------------]]
+concommand.Add( "wire_vgui_listblockedplayers",
+function( ply, cmd, args )
+    local blockedPlayers = E2VguiLib.GetBlockedPlayers()
+    if #blockedPlayers <= 0 then
+        print("No players blocked!")
+        return
+    end
+    print("Blocked Players:")
+    print("---------------------------------------")
+    for k,v in pairs(blockedPlayers) do
+        print("- "..v:Nick().." - "..v:SteamID())
+    end
+    print("---------------------------------------")
+end
+,nil,
+"Prints a list of all blocked players",0)
+
+concommand.Add( "wire_vgui_blockplayer",
+function( ply, cmd, args )
+    if #args == 0 then return end
+    local name = args[1]
+    E2VguiLib.BlockPlayer(name)
+end
+,function()
+    local tbl = {}
+    for k,v in pairs(player.GetAll()) do
+        if v != LocalPlayer() and E2VguiLib.BlockedPlayers[v:SteamID()] != true then
+            table.insert(tbl,"wire_vgui_blockplayer " .. "\""..v:Nick() .. "\"")
+        end
+    end
+    return tbl
+end,
+"Blocks a client so he can't create derma panels on your client with E2",0)
+
+concommand.Add( "wire_vgui_unblockplayer",
+function( ply, cmd, args )
+    if #args == 0 then return end
+    local name = args[1]
+    E2VguiLib.UnblockPlayer(name)
+end
+,function()
+    local tbl = {}
+    for k,v in pairs(E2VguiLib.BlockedPlayers) do
+        local ply = player.GetBySteamID( k )
+        if ply != LocalPlayer():SteamID() then
+            table.insert(tbl,"wire_vgui_unblockplayer " .. "\"".. ply:Nick() .. "\"")
+        end
+    end
+    return tbl
+end,
+"Unblocks a client so he can create derma panels on your client with E2",0)
+
+
+
+
+
+
+
+
+--[[-------------------------------------------------------------------------
+UTIL FUNCTIONS
+---------------------------------------------------------------------------]]
+--simple function to convert between lua tables and e2 tables
 function E2VguiLib.convertToE2Table(tbl)
     /*	{n={},ntypes={},s={},stypes={},size=0}
     n 			- table for number keys
@@ -193,145 +368,3 @@ function E2VguiLib.convertToLuaTable(tbl)
 	end
     return luatable
 end
-
-
-
-//Maybe optimise this by creating a 'children' table for each panel ?
-function E2VguiLib.GetChildPanelIDs(uniqueID,e2EntityID,pnlList)
-    local tbl = pnlList or {uniqueID}
-    local pnl = E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
-    if pnl != nil then
-        if pnl:HasChildren() then
-            for k,v in pairs(pnl:GetChildren()) do
-                --if the pnl has childs get their child panels as well
-                if v:HasChildren() and table.HasValue(tbl,v.uniqueID) then
-                    local panels = E2VguiLib.GetChildPanelIDs(uniqueID,e2EntityID,tbl)
-                    table.Add(tbl,panels)
-                end
-                --Add the ID to the list
-                if v.uniqueID != nil then
-                    table.insert(tbl,v.uniqueID)
-                    --remove the OnRemove() function to prevent spamming with net-messages
-                    v.OnRemove = function() return end
-                end
-            end
-        end
-    end
-    return tbl
-end
-
-function E2VguiLib.BlockPlayer(name)
-    local target = nil
-    for k,v in pairs(player.GetAll()) do
-        if v:Nick() == name then
-            target = v
-            break
-        end
-    end
-    if target == nil or target:IsBot() then return end
-    net.Start("E2Vgui.BlockUnblockClient")
-    net.WriteBool(true)
-    net.WriteEntity(target)
-    net.SendToServer()
-    E2VguiLib.BlockedPlayers[target:SteamID()] = true
-    print("[E2VguiCore] Blocked "..target:Nick() .. "! He can't create derma panels on your client anymore!")
-end
-
-function E2VguiLib.UnblockPlayer(name)
-    local target = nil
-    for k,v in pairs(player.GetAll()) do
-        if v:Nick() == name then
-            target = v
-            break
-        end
-    end
-    if target == nil or target:IsBot() then return end
-    net.Start("E2Vgui.BlockUnblockClient")
-    net.WriteBool(false)
-    net.WriteEntity(target)
-    net.SendToServer()
-    E2VguiLib.BlockedPlayers[target:SteamID()] = false
-    print("[E2VguiCore] Unblocked "..target:Nick() .. "! He can now create derma panels on your client again!")
-end
-
-function E2VguiLib.GetBlockedPlayers()
-    local tbl = {}
-    for k,v in pairs(E2VguiLib.BlockedPlayers) do
-        table.insert(tbl,player.GetBySteamID(k))
-    end
-    return tbl
-end
-
-function E2VguiLib.RemovePanelWithChilds(panel,e2EntityID)
-    local name = panel["uniqueID"]
-    local pnlData = panel["pnlData"]
-    local panels = E2VguiLib.GetChildPanelIDs(name,e2EntityID)
-
-    for k,v in pairs(panels) do
-        --remove the panel on clientside table
-        E2VguiPanels["panels"][e2EntityID][v] = nil
-    end
-
-    --notify the server of removal
-    net.Start("E2Vgui.NotifyPanelRemove")
-        -- -2 : none -1: single / 0 : multiple / 1 : all
-        net.WriteInt(0,3)
-        net.WriteInt(e2EntityID,32)
-        net.WriteTable(panels)
-    net.SendToServer()
-end
-
---[[-------------------------------------------------------------------------
-CONSOLE COMMANDS
----------------------------------------------------------------------------]]
-concommand.Add( "wire_vgui_listblockedplayers",
-function( ply, cmd, args )
-    local blockedPlayers = E2VguiLib.GetBlockedPlayers()
-    if #blockedPlayers <= 0 then
-        print("No players blocked!")
-        return
-    end
-    print("Blocked Players:")
-    print("---------------------------------------")
-    for k,v in pairs(blockedPlayers) do
-        print("- "..v:Nick().." - "..v:SteamID())
-    end
-    print("---------------------------------------")
-end
-,nil,
-"Prints a list of all blocked players",0)
-
-concommand.Add( "wire_vgui_blockplayer",
-function( ply, cmd, args )
-    if #args == 0 then return end
-    local name = args[1]
-    E2VguiLib.BlockPlayer(name)
-end
-,function()
-    local tbl = {}
-    for k,v in pairs(player.GetAll()) do
-        if v != LocalPlayer() and E2VguiLib.BlockedPlayers[v:SteamID()] != true then
-            table.insert(tbl,"wire_vgui_blockplayer " .. "\""..v:Nick() .. "\"")
-        end
-    end
-    return tbl
-end,
-"Blocks a client so he can't create derma panels on your client with E2",0)
-
-concommand.Add( "wire_vgui_unblockplayer",
-function( ply, cmd, args )
-    if #args == 0 then return end
-    local name = args[1]
-    E2VguiLib.UnblockPlayer(name)
-end
-,function()
-    local tbl = {}
-    for k,v in pairs(E2VguiLib.BlockedPlayers) do
-        local ply = player.GetBySteamID( k )
-        if ply != LocalPlayer():SteamID() then
-            table.insert(tbl,"wire_vgui_unblockplayer " .. "\"".. ply:Nick() .. "\"")
-        end
-    end
-    return tbl
-end,
-"Unblocks a client so he can create derma panels on your client with E2",0)

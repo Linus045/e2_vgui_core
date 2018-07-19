@@ -4,12 +4,7 @@ E2VguiCore = {
 	["e2_types"] = {},
 	["callbacks"] = {},
 	["Trigger"] = {},
-	["BlockedPlayer"] = {},
-	["DefaultPanel"] = {
-		["type"] = "",
-		["players"] = {},
-		["paneldata"] = {}
-	}
+	["BlockedPlayer"] = {}
 }
 
 util.AddNetworkString("E2Vgui.CreatePanel")
@@ -19,7 +14,6 @@ util.AddNetworkString("E2Vgui.ClosePanels")
 util.AddNetworkString("E2Vgui.ModifyPanel")
 util.AddNetworkString("E2Vgui.ConfirmModification")
 util.AddNetworkString("E2Vgui.TriggerE2")
---util.AddNetworkString("E2Vgui.SetPanelVisibility")
 util.AddNetworkString("E2Vgui.BlockUnblockClient")
 
 local sbox_E2_Vgui_maxVgui 				= CreateConVar("wire_vgui_maxPanels",100,{FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE},"Sets the max amount of panels you can create with E2")
@@ -31,12 +25,14 @@ local sbox_E2_Vgui_permissionDefault 	= CreateConVar("wire_vgui_permissionDefaul
 	(1)  - players can create only on their client.
 	(2)  - only admins and superadmins can use it (on everyone)]])
 
+--ULX Implementation
 if ULib ~= nil then
 	ULib.ucl.registerAccess("e2_vgui_access", {"user","admin", "superadmin"}, "Give access to create vgui panels with e2 on all clients", "E2 Vgui Core")
 else
 	sbox_E2_Vgui_permissionDefault:SetInt(1)
 end
 
+--spam protection for PNL:create()/PNL:modify() calls
 local TimeStamp = 0
 local function E2VguiResetTemp()
 	 if CurTime() >= TimeStamp then
@@ -48,18 +44,6 @@ local function E2VguiResetTemp()
 end
 hook.Add("Think","E2VguiTempReset",E2VguiResetTemp)
 
-
-net.Receive("E2Vgui.BlockUnblockClient",function( len,ply )
-	local mode = net.ReadBool()
-	local target = net.ReadEntity()
-	if mode == true then
-		E2VguiCore.BlockClient(ply,target)
-	else
-		E2VguiCore.UnblockClient(ply,target)
-	end
-end)
-
-
 --[[-------------------------------------------------------------------------
 				E2VguiCore.CanUpdateVgui
 Desc: Returns if the player can create a new vgui element/update an existing vgui element
@@ -69,7 +53,7 @@ Args:
 Return: boolean true/false
 ---------------------------------------------------------------------------]]
 function E2VguiCore.CanUpdateVgui(ply) --vguiCanCreate
-	if !ply:IsPlayer() then return false end
+	if not ply:IsPlayer() then return false end
 	if ply.e2vgui_tempPanels == nil then
 		ply.e2vgui_tempPanels = 0
 		return true
@@ -86,7 +70,6 @@ function E2VguiCore.CanUpdateVgui(ply) --vguiCanCreate
 	return true
 end
 
-
 --[[-------------------------------------------------------------------------
 				E2VguiCore.HasAccess
 Desc: Returns if the player can create a vguipanel on the target (Check ConVar 'sbox_E2_Vgui_permissionDefault')
@@ -97,7 +80,7 @@ Return: true OR false
 ---------------------------------------------------------------------------]]
 function E2VguiCore.HasAccess(ply,target)
 	if ply == nil or target == nil then return false end
-	if !ply:IsPlayer() or !target:IsPlayer() then return false end
+	if not ply:IsPlayer() or not target:IsPlayer() then return false end
 
 	local setting = sbox_E2_Vgui_permissionDefault:GetInt()
 	if setting < -1 or setting > 2 then
@@ -156,7 +139,7 @@ Return: nil
 ---------------------------------------------------------------------------]]
 function E2VguiCore.BlockClient(ply,target)
 	if ply == nil or target == nil then return end
-	if !ply:IsPlayer() or !target:IsPlayer() then return end
+	if not ply:IsPlayer() or not target:IsPlayer() then return end
 	if ply == target then return end
 	if E2VguiCore.BlockedPlayer[ply:SteamID()] == nil then
 		E2VguiCore.BlockedPlayer[ply:SteamID()] = {}
@@ -178,7 +161,7 @@ Return: nil
 function E2VguiCore.UnblockClient(ply,target)
 //	print("[E2VguiCore]" .. tostring(ply).." unblocked :"..tostring(target))
 	if ply == nil or target == nil then return end
-	if !ply:IsPlayer() or !target:IsPlayer() then return end
+	if not ply:IsPlayer() or not target:IsPlayer() then return end
 	if ply == target then return end
 	if E2VguiCore.BlockedPlayer[ply:SteamID()] then
 		E2VguiCore.BlockedPlayer[ply:SteamID()] = {}
@@ -195,7 +178,7 @@ Args:
 Return: 0 or number
 ---------------------------------------------------------------------------]]
 function E2VguiCore.GetCurrentPanelAmount(ply)
-	if ply == nil or !ply:IsPlayer() then return 0 end
+	if ply == nil or not ply:IsPlayer() then return 0 end
 	local count  = 0
 	if ply.e2_vgui_core == nil then return 0 end
 	local e2s = ply.e2_vgui_core
@@ -246,13 +229,13 @@ function E2VguiCore.CreatePanel(e2self, panel)
 	local uniqueID = math.Round(paneldata["uniqueID"])
 
 	local pnlType = paneldata["typeID"]
-	if pnlType == nil or !E2VguiCore.vgui_types[string.lower(pnlType)..".lua"] then
-		error("[E2VguiCore] Paneltype is invalid or not registered! type: ".. tostring(pnlType)..", received value: "..tostring(E2VguiCore.vgui_types[pnlType]).."\nTry to use 'wire_expression2_reload'")
+	if pnlType == nil or not E2VguiCore.vgui_types[string.lower(pnlType)..".lua"] then
+		error("[E2VguiCore] Paneltype is invalid or not registerednot  type: ".. tostring(pnlType)..", received value: "..tostring(E2VguiCore.vgui_types[pnlType]).."\nTry to use 'wire_expression2_reload'")
 		return
 	end
 
 	//Check if the player hit the spam protection limit
-	if !E2VguiCore.CanUpdateVgui(e2self.player) then return end
+	if not E2VguiCore.CanUpdateVgui(e2self.player) then return end
 	e2self.player.e2vgui_tempPanels = e2self.player.e2vgui_tempPanels + 1
 
 	players = E2VguiCore.FilterPlayers(players) //remove redundant names and not-player entries
@@ -311,13 +294,13 @@ function E2VguiCore.ModifyPanel(e2self, panel,updateChildsToo)
 	local uniqueID = math.Round(paneldata["uniqueID"])
 
 	local pnlType = paneldata["typeID"]
-	if pnlType == nil or !E2VguiCore.vgui_types[string.lower(pnlType)..".lua"] then
-		error("[E2VguiCore] Paneltype is invalid or not registered! type: ".. tostring(pnlType)..", received value: "..tostring(E2VguiCore.vgui_types[pnlType]).."\nTry to use 'wire_expression2_reload'")
+	if pnlType == nil or not E2VguiCore.vgui_types[string.lower(pnlType)..".lua"] then
+		error("[E2VguiCore] Paneltype is invalid or not registerednot  type: ".. tostring(pnlType)..", received value: "..tostring(E2VguiCore.vgui_types[pnlType]).."\nTry to use 'wire_expression2_reload'")
 		return
 	end
 
 	//Check if the player hit the spam protection limit
-	if !E2VguiCore.CanUpdateVgui(e2self.player) then return end
+	if not E2VguiCore.CanUpdateVgui(e2self.player) then return end
 	e2self.player.e2vgui_tempPanels = e2self.player.e2vgui_tempPanels + 1
 
 	players = E2VguiCore.FilterPlayers(players) //remove redundant names and not-player entries
@@ -389,7 +372,7 @@ function E2VguiCore.GetChildren(e2self,panel)
 end
 
 function E2VguiCore.GetDefaultPanelTable(pnlType,uniqueID,parentID)
-	if E2VguiCore["defaultPanelTable"][pnlType] == nil then error("E2VguiCore.GetDefaultPanelTable : No valid paneltype!\n"..tostring(pnlType)) return nil end
+	if E2VguiCore["defaultPanelTable"][pnlType] == nil then error("E2VguiCore.GetDefaultPanelTable : No valid paneltypenot \n"..tostring(pnlType)) return nil end
 	local tbl = E2VguiCore["defaultPanelTable"][pnlType](uniqueID,parentID)
 	return tbl
 end
@@ -429,10 +412,10 @@ Args: table players
 Return: table players
 ---------------------------------------------------------------------------]]
 function E2VguiCore.FilterPlayers(players)
-	if players == nil or !istable(players) then return {} end
+	if players == nil or not istable(players) then return {} end
 	local tbl = {}
 	for k,v in pairs(players) do
-		if v:IsPlayer() and !table.HasValue(tbl,v) then
+		if v:IsPlayer() and not table.HasValue(tbl,v) then
 			table.insert(tbl,v)
 		end
 	end
@@ -452,7 +435,7 @@ function E2VguiCore.FilterBlocklist(targets,creator)
 	local allowedPlayers = {}
 	for k,ply in pairs(targets) do
 		local blocked = E2VguiCore.IsBlocked(creator,ply) --player is blocked so don't add him
-		if !blocked then
+		if not blocked then
 			table.insert(allowedPlayers,ply)
 		end
 	end
@@ -481,7 +464,7 @@ end
 
 
 function E2VguiCore.GetPanelByID(ply,e2EntityID, uniqueID)
-	if ply == nil or !ply:IsPlayer() then return end
+	if ply == nil or not ply:IsPlayer() then return end
 	if ply.e2_vgui_core == nil then return end
 	if ply.e2_vgui_core[e2EntityID] == nil then return  end
 	if ply.e2_vgui_core[e2EntityID][uniqueID] == nil then return end
@@ -546,7 +529,7 @@ function E2VguiCore.convertToE2Table(tbl)
 			--check if it contains sub-tables, so it's not a vector3 or vector4
 			elseif type(v[1]) == "table" then
 				--TODO:this check isn't 100% proof
-				--TODO:implement protection against recursive tables. Infinite loops!
+				--TODO:implement protection against recursive tables. Infinite loopsnot
 				e2table[indextype][k] = E2VguiCore.convertToE2Table(v)
 			elseif table.IsSequential(v) and #v==2 and type(v[1]) == "number" and type(v[2]) == "number" then
                 e2table[indextype.."types"][indextype == "n" and k or tostring(k)] = wire_expression_types["VECTOR2"][1]
@@ -558,7 +541,7 @@ function E2VguiCore.convertToE2Table(tbl)
                 e2table[indextype.."types"][indextype == "n" and k or tostring(k)] = wire_expression_types["VECTOR4"][1]
                 e2table[indextype][k] = v
 			else
-				//TODO:implement protection against recursive tables. Infinite loops!
+				//TODO:implement protection against recursive tables. Infinite loopsnot
                 e2table[indextype][k] = E2VguiCore.convertToE2Table(v)
             end
         elseif vtype == "boolean" then
@@ -646,7 +629,7 @@ Args:
 Return: nil
 ---------------------------------------------------------------------------]]
 function E2VguiCore.RemovePanelOnPlayerServer(e2EntityID,uniqueID,ply)
-	if e2EntityID == nil or uniqueID == nil or ply == nil or !ply:IsPlayer() then return end
+	if e2EntityID == nil or uniqueID == nil or ply == nil or not ply:IsPlayer() then return end
 	if ply.e2_vgui_core == nil then return end
 	if ply.e2_vgui_core[e2EntityID] != nil then
 		ply.e2_vgui_core[e2EntityID][uniqueID] = nil
@@ -678,7 +661,7 @@ end
 
 
 function E2VguiCore.RemovePanelsOnPlayer(e2EntityID,ply)
-	if e2EntityID == nil or ply == nil or !ply:IsPlayer()then return end
+	if e2EntityID == nil or ply == nil or not ply:IsPlayer()then return end
 	if ply.e2_vgui_core[e2EntityID] == nil then return end
 
 	local panels = {uniqueID}
@@ -692,7 +675,7 @@ end
 
 
 function E2VguiCore.RemovePanel(e2EntityID,uniqueID,ply)
-	if e2EntityID == nil or uniqueID == nil or ply == nil or !ply:IsPlayer() then return end
+	if e2EntityID == nil or uniqueID == nil or ply == nil or not ply:IsPlayer() then return end
 	if ply.e2_vgui_core[e2EntityID] == nil then return end
 
 	local panels = {uniqueID}
@@ -796,23 +779,15 @@ net.Receive("E2Vgui.ConfirmModification",function(len,ply)
 	end
 end)
 
-net.Receive("E2Vgui.TriggerE2",function(len,ply)
-	local e2EntityID = net.ReadInt(32)
-	local uniqueID = net.ReadInt(32)
-	local panelType = net.ReadString()
-	local tableData = net.ReadTable()
-	E2VguiCore.TriggerE2(e2EntityID,uniqueID, ply, tableData)
-end)
 
---TODO: Refine this function. Add the updated value to the trigger player's paneldata table
 function E2VguiCore.TriggerE2(e2EntityID,uniqueID, triggerPly, tableData)
 	if E2VguiCore.Trigger[e2EntityID] == nil then
 		E2VguiCore.Trigger[e2EntityID] = {}
 	end
 	if E2VguiCore.Trigger[e2EntityID].RunOnDerma == nil or E2VguiCore.Trigger[e2EntityID].RunOnDerma == false then return end
-	if triggerPly == nil or !triggerPly:IsPlayer() then return end
+	if triggerPly == nil or not triggerPly:IsPlayer() then return end
 	local e2Entity = ents.GetByIndex(e2EntityID)
-	if !IsValid(e2Entity) then return end
+	if not IsValid(e2Entity) then return end
 	if e2Entity:GetClass() != "gmod_wire_expression2" then return end
 
 	local value = value and tostring(value) or ""
@@ -827,11 +802,30 @@ function E2VguiCore.TriggerE2(e2EntityID,uniqueID, triggerPly, tableData)
 		E2VguiCore.GetPanelByID(triggerPly,e2EntityID, uniqueID)["paneldata"][attributeName] = value
 	end
 
-
 	e2Entity:Execute()
 
 	E2VguiCore.Trigger[e2EntityID].triggeredByClient = NULL
-	E2VguiCore.Trigger[e2EntityID].triggerValue = -1
+	E2VguiCore.Trigger[e2EntityID].triggerValues = {}
+	E2VguiCore.Trigger[e2EntityID].triggerValuesTable = {n={},ntypes={},s={},stypes={},size=0}
 	E2VguiCore.Trigger[e2EntityID].triggerUniqueID = -1
 	E2VguiCore.Trigger[e2EntityID].run = false
 end
+
+net.Receive("E2Vgui.TriggerE2",function(len,ply)
+	local e2EntityID = net.ReadInt(32)
+	local uniqueID = net.ReadInt(32)
+	local panelType = net.ReadString()
+	local tableData = net.ReadTable()
+	E2VguiCore.TriggerE2(e2EntityID,uniqueID, ply, tableData)
+end)
+
+
+net.Receive("E2Vgui.BlockUnblockClient",function( len,ply )
+	local mode = net.ReadBool()
+	local target = net.ReadEntity()
+	if mode == true then
+		E2VguiCore.BlockClient(ply,target)
+	else
+		E2VguiCore.UnblockClient(ply,target)
+	end
+end)

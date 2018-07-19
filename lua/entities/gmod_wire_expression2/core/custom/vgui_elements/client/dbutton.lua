@@ -27,7 +27,7 @@ E2VguiPanels["vgui_elements"]["functions"]["dbutton"]["createFunc"] = function(u
 		local Hover = pnlData["textcolors"].Hover or skin.Colours.Button.Hover
 		local Normal = pnlData["textcolors"].Normal or skin.Colours.Button.Normal
 
-		if ( !self:IsEnabled() )					then return self:SetTextStyleColor( Disabled ) end
+		if ( not self:IsEnabled() )					then return self:SetTextStyleColor( Disabled ) end
 		if ( self:IsDown() || self.m_bSelected )	then return self:SetTextStyleColor( Down ) end
 		if ( self.Hovered )							then return self:SetTextStyleColor( Hover ) end
 
@@ -58,7 +58,7 @@ end
 
 E2VguiPanels["vgui_elements"]["functions"]["dbutton"]["modifyFunc"] = function(uniqueID, e2EntityID, changes)
 	local panel = E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
-	if panel == nil or !IsValid(panel)  then return end
+	if panel == nil or not IsValid(panel)  then return end
 
 	local data = E2VguiLib.applyAttributes(panel,changes)
 	table.Merge(panel["pnlData"],data)
@@ -78,7 +78,7 @@ E2VguiPanels["vgui_elements"]["functions"]["dbutton"]["modifyFunc"] = function(u
 		local Hover = textcolors.Hover or skin.Colours.Button.Hover
 		local Normal = textcolors.Normal or skin.Colours.Button.Normal
 
-		if ( !self:IsEnabled() )					then return self:SetTextStyleColor( Disabled ) end
+		if ( not self:IsEnabled() )					then return self:SetTextStyleColor( Disabled ) end
 		if ( self:IsDown() || self.m_bSelected )	then return self:SetTextStyleColor( Down ) end
 		if ( self.Hovered )							then return self:SetTextStyleColor( Hover ) end
 

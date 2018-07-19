@@ -61,7 +61,7 @@ end
 
 E2VguiPanels["vgui_elements"]["functions"]["dcolormixer"]["modifyFunc"] = function(uniqueID, e2EntityID, changes)
 	local panel = E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
-	if panel == nil or !IsValid(panel)  then return end
+	if panel == nil or not IsValid(panel)  then return end
 
 	local data = E2VguiLib.applyAttributes(panel,changes)
 	table.Merge(panel["pnlData"],data)

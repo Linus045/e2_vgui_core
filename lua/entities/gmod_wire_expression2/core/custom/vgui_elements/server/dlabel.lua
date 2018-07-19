@@ -1,7 +1,7 @@
 E2VguiCore.RegisterVguiElementType("dlabel.lua",true)
 __e2setcost(5)
 local function isValidDLabel(panel)
-	if !istable(panel) then return false end
+	if not istable(panel) then return false end
 	if table.Count(panel) != 3 then return false end
 	if panel["players"] == nil then return false end
 	if panel["paneldata"] == nil then return false end
@@ -33,11 +33,11 @@ registerType("dlabel", "xdl", {["players"] = {}, ["paneldata"] = {},["changes"] 
 	nil,
 	nil,
 	function(retval)
-		if !istable(retval) then error("Return value is not a table, but a "..type(retval).."!",0) end
+		if not istable(retval) then error("Return value is not a table, but a "..type(retval).."!",0) end
 		if #retval ~= 3 then error("Return value does not have exactly 3 entries!",0) end
 	end,
 	function(v)
-		return !isValidDLabel(v)
+		return not isValidDLabel(v)
 	end
 )
 
@@ -70,20 +70,20 @@ end
 --- B == B --check if the names match
 --TODO: Check if the entire pnl data is equal (each attribute of the panel)
 e2function number operator==(xdl ldata, xdl rdata)
-	if !isValidDLabel(ldata) then return 0 end
-	if !isValidDLabel(rdata) then return 0 end
+	if not isValidDLabel(ldata) then return 0 end
+	if not isValidDLabel(rdata) then return 0 end
 	return ldata["paneldata"]["uniqueID"] == rdata["paneldata"]["uniqueID"] and 1 or 0
 end
 
 --- B == number --check if the uniqueID matches
 e2function number operator==(xdl ldata, n index)
-	if !isValidDLabel(ldata) then return 0 end
+	if not isValidDLabel(ldata) then return 0 end
 	return ldata["paneldata"]["uniqueID"] == index and 1 or 0
 end
 
 --- number == B --check if the uniqueID matches
 e2function number operator==(n index,xdl rdata)
-	if !isValidDLabel(rdata) then return 0 end
+	if not isValidDLabel(rdata) then return 0 end
 	return rdata["paneldata"]["uniqueID"] == index and 1 or 0
 end
 
@@ -91,21 +91,21 @@ end
 --- B != B
 --TODO: Check if the entire pnl data is equal (each attribute of the panel)
 e2function number operator!=(xdl ldata, xdl rdata)
-	if !isValidDLabel(ldata) then return 1 end
-	if !isValidDLabel(rdata) then return 1 end
+	if not isValidDLabel(ldata) then return 1 end
+	if not isValidDLabel(rdata) then return 1 end
 	return ldata["paneldata"]["uniqueID"] == rdata["paneldata"]["uniqueID"] and 0 or 1
 end
 
 
 --- B != number --check if the uniqueID matches
 e2function number operator!=(xdl ldata, n index)
-	if !isValidDLabel(ldata) then return 0 end
+	if not isValidDLabel(ldata) then return 0 end
 	return ldata["paneldata"]["uniqueID"] == index and 0 or 1
 end
 
 --- number != B --check if the uniqueID matches
 e2function number operator!=(n index,xdl rdata)
-	if !isValidDLabel(rdata) then return 0 end
+	if not isValidDLabel(rdata) then return 0 end
 	return rdata["paneldata"]["uniqueID"] == index and 0 or 1
 end
 

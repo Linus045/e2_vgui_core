@@ -1,7 +1,7 @@
 E2VguiCore.RegisterVguiElementType("dpropertysheet.lua",true)
 __e2setcost(5)
 local function isValidDPropertySheet(panel)
-	if !istable(panel) then return false end
+	if not istable(panel) then return false end
 	if table.Count(panel) != 3 then return false end
 	if panel["players"] == nil then return false end
 	if panel["paneldata"] == nil then return false end
@@ -32,11 +32,11 @@ registerType("dpropertysheet", "xdo", {["players"] = {}, ["paneldata"] = {},["ch
 	nil,
 	nil,
 	function(retval)
-		if !istable(retval) then error("Return value is not a table, but a "..type(retval).."!",0) end
+		if not istable(retval) then error("Return value is not a table, but a "..type(retval).."!",0) end
 		if #retval ~= 3 then error("Return value does not have exactly 3 entries!",0) end
 	end,
 	function(v)
-		return !isValidDPropertySheet(v)
+		return not isValidDPropertySheet(v)
 	end
 )
 
@@ -69,20 +69,20 @@ end
 --- B == B --check if the names match
 --TODO: Check if the entire pnl data is equal (each attribute of the panel)
 e2function number operator==(xdo ldata, xdo rdata)
-	if !isValidDPropertySheet(ldata) then return 0 end
-	if !isValidDPropertySheet(rdata) then return 0 end
+	if not isValidDPropertySheet(ldata) then return 0 end
+	if not isValidDPropertySheet(rdata) then return 0 end
 	return ldata["paneldata"]["uniqueID"] == rdata["paneldata"]["uniqueID"] and 1 or 0
 end
 
 --- B == number --check if the uniqueID matches
 e2function number operator==(xdo ldata, n index)
-	if !isValidDPropertySheet(ldata) then return 0 end
+	if not isValidDPropertySheet(ldata) then return 0 end
 	return ldata["paneldata"]["uniqueID"] == index and 1 or 0
 end
 
 --- number == B --check if the uniqueID matches
 e2function number operator==(n index,xdo rdata)
-	if !isValidDPropertySheet(rdata) then return 0 end
+	if not isValidDPropertySheet(rdata) then return 0 end
 	return rdata["paneldata"]["uniqueID"] == index and 1 or 0
 end
 
@@ -90,21 +90,21 @@ end
 --- B != B
 --TODO: Check if the entire pnl data is equal (each attribute of the panel)
 e2function number operator!=(xdo ldata, xdo rdata)
-	if !isValidDPropertySheet(ldata) then return 1 end
-	if !isValidDPropertySheet(rdata) then return 1 end
+	if not isValidDPropertySheet(ldata) then return 1 end
+	if not isValidDPropertySheet(rdata) then return 1 end
 	return ldata["paneldata"]["uniqueID"] == rdata["paneldata"]["uniqueID"] and 0 or 1
 end
 
 
 --- B != number --check if the uniqueID matches
 e2function number operator!=(xdo ldata, n index)
-	if !isValidDPropertySheet(ldata) then return 0 end
+	if not isValidDPropertySheet(ldata) then return 0 end
 	return ldata["paneldata"]["uniqueID"] == index and 0 or 1
 end
 
 --- number != B --check if the uniqueID matches
 e2function number operator!=(n index,xdo rdata)
-	if !isValidDPropertySheet(rdata) then return 0 end
+	if not isValidDPropertySheet(rdata) then return 0 end
 	return rdata["paneldata"]["uniqueID"] == index and 0 or 1
 end
 
