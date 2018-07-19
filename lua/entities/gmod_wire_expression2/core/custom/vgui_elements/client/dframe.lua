@@ -10,6 +10,16 @@ E2VguiPanels["vgui_elements"]["functions"]["dframe"]["createFunc"] = function(un
 		E2VguiLib.RemovePanelWithChilds(self,e2EntityID)
 	end
 
+	function panel:OnClose()
+		net.Start("E2Vgui.UpdateServerValues")
+			net.WriteInt(e2EntityID,32)
+			net.WriteInt(uniqueID,32)
+			net.WriteTable({
+				visible = false
+			})
+		net.SendToServer()
+	end
+
 	if pnlData["color"] ~= nil then
 		function panel:Paint(w,h)
 			local col = pnlData["color"]

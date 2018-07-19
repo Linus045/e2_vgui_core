@@ -15,6 +15,7 @@ util.AddNetworkString("E2Vgui.ModifyPanel")
 util.AddNetworkString("E2Vgui.ConfirmModification")
 util.AddNetworkString("E2Vgui.TriggerE2")
 util.AddNetworkString("E2Vgui.BlockUnblockClient")
+util.AddNetworkString("E2Vgui.UpdateServerValues")
 
 local sbox_E2_Vgui_maxVgui 				= CreateConVar("wire_vgui_maxPanels",100,{FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE},"Sets the max amount of panels you can create with E2")
 local sbox_E2_Vgui_maxVguiPerSecond 	= CreateConVar("wire_vgui_maxPanelsPerSecond",20,{FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE},"Sets the max amount of panels you can create/modify/update with E2 (All these send netmessages and too many would crash the client [Client overflow])")
@@ -779,8 +780,15 @@ net.Receive("E2Vgui.ConfirmModification",function(len,ply)
 	end
 end)
 
+function E2VguiCore.UpdateServerValuesFromTable(ply,e2EntityID,uniqueID,tableData)
+	--Set the attribute values on the server correct
+	for attributeName,value in pairs(tableData) do
+		E2VguiCore.GetPanelByID(ply,e2EntityID, uniqueID)["paneldata"][attributeName] = value
+	end
 
-function E2VguiCore.TriggerE2(e2EntityID,uniqueID, triggerPly, tableData)
+end
+
+function E2VguiCore.TriggerE2(e2EntityID,uniqueID, triggerPly, tableData, alsoTriggerE2)
 	if E2VguiCore.Trigger[e2EntityID] == nil then
 		E2VguiCore.Trigger[e2EntityID] = {}
 	end
@@ -797,11 +805,7 @@ function E2VguiCore.TriggerE2(e2EntityID,uniqueID, triggerPly, tableData)
 	E2VguiCore.Trigger[e2EntityID].triggerUniqueID = uniqueID
 	E2VguiCore.Trigger[e2EntityID].run = true
 
-	--Set the attribute values on the server correct
-	for attributeName,value in pairs(tableData) do
-		E2VguiCore.GetPanelByID(triggerPly,e2EntityID, uniqueID)["paneldata"][attributeName] = value
-	end
-
+	E2VguiCore.UpdateServerValuesFromTable(triggerPly,e2EntityID,uniqueID,tableData)
 	e2Entity:Execute()
 
 	E2VguiCore.Trigger[e2EntityID].triggeredByClient = NULL
@@ -811,6 +815,7 @@ function E2VguiCore.TriggerE2(e2EntityID,uniqueID, triggerPly, tableData)
 	E2VguiCore.Trigger[e2EntityID].run = false
 end
 
+--Only updates the server values and executes the e2
 net.Receive("E2Vgui.TriggerE2",function(len,ply)
 	local e2EntityID = net.ReadInt(32)
 	local uniqueID = net.ReadInt(32)
@@ -819,6 +824,13 @@ net.Receive("E2Vgui.TriggerE2",function(len,ply)
 	E2VguiCore.TriggerE2(e2EntityID,uniqueID, ply, tableData)
 end)
 
+--Only updates the server values without executing the e2
+net.Receive("E2Vgui.UpdateServerValues",function(len,ply)
+	local e2EntityID = net.ReadInt(32)
+	local uniqueID = net.ReadInt(32)
+	local tableData = net.ReadTable()
+	E2VguiCore.UpdateServerValuesFromTable(ply,e2EntityID,uniqueID,tableData)
+end)
 
 net.Receive("E2Vgui.BlockUnblockClient",function( len,ply )
 	local mode = net.ReadBool()
