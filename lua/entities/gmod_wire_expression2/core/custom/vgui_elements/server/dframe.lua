@@ -23,6 +23,7 @@ E2VguiCore.AddDefaultPanelTable("dframe",function(uniqueID,parentPnlID)
 			["showCloseButton"] = true,
 			["sizable"] = false,
 			["visible"] = true,
+			["backgroundBlur"] = false,
 			["deleteOnClose"] = nil,
 			["color"] = nil, //set no default color to use the default skin
 			["keyboardinput"] = nil,
@@ -192,6 +193,15 @@ do--[[setter]]--
 
 	e2function void dframe:setTitle(string title)
 		E2VguiCore.registerAttributeChange(this,"title",  title )
+	end
+
+	e2function void dframe:setBackgroundBlue(number backgroundBlur)
+		E2VguiCore.registerAttributeChange(this,"backgroundBlur",  backgroundBlur > 0 )
+	end
+
+	e2function void dframe:setIcon(string material)
+		if material == "" then material = nil end
+		E2VguiCore.registerAttributeChange(this,"icon", material )
 	end
 
 	e2function void dframe:setSizable(number sizable)

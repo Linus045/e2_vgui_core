@@ -22,6 +22,7 @@ E2VguiCore.AddDefaultPanelTable("dcombobox",function(uniqueID,parentPnlID)
 		["height"] = nil,
 		["text"] = "DComboBox",
 		["visible"] = true,
+		["sortItems"] = false,
 		["choice"] = nil,
 		["clear"] = nil
 	}
@@ -205,6 +206,10 @@ do--[[setter]]--
 
 	e2function void dcombobox:setText(string text)
 		E2VguiCore.registerAttributeChange(this,"value", text)
+	end
+
+	e2function void dcombobox:setSortItems(number sortItems)
+		E2VguiCore.registerAttributeChange(this,"sortItems", sortItems > 0)
 	end
 
 	e2function void dcombobox:setVisible(number visible)
