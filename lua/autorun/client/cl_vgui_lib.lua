@@ -72,6 +72,12 @@ E2VguiLib = {
         enabled = function(panel,value) panel:SetEnabled(value) end,
         icon = function(panel,value) panel:SetIcon(value) end,
         label = function(panel,value) panel:SetLabel(value) end,
+        drawOutlinedRect = function(panel,value)
+            function panel:PaintOver()
+                surface.SetDrawColor(value)
+                self:DrawOutlinedRect()
+            end
+        end,
         sortItems = function(panel,value) panel:SetSortItems(value) end,
         backgroundBlur = function(panel,value) panel:SetBackgroundBlur(value) end
     }

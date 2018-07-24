@@ -210,6 +210,16 @@ do--[[setter]]--
 		E2VguiCore.registerAttributeChange(this,"font", {font, size})
 	end
 
+	e2function void dlabel:setDrawOutlinedRect(vector color)
+		local drawColor = Color(color[1],color[2],color[3],255)
+		E2VguiCore.registerAttributeChange(this,"drawOutlinedRect", drawColor)
+	end
+
+	e2function void dlabel:setDrawOutlinedRect(vector4 color)
+		local drawColor = Color(color[1],color[2],color[3],color[4])
+		E2VguiCore.registerAttributeChange(this,"drawOutlinedRect", drawColor)
+	end
+
 	e2function void dlabel:setAutoStretchVertical(number enabled)
 		E2VguiCore.registerAttributeChange(this,"autoStrechVertical",enabled > 0)
 	end
