@@ -29,7 +29,25 @@ E2VguiLib = {
         max = function(panel,value) panel:SetMax(value) end,
         min = function(panel,value) panel:SetMin(value) end,
         textcolor = function(panel,value) panel:SetTextColor(value) end,
-        font = function(panel,value) panel:SetFont(value) end,
+        font = function(panel,values)
+            local fontname = values[1]
+            local fontsize = values[2]
+            --we us the same table wiremod uses for egp fonts
+            local font = "WireEGP_" .. fontsize .. "_" .. fontname
+            if (!EGP.ValidFonts_Lookup[font]) then
+                local fontTable =
+                {
+                    font=fontname,
+                    size = fontsize,
+                    weight = 800,
+                    antialias = true,
+                    additive = false
+                }
+                surface.CreateFont( font, fontTable )
+                EGP.ValidFonts_Lookup[font] = true
+            end
+            panel:SetFont(font)
+        end,
         checked = function(panel,value) panel:SetChecked(value) end,
         value = function(panel,value) panel:SetValue(value) end,
         choice = function(panel,value) panel:AddChoice(value[1],value[2]) end,

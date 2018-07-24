@@ -202,11 +202,12 @@ do--[[setter]]--
 		E2VguiCore.registerAttributeChange(this,"dock", dockType)
 	end
 
-	e2function void dlabel:setFont(string font) --TODO:implement font system similar to wiremod's system for egp
-		if font == "" then
-			font = "Default"
-		end
-		E2VguiCore.registerAttributeChange(this,"font", font)
+	e2function void dlabel:setFont(string font)
+		E2VguiCore.registerAttributeChange(this,"font", {font, 12})
+	end
+
+	e2function void dlabel:setFont(string font,number size)
+		E2VguiCore.registerAttributeChange(this,"font", {font, size})
 	end
 
 	e2function void dlabel:setAutoStretchVertical(number enabled)

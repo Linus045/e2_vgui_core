@@ -24,7 +24,7 @@ E2VguiPanels["vgui_elements"]["functions"]["dlabel"]["modifyFunc"] = function(un
 
 	local data = E2VguiLib.applyAttributes(panel,changes)
 	table.Merge(panel["pnlData"],data)
-	
+
 	E2VguiLib.UpdatePosAndSizeServer(e2EntityID,uniqueID,panel)
 	return true
 end
@@ -40,6 +40,8 @@ E2Helper.Descriptions["getPos(xdl:)"] = "Sets the position of the Panel."
 E2Helper.Descriptions["setSize(xdl:nn)"] = "Sets the size of the Panel."
 E2Helper.Descriptions["setSize(xdl:xv2)"] = "Sets the size of the Panel."
 E2Helper.Descriptions["getSize(xdl:)"] = "Returns the size of the Panel. May differ from the actual size on the client if its resizable."
+E2Helper.Descriptions["setFont(xdl:s)"] = "Sets the font."
+E2Helper.Descriptions["setFont(xdl:sn)"] = "Sets the font and text size."
 E2Helper.Descriptions["setColor(xdl:v)"] = "Sets the Text Color."
 E2Helper.Descriptions["setColor(xdl:vn)"] = "Sets the Text Color."
 E2Helper.Descriptions["setColor(xdl:xv4)"] = "Sets the Text Color."
