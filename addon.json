@@ -12,7 +12,8 @@
 		"*.xcf",
 		".git*",
 		".gitignore",
-		"LICENSE",
-		"README.md"
+		"license",
+		"readme.md",
+		"*.jpeg"
 	]
 }
