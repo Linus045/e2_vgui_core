@@ -47,6 +47,7 @@ E2VguiPanels["vgui_elements"]["functions"]["dtextentry"]["createFunc"] = functio
 			if frame["pnlData"] != nil and frame["pnlData"]["keyboardinput"] != nil then break end
 		end
 		--read the setting defined for the dframe and set it back to its original value
+		if frame["pnlData"] == nil then return end
 		frame:SetKeyboardInputEnabled(frame["pnlData"]["keyboardinput"])
 
 	end

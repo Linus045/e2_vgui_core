@@ -66,7 +66,11 @@ E2VguiLib = {
             panel:AddSheet(values["name"],sheet_pnl,values["icon"])
         end,
         addColumn = function(panel,values) panel:AddColumn(values["column"],values["position"]) end,
-        addLine = function(panel,...) panel:AddLine(unpack(...)) end,
+        addLine = function(panel,...)
+            if #panel.Lines < 200 then --if we exceed 200 lines don't add more
+                panel:AddLine(unpack(...))
+            end
+        end,
         multiselect = function(panel,value) panel:SetMultiSelect(value) end,
         dock = function(panel,value) panel:Dock(value) end,
         enabled = function(panel,value) panel:SetEnabled(value) end,

@@ -16,25 +16,35 @@ E2VguiPanels["vgui_elements"]["functions"]["dlistview"]["createFunc"] = function
 	function panel:OnRowSelected(lineID,linePnl)
 		local uniqueID = self["uniqueID"]
 		if uniqueID != nil then
-			net.Start("E2Vgui.TriggerE2")
-				net.WriteInt(e2EntityID,32)
-				net.WriteInt(uniqueID,32)
-				net.WriteString("DListView")
-				local selected = self:GetSelected()
-				local values = {}
-				for row=1,#selected do
-					values[row] = {}
-					for column=1, #self.Columns do
-						local header = self.Columns[column].Header:GetText()
-						local text = selected[row]:GetValue(column)
-						values[row][header] = text
+				local sendData = function()
+					local selected = self:GetSelected()
+					local values = {}
+					for row=1,#selected do
+						values[row] = {}
+						for column=1, #self.Columns do
+							local header = self.Columns[column].Header:GetText()
+							local text = selected[row]:GetValue(column)
+							values[row][header] = text
+						end
 					end
+					net.Start("E2Vgui.TriggerE2")
+					net.WriteInt(e2EntityID,32)
+					net.WriteInt(uniqueID,32)
+					net.WriteString("DListView")
+					net.WriteTable({
+						["index"] = lineID,
+						["values"] = values
+					})
+					net.SendToServer()
 				end
-				net.WriteTable({ --TODO:PROBLEM WRONG KEYS
-					["index"] = lineID,
-					["values"] = values
-				})
-			net.SendToServer()
+				--if we have multiselect enabled, this function gets called for every element we selected
+				--to prevent sending a message for every element we use a timer that gets reset
+				--once a new entry is added within a certain delay
+				if timer.Exists("E2Vui_sendDListEntries") then
+					timer.Adjust("E2Vui_sendDListEntries",0.3,1,sendData)
+				else
+					timer.Create("E2Vui_sendDListEntries",0.3,1,sendData)
+				end
 		end
 	end
 	panel["uniqueID"] = uniqueID
@@ -86,5 +96,5 @@ E2Helper.Descriptions["closeAll(xdv:)"] = "Closes the Panel on all players of pl
 
 E2Helper.Descriptions["addColumn(xdv:s)"] = "Adds a column to the Listview."
 E2Helper.Descriptions["addColumn(xdv:sn)"] = "Adds a column to the Listview."
-E2Helper.Descriptions["addLine(xdv:s)"] = "Adds a line to the list Listview."
+E2Helper.Descriptions["addLine(xdv:s)"] = "Adds a line to the list Listview. (Hardcoded max of 200 lines)"
 E2Helper.Descriptions["setMultiSelect(xdv:n)"] = "Sets whether multiple lines can be selected by the user by using the Ctrl or Shift key"
