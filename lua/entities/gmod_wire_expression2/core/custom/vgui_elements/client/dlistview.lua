@@ -2,8 +2,8 @@ E2VguiPanels["vgui_elements"]["functions"]["dlistview"] = {}
 E2VguiPanels["vgui_elements"]["functions"]["dlistview"]["createFunc"] = function(uniqueID, pnlData, e2EntityID,changes)
 	local parent = E2VguiLib.GetPanelByID(pnlData["parentID"],e2EntityID)
 	local panel = vgui.Create("DListView",parent)
-	pnlData["addColumn"] = nil //otherwise it will get added twice
-	pnlData["addLine"] = nil //otherwise it will get added twice
+	pnlData["addColumn"] = nil --otherwise it will get added twice
+	pnlData["addLine"] = nil --otherwise it will get added twice
 	E2VguiLib.applyAttributes(panel,pnlData,true)
 	local data = E2VguiLib.applyAttributes(panel,changes)
 	table.Merge(pnlData,data)

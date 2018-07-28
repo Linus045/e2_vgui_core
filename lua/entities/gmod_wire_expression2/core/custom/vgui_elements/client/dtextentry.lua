@@ -24,7 +24,7 @@ E2VguiPanels["vgui_elements"]["functions"]["dtextentry"]["createFunc"] = functio
 		frame:SetKeyboardInputEnabled(true)
 	end
 
-	//might be called unnecessarily often at the same time
+	--might be called unnecessarily often at the same time
 	function panel:OnLoseFocus()
 		local uniqueID = self["uniqueID"]
 		if uniqueID != nil then

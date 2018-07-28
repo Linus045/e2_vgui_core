@@ -13,7 +13,7 @@ E2VguiPanels["vgui_elements"]["functions"]["dcolormixer"]["createFunc"] = functi
 
 	function panel:Think()
 		if panel["changed"] == false then
-			if input.IsMouseDown(MOUSE_LEFT) == false then //send the data to the server when the mouse is released
+			if input.IsMouseDown(MOUSE_LEFT) == false then --send the data to the server when the mouse is released
 				local uniqueID = self["uniqueID"]
 				if uniqueID != nil then
 					net.Start("E2Vgui.TriggerE2")
@@ -32,14 +32,14 @@ E2VguiPanels["vgui_elements"]["functions"]["dcolormixer"]["createFunc"] = functi
 	end
 
 	function panel:ValueChanged(number)
-		panel["changed"] = false //set flag to false so it waits until you
-								 //stopped editing before sending net-messages
+		panel["changed"] = false --set flag to false so it waits until you
+								 --stopped editing before sending net-messages
 	end
 
 	-- 	local uniqueID = self["uniqueID"]
 	-- 	if self.HSV and self.HSV.IsEditing() == false then
 	-- 		if uniqueID != nil then
-	-- //			E2VguiLib.GetPanelByID(uniqueID,e2EntityID) = nil
+	-- --			E2VguiLib.GetPanelByID(uniqueID,e2EntityID) = nil
 	-- 			net.Start("E2Vgui.TriggerE2")
 	-- 				net.WriteInt(e2EntityID,32)
 	-- 				net.WriteInt(uniqueID,32)

@@ -38,7 +38,7 @@ E2VguiPanels["vgui_elements"]["functions"]["dbutton"]["createFunc"] = function(u
 	function panel:DoClick()
 		local uniqueID = self["uniqueID"]
 		if uniqueID != nil then
-//			E2VguiLib.GetPanelByID(uniqueID,e2EntityID) = nil
+--			E2VguiLib.GetPanelByID(uniqueID,e2EntityID) = nil
 			net.Start("E2Vgui.TriggerE2")
 				net.WriteInt(e2EntityID,32)
 				net.WriteInt(uniqueID,32)
@@ -120,6 +120,6 @@ E2Helper.Descriptions["closePlayer(xdb:e)"] = "Closes the Panel on the specified
 E2Helper.Descriptions["closeAll(xdb:)"] = "Closes the Panel on all players of player's list"
 
 E2Helper.Descriptions["setCornerRadius(xdb:n)"] = "Radius of the rounded corners, works best with a multiple of 2."
-E2Helper.Descriptions["setIcon(xdb:s)"] = "The image file to use, relative to '/materials/'\nIcon names can be found here: http://wiki.garrysmod.com/page/Silkicons \nNote: use \"icon16/<Icon-name>.png\" as material name for icons. E.g. \"icon16/accept.png\""
+E2Helper.Descriptions["setIcon(xdb:s)"] = "The image file to use, relative to '/materials/'\nIcon names can be found here: http:--wiki.garrysmod.com/page/Silkicons \nNote: use \"icon16/<Icon-name>.png\" as material name for icons. E.g. \"icon16/accept.png\""
 E2Helper.Descriptions["setText(xdb:s)"] = "Sets the label of the Button."
 E2Helper.Descriptions["getText(xdb:)"] = "Returns the label of the Button."

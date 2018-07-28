@@ -71,7 +71,7 @@ e2function table vguiClkValuesTable()
 	return E2VguiCore.Trigger[self.entity:EntIndex()].triggerValuesTable
 end
 
-//TODO:Move this stuff elsewhere
+--TODO:Move this stuff elsewhere
 local function addFunction(panelName,panelID,OtherPanelID)
 	registerFunction( panelName, "n"..OtherPanelID, panelID, function(self,args)
 		local op1, op2 = args[2], args[3]
@@ -89,10 +89,10 @@ local function addFunction(panelName,panelID,OtherPanelID)
 	,5)
 end
 
-//TODO:Move this stuff elsewhere
+--TODO:Move this stuff elsewhere
 E2VguiCore.registerCallback("loaded_elements",function()
 	for _,otherpanelid in pairs(E2VguiCore.e2_types) do
-		//add getPlayers() function for every panel
+		--add getPlayers() function for every panel
 		registerFunction( "getPlayers", otherpanelid..":", "r", function(self,args)
 			local op1 = args[2]
 			local panel = op1[1](self,op1)
@@ -100,10 +100,19 @@ E2VguiCore.registerCallback("loaded_elements",function()
 		end
 		,5)
 
+		registerFunction( "setPlayers", otherpanelid..":r", "", function(self,args)
+			local op1 = args[2]
+			local op2 = args[3]
+			local panel = op1[1](self,op1)
+			local players = op2[1](self,op2)
+			panel.players = players --gets filtered inside CreatePanel() or ModifyPanel()
+		end
+		,5)
+
 
 		for panelName,id in pairs(E2VguiCore.e2_types) do
-			//change this to something like E2VguiCore.e2_types.parentable == true instead of hardcoded identifiers
-			//only parent to dframes and dpanels for now
+			--TODO:change this to something like E2VguiCore.e2_types.parentable == true instead of hardcoded identifiers
+			--only parent to dframes and dpanels for now
 			if (otherpanelid == "xdf" or otherpanelid == "xdp") and not (otherpanelid == "xdf" and id == "xdf" ) then
 				addFunction(panelName,id,otherpanelid)
 				--print("Created function: "..panelName.."(number,".. otherpanelid ..")")

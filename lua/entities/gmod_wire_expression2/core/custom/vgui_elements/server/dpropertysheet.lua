@@ -9,7 +9,7 @@ local function isValidDPropertySheet(panel)
 	return true
 end
 
-//register this default table creation function so we can use it anywhere
+--register this default table creation function so we can use it anywhere
 E2VguiCore.AddDefaultPanelTable("dpropertysheet",function(uniqueID,parentPnlID)
 	local tbl = {
 		["uniqueID"] = uniqueID,
@@ -22,7 +22,7 @@ E2VguiCore.AddDefaultPanelTable("dpropertysheet",function(uniqueID,parentPnlID)
 		["visible"] = true,
 		["tabs"] = {},
 		["activeTab"] = nil,
-		["color"] = nil //set no default color to use the default skin
+		["color"] = nil --set no default color to use the default skin
 	}
 	return tbl
 end)
@@ -259,9 +259,24 @@ do--[[utility]]--
 		E2VguiCore.CreatePanel(self,this)
 	end
 
-	--TODO: make it update it child panels when the parent is modified ?
+	e2function void dpropertysheet:create(array players)
+		E2VguiCore.CreatePanel(self,this,players)
+	end
+
 	e2function void dpropertysheet:modify()
 		E2VguiCore.ModifyPanel(self,this)
+	end
+
+	e2function void dpropertysheet:modify(array players)
+		E2VguiCore.ModifyPanel(self,this,players)
+	end
+
+	e2function void dpropertysheet:modify(n updateChildsToo)
+		E2VguiCore.ModifyPanel(self, this, nil, updateChildsToo > 0)
+	end
+
+	e2function void dpropertysheet:modify(n updateChildsToo,array players)
+		E2VguiCore.ModifyPanel(self, this, players, updateChildsToo > 0)
 	end
 
 	e2function void dpropertysheet:closePlayer(entity ply)
@@ -278,8 +293,8 @@ do--[[utility]]--
 
 	e2function void dpropertysheet:addPlayer(entity ply)
 		if IsValid(ply) and ply:IsPlayer() then
-			//check for redundant players will be done in CreatePanel or ModifyPanel
-			//maybe change that ?
+			--check for redundant players will be done in CreatePanel or ModifyPanel
+			--maybe change that ?
 			table.insert(this["players"],ply)
 		end
 	end

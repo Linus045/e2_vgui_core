@@ -9,7 +9,7 @@ local function isValidDCheckBoxLabel(panel)
 	return true
 end
 
-//register this default table creation function so we can use it anywhere
+--register this default table creation function so we can use it anywhere
 E2VguiCore.AddDefaultPanelTable("dcheckboxlabel",function(uniqueID,parentPnlID)
 	local tbl = {
 		["uniqueID"] = uniqueID,
@@ -237,10 +237,26 @@ do--[[utility]]--
 		E2VguiCore.CreatePanel(self,this)
 	end
 
-	--TODO: make it update it child panels when the parent is modified ?
+	e2function void dcheckboxlabel:create(array players)
+		E2VguiCore.CreatePanel(self,this,players)
+	end
+
 	e2function void dcheckboxlabel:modify()
 		E2VguiCore.ModifyPanel(self,this)
 	end
+
+	e2function void dcheckboxlabel:modify(array players)
+		E2VguiCore.ModifyPanel(self,this,players)
+	end
+
+	e2function void dcheckboxlabel:modify(n updateChildsToo)
+		E2VguiCore.ModifyPanel(self, this, nil, updateChildsToo > 0)
+	end
+
+	e2function void dcheckboxlabel:modify(n updateChildsToo,array players)
+		E2VguiCore.ModifyPanel(self, this, players, updateChildsToo > 0)
+	end
+
 
 	e2function void dcheckboxlabel:closePlayer(entity ply)
 		if IsValid(ply) and ply:IsPlayer() then
@@ -256,8 +272,8 @@ do--[[utility]]--
 
 	e2function void dcheckboxlabel:addPlayer(entity ply)
 		if IsValid(ply) and ply:IsPlayer() then
-			//check for redundant players will be done in CreatePanel or ModifyPanel
-			//maybe change that ?
+			--check for redundant players will be done in CreatePanel or ModifyPanel
+			--maybe change that ?
 			table.insert(this["players"],ply)
 		end
 	end

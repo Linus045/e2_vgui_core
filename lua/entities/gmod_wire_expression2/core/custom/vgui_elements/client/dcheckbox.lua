@@ -14,7 +14,7 @@ E2VguiPanels["vgui_elements"]["functions"]["dcheckbox"]["createFunc"] = function
 	function panel:OnChange(bVal)
 		local uniqueID = self["uniqueID"]
 		if uniqueID != nil then
-//			E2VguiLib.GetPanelByID(uniqueID,e2EntityID) = nil
+--			E2VguiLib.GetPanelByID(uniqueID,e2EntityID) = nil
 			net.Start("E2Vgui.TriggerE2")
 				net.WriteInt(e2EntityID,32)
 				net.WriteInt(uniqueID,32)

@@ -9,7 +9,7 @@ local function isValidDListView(panel)
 	return true
 end
 
-//register this default table creation function so we can use it anywhere
+--register this default table creation function so we can use it anywhere
 E2VguiCore.AddDefaultPanelTable("dlistview",function(uniqueID,parentPnlID)
 	local tbl = {
 		["uniqueID"] = uniqueID,
@@ -21,7 +21,7 @@ E2VguiCore.AddDefaultPanelTable("dlistview",function(uniqueID,parentPnlID)
 		["height"] = 22,
 		["multiselect"] = false,
 		["visible"] = true,
-		["color"] = nil //set no default color to use the default skin
+		["color"] = nil --set no default color to use the default skin
 	}
 	return tbl
 end)
@@ -271,10 +271,26 @@ do--[[utility]]--
 		E2VguiCore.CreatePanel(self,this)
 	end
 
-	--TODO: make it update it child panels when the parent is modified ?
+	e2function void dlistview:create(array players)
+		E2VguiCore.CreatePanel(self,this,players)
+	end
+
 	e2function void dlistview:modify()
 		E2VguiCore.ModifyPanel(self,this)
 	end
+
+	e2function void dlistview:modify(array players)
+		E2VguiCore.ModifyPanel(self,this,players)
+	end
+
+	e2function void dlistview:modify(n updateChildsToo)
+		E2VguiCore.ModifyPanel(self, this, nil, updateChildsToo > 0)
+	end
+
+	e2function void dlistview:modify(n updateChildsToo,array players)
+		E2VguiCore.ModifyPanel(self, this, players, updateChildsToo > 0)
+	end
+
 
 	e2function void dlistview:closePlayer(entity ply)
 		if IsValid(ply) and ply:IsPlayer() then
@@ -290,8 +306,8 @@ do--[[utility]]--
 
 	e2function void dlistview:addPlayer(entity ply)
 		if IsValid(ply) and ply:IsPlayer() then
-			//check for redundant players will be done in CreatePanel or ModifyPanel
-			//maybe change that ?
+			--check for redundant players will be done in CreatePanel or ModifyPanel
+			--maybe change that ?
 			table.insert(this["players"],ply)
 		end
 	end

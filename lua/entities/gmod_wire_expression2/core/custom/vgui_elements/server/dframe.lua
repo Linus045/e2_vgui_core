@@ -25,7 +25,7 @@ E2VguiCore.AddDefaultPanelTable("dframe",function(uniqueID,parentPnlID)
 			["visible"] = true,
 			["backgroundBlur"] = false,
 			["deleteOnClose"] = nil,
-			["color"] = nil, //set no default color to use the default skin
+			["color"] = nil, --set no default color to use the default skin
 			["keyboardinput"] = nil,
 			["mouseinput"] = nil,
 			["makepopup"] = nil,
@@ -288,13 +288,24 @@ do--[[utility]]--
 		E2VguiCore.CreatePanel(self,this)
 	end
 
-	--TODO: make it update it child panels when the parent is modified ?
+	e2function void dframe:create(array players)
+		E2VguiCore.CreatePanel(self,this,players)
+	end
+
 	e2function void dframe:modify()
 		E2VguiCore.ModifyPanel(self,this)
 	end
 
+	e2function void dframe:modify(array players)
+		E2VguiCore.ModifyPanel(self,this,players)
+	end
+
 	e2function void dframe:modify(n updateChildsToo)
-		E2VguiCore.ModifyPanel(self,this,updateChildsToo > 0)
+		E2VguiCore.ModifyPanel(self, this, nil, updateChildsToo > 0)
+	end
+
+	e2function void dframe:modify(n updateChildsToo,array players)
+		E2VguiCore.ModifyPanel(self, this, players, updateChildsToo > 0)
 	end
 
 	e2function void dframe:makePopup()
@@ -315,8 +326,8 @@ do--[[utility]]--
 
 	e2function void dframe:addPlayer(entity ply)
 		if IsValid(ply) and ply:IsPlayer() then
-			//check for redundant players will be done in CreatePanel or ModifyPanel
-			//maybe change that ?
+			--check for redundant players will be done in CreatePanel or ModifyPanel
+			--maybe change that ?
 			table.insert(this["players"],ply)
 		end
 	end

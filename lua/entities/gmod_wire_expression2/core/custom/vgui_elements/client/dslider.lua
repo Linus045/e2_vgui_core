@@ -14,7 +14,7 @@ E2VguiPanels["vgui_elements"]["functions"]["dslider"]["createFunc"] = function(u
 
 	function panel:Think()
 		if panel["changed"] == false then
-			if input.IsMouseDown(MOUSE_LEFT) == false then //send data to server when the mouse is released
+			if input.IsMouseDown(MOUSE_LEFT) == false then --send data to server when the mouse is released
 				local uniqueID = self["uniqueID"]
 				if uniqueID != nil then
 					net.Start("E2Vgui.TriggerE2")
@@ -32,8 +32,8 @@ E2VguiPanels["vgui_elements"]["functions"]["dslider"]["createFunc"] = function(u
 	end
 
 	function panel:OnValueChanged(number)
-		panel["changed"] = false //set flag to false so it waits until you
-								 //stopped editing before sending net-messages
+		panel["changed"] = false --set flag to false so it waits until you
+								 --stopped editing before sending net-messages
 	end
 
 	if pnlData["color"] ~= nil then

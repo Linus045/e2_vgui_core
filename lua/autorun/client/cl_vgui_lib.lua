@@ -12,8 +12,8 @@ E2VguiLib = {
         width = function(panel,value) panel:SetWidth(value) end,
         height = function(panel,value) panel:SetHeight(value) end,
         title = function(panel,value) panel:SetTitle(value) end,
-        //TODO implement parenting functions
-        //parent = function(panel,value,...) panel:SetParent(E2VguiLib.GetPanelByID(value,panel["pnlData"]["e2EntityID"])) end,
+        --TODO implement parenting functions
+        --parent = function(panel,value,...) panel:SetParent(E2VguiLib.GetPanelByID(value,panel["pnlData"]["e2EntityID"])) end,
         posX = function(panel,value) local old_posX,old_posY = panel:GetPos() panel:SetPos(value,old_posY) end,
         posY = function(panel,value) local old_posX,old_posY = panel:GetPos() panel:SetPos(old_posX,value) end,
         visible = function(panel,value) panel:SetVisible(value) end,
@@ -147,7 +147,7 @@ function E2VguiLib.UpdatePosAndSizeServer(e2EntityID,uniqueID,panel)
 end
 
 
-//Maybe optimise this by creating a 'children' table for each panel ?
+--Maybe optimise this by creating a 'children' table for each panel ?
 function E2VguiLib.GetChildPanelIDs(uniqueID,e2EntityID,pnlList)
     local tbl = pnlList or {uniqueID}
     local pnl = E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
@@ -326,7 +326,7 @@ function E2VguiLib.convertToE2Table(tbl)
 
     for k,v in pairs( tbl ) do
         local vtype = type(v)
-        //convert number to Normal otherwise it won't get recognized as wire datatype
+        --convert number to Normal otherwise it won't get recognized as wire datatype
         if vtype == "number" then vtype = "normal" end
         local keyType = type(k)
 
@@ -334,24 +334,24 @@ function E2VguiLib.convertToE2Table(tbl)
         if wire_expression_types[string.upper(vtype)] != nil then
             e2Type = wire_expression_types[string.upper(vtype)][1]
         elseif vtype == "boolean" and wire_expression_types[string.upper(vtype)] == nil then
-            //handle booleans beforehand because they have no type in e2
+            --handle booleans beforehand because they have no type in e2
             e2Type = wire_expression_types["NORMAL"][1]
         else
             ErrorNoHalt("[CLIENT VGUI LIB] Unknown type detected key:"..vtype.." value:"..tostring(v))
             continue
         end
 
-        //determine if the key is a number or anything else
+        --determine if the key is a number or anything else
         local indextype = (keyType == "number" and "n" or "s")
         if indextype == "n" then
             e2table[indextype.."types"][k] = e2Type
         else
-            //convert the key to a string
+            --convert the key to a string
             e2table[indextype.."types"][tostring(k)] = e2Type
         end
 
         if vtype == "table" then
-            //colors are getting detected as table, so we make sure they get parsed as vector4
+            --colors are getting detected as table, so we make sure they get parsed as vector4
             if IsColor(v) then
                 e2table[indextype.."types"][indextype == "n" and k or tostring(k)] = wire_expression_types["VECTOR4"][1]
                 e2table[indextype][k] = {v.r,v.g,v.b,v.a}
@@ -374,15 +374,15 @@ function E2VguiLib.convertToE2Table(tbl)
                 e2table[indextype.."types"][indextype == "n" and k or tostring(k)] = wire_expression_types["VECTOR4"][1]
                 e2table[indextype][k] = v
 			else
-                //TODO:implement protection against recursive tables. Infinite loops!
+                --TODO:implement protection against recursive tables. Infinite loops!
                 e2table[indextype][k] = E2VguiCore.convertToE2Table(v)
             end
         elseif vtype == "boolean" then
-            //booleans have no type in e2 so parse them as number
+            --booleans have no type in e2 so parse them as number
             e2table[indextype.."types"][indextype == "n" and k or tostring(k)] = wire_expression_types["NORMAL"][1]
             e2table[indextype][k] = v and 1 or 0
         else
-            //everything that has a valid type in e2 just put the value inside
+            --everything that has a valid type in e2 just put the value inside
             e2table[indextype][k] = v
         end
         size = size + 1
@@ -391,7 +391,7 @@ function E2VguiLib.convertToE2Table(tbl)
     return e2table
 end
 
-//Converts a e2table into a lua table
+--Converts a e2table into a lua table
 function E2VguiLib.convertToLuaTable(tbl)
     /*	{n={},ntypes={},s={},stypes={},size=0}
     n 			- table for number keys

@@ -9,7 +9,7 @@ local function isValidDPanel(panel)
 	return true
 end
 
-//register this default table creation function so we can use it anywhere
+--register this default table creation function so we can use it anywhere
 E2VguiCore.AddDefaultPanelTable("dpanel",function(uniqueID,parentPnlID)
 	local tbl = {
 		["uniqueID"] = uniqueID,
@@ -21,7 +21,7 @@ E2VguiCore.AddDefaultPanelTable("dpanel",function(uniqueID,parentPnlID)
 		["height"] = 80,
 		["visible"] = true,
 		["putCenter"] = false,
-		["color"] = nil, //set no default color to use the default skin
+		["color"] = nil, --set no default color to use the default skin
 		["dock"] = nil,
 		["mouseinput"] = nil,
 		["keyboardinput"] = nil
@@ -255,10 +255,26 @@ do--[[utility]]--
 		E2VguiCore.CreatePanel(self,this)
 	end
 
-	--TODO: make it update it child panels when the parent is modified ?
+	e2function void dpanel:create(array players)
+		E2VguiCore.CreatePanel(self,this,players)
+	end
+
 	e2function void dpanel:modify()
 		E2VguiCore.ModifyPanel(self,this)
 	end
+
+	e2function void dpanel:modify(array players)
+		E2VguiCore.ModifyPanel(self,this,players)
+	end
+
+	e2function void dpanel:modify(n updateChildsToo)
+		E2VguiCore.ModifyPanel(self, this, nil, updateChildsToo > 0)
+	end
+
+	e2function void dpanel:modify(n updateChildsToo,array players)
+		E2VguiCore.ModifyPanel(self, this, players, updateChildsToo > 0)
+	end
+
 
 	e2function void dpanel:modify(n updateChildsToo)
 		E2VguiCore.ModifyPanel(self,this,updateChildsToo > 0)

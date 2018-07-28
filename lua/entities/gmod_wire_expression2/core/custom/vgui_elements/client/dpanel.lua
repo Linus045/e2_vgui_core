@@ -33,7 +33,7 @@ E2VguiPanels["vgui_elements"]["functions"]["dpanel"]["modifyFunc"] = function(un
 	local data = E2VguiLib.applyAttributes(panel,changes)
 	table.Merge(panel["pnlData"],data)
 
-	if panel["pnlData"]["parentID"] != nil then //TODO:implement e2function setParent()
+	if panel["pnlData"]["parentID"] != nil then --TODO:implement e2function setParent()
 		local parentPnl = E2VguiLib.GetPanelByID(panel["pnlData"]["parentID"],e2EntityID)
 		if parentPnl != nil then
 			panel:SetParent(parentPnl)

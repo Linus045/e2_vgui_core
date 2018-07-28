@@ -93,7 +93,7 @@ function E2VguiCore.HasAccess(ply,target)
 			return ULib.ucl.query(ply, "e2_vgui_access")
 		else
 			print("Check wire_vgui_permissionDefault for permissions")
-			return false //should default to 1 in this case, ulx is not installed
+			return false --should default to 1 in this case, ulx is not installed
 		end
 	elseif setting == 0 then
 		return true
@@ -146,7 +146,7 @@ function E2VguiCore.BlockClient(ply,target)
 		E2VguiCore.BlockedPlayer[ply:SteamID()] = {}
 	end
 	E2VguiCore.BlockedPlayer[ply:SteamID()][target:SteamID()] = true
-//	print("[E2VguiCore]" .. tostring(ply).." blocked "..tostring(target))
+--	print("[E2VguiCore]" .. tostring(ply).." blocked "..tostring(target))
 end
 
 
@@ -160,7 +160,7 @@ Args:
 Return: nil
 ---------------------------------------------------------------------------]]
 function E2VguiCore.UnblockClient(ply,target)
-//	print("[E2VguiCore]" .. tostring(ply).." unblocked :"..tostring(target))
+--	print("[E2VguiCore]" .. tostring(ply).." unblocked :"..tostring(target))
 	if ply == nil or target == nil then return end
 	if not ply:IsPlayer() or not target:IsPlayer() then return end
 	if ply == target then return end
@@ -211,23 +211,24 @@ function E2VguiCore.EnableVguiElementType(vguiType,status)
 			E2VguiCore.vgui_types[vguiType] = status
 		end
 	end
-	wire_expression2_reload() //reload extensions
+	wire_expression2_reload() --reload extensions
 end
 
 
-function E2VguiCore.CreatePanel(e2self, panel)
+function E2VguiCore.CreatePanel(e2self, panel, players)
 	if e2self == nil then return end
 	if panel == nil then return end
 	--invalid panel, return
-	if #panel.players == 0 then return end
+	if #panel.players == 0 and players == nil then return end
 	if table.Count(panel.paneldata) == 0 then return end
 
 
 	local e2EntityID = e2self.entity:EntIndex()
-	local players = panel["players"]
+	local players = players or panel["players"]
 	local paneldata = panel["paneldata"]
 	local changes = panel["changes"]
 	local uniqueID = math.Round(paneldata["uniqueID"])
+	if #players == 0 then return end
 
 	local pnlType = paneldata["typeID"]
 	if pnlType == nil or not E2VguiCore.vgui_types[string.lower(pnlType)..".lua"] then
@@ -235,27 +236,27 @@ function E2VguiCore.CreatePanel(e2self, panel)
 		return
 	end
 
-	//Check if the player hit the spam protection limit
+	--Check if the player hit the spam protection limit
 	if not E2VguiCore.CanUpdateVgui(e2self.player) then return end
 	e2self.player.e2vgui_tempPanels = e2self.player.e2vgui_tempPanels + 1
 
-	players = E2VguiCore.FilterPlayers(players) //remove redundant names and not-player entries
-	players = E2VguiCore.FilterBlocklist(players,e2self.player) //has anyone e2self.player in their block list ?
-	players = E2VguiCore.FilterPermission(players,e2self.player) //check if e2self.player is allowed to use vguicore
-	if table.Count(players) == 0 then return end //there are no players to create the panel for therefore return
+	players = E2VguiCore.FilterPlayers(players) --remove redundant names and not-player entries
+	players = E2VguiCore.FilterBlocklist(players,e2self.player) --has anyone e2self.player in their block list ?
+	players = E2VguiCore.FilterPermission(players,e2self.player) --check if e2self.player is allowed to use vguicore
+	if table.Count(players) == 0 then return end --there are no players to create the panel for therefore return
 
 	for _,values in pairs(changes) do
 		local key = values[1]
 		local value = values[2]
 		paneldata[key] = value
 	end
-	//update panels values
+	--update panels values
 	panel["players"] = players
 	panel["paneldata"] = paneldata
 	panel["changes"] = {}
 
 	local notCreatedYet = {}
-	//update server table with new values
+	--update server table with new values
 	for k,ply in pairs(players) do
 		if ply.e2_vgui_core == nil or ply.e2_vgui_core[e2EntityID] == nil
 			or ply.e2_vgui_core[e2EntityID][uniqueID] == nil then
@@ -278,21 +279,20 @@ function E2VguiCore.CreatePanel(e2self, panel)
 end
 
 
-function E2VguiCore.ModifyPanel(e2self, panel,updateChildsToo)
+function E2VguiCore.ModifyPanel(e2self, panel, players, updateChildsToo)
 	if e2self == nil then return end
 	if panel == nil then return end
 	--invalid panel, return
-	if #panel.players == 0 then return end
+	if #panel.players == 0 and players == nil then return end
 	if table.Count(panel.paneldata) == 0 then return end
 
 	local e2EntityID = e2self.entity:EntIndex()
-	local players = panel["players"]
+	local players = players or panel["players"]
 	local paneldata = panel["paneldata"]
 	local changes = panel["changes"]
-	if #players == 0 then return end
+	local uniqueID = math.Round(paneldata["uniqueID"])
 	if #players == 0 then return end
 	if #changes == 0 then return end
-	local uniqueID = math.Round(paneldata["uniqueID"])
 
 	local pnlType = paneldata["typeID"]
 	if pnlType == nil or not E2VguiCore.vgui_types[string.lower(pnlType)..".lua"] then
@@ -300,16 +300,16 @@ function E2VguiCore.ModifyPanel(e2self, panel,updateChildsToo)
 		return
 	end
 
-	//Check if the player hit the spam protection limit
+	--Check if the player hit the spam protection limit
 	if not E2VguiCore.CanUpdateVgui(e2self.player) then return end
 	e2self.player.e2vgui_tempPanels = e2self.player.e2vgui_tempPanels + 1
 
-	players = E2VguiCore.FilterPlayers(players) //remove redundant names and not-player entries
-	players = E2VguiCore.FilterBlocklist(players,e2self.player) //has anyone e2self.player in their block list ?
-	players = E2VguiCore.FilterPermission(players,e2self.player) //check if e2self.player is allowed to use vguicore
-	if table.Count(players) == 0 then return end //there are no players to create the panel for therefore return
+	players = E2VguiCore.FilterPlayers(players) --remove redundant names and not-player entries
+	players = E2VguiCore.FilterBlocklist(players,e2self.player) --has anyone e2self.player in their block list ?
+	players = E2VguiCore.FilterPermission(players,e2self.player) --check if e2self.player is allowed to use vguicore
+	if table.Count(players) == 0 then return end --there are no players to create the panel for therefore return
 
-	//convert changes table format to paneldata's table's format
+	--convert changes table format to paneldata's table's format
 	local simplifiedChanges = {}
 	for _,values in pairs(changes) do
 		local key = values[1]
@@ -318,20 +318,20 @@ function E2VguiCore.ModifyPanel(e2self, panel,updateChildsToo)
 	end
 
 	panel["players"] = players
-	panel["paneldata"] = table.Merge(paneldata,simplifiedChanges) //integrate changes into paneldata
-	panel["changes"] = {}	//changes are send to the player with pnl_modify() so reset them
+	panel["paneldata"] = table.Merge(paneldata,simplifiedChanges) --integrate changes into paneldata
+	panel["changes"] = {}	--changes are send to the player with pnl_modify() so reset them
 
-	//TODO: prevent recursion - Infinite loops
+	--TODO: prevent recursion - Infinite loops
 	if updateChildsToo == true then
 		local childpanels = E2VguiCore.GetChildren(e2self,panel)
 		for _,childpnl in pairs(childpanels) do
-			E2VguiCore.ModifyPanel(e2self, childpnl, true)
+			E2VguiCore.ModifyPanel(e2self, childpnl, nil, true)
 		end
 	end
 	local stillOpen = {}
-	//update server table with new values
+	--update server table with new values
 	for k,ply in pairs(players) do
-		if ply.e2_vgui_core == nil then continue end //the player closed the panel already, no need to update
+		if ply.e2_vgui_core == nil then continue end --the player closed the panel already, no need to update
 		if ply.e2_vgui_core[e2EntityID] == nil then continue end
 		--table.copy here because otherwise it sets the same table for every player
 		-- but we want every player to have a individual table
@@ -349,7 +349,7 @@ function E2VguiCore.ModifyPanel(e2self, panel,updateChildsToo)
 end
 
 function E2VguiCore.registerAttributeChange(panel,attributeName, ...)
-	//TODO: check if the attributeName exists for this panel type
+	--TODO: check if the attributeName exists for this panel type
 	panel.changes[#panel["changes"]+1] = {attributeName,...}
 end
 
@@ -357,7 +357,7 @@ function E2VguiCore.AddDefaultPanelTable(pnlType,func)
 	E2VguiCore["defaultPanelTable"][pnlType] = func
 end
 
-//TODO: prevent recursion - Infinite loops
+--TODO: prevent recursion - Infinite loops
 function E2VguiCore.GetChildren(e2self,panel)
 	local children = {}
 	for _,ply in pairs(panel["players"]) do
@@ -378,7 +378,7 @@ function E2VguiCore.GetDefaultPanelTable(pnlType,uniqueID,parentID)
 	return tbl
 end
 
-// dButton = xdb, used to create the constructors later
+-- dButton = xdb, used to create the constructors later
 function E2VguiCore.RegisterTypeWithID(e2Type,id)
 	E2VguiCore["e2_types"][e2Type] = id
 end
@@ -481,7 +481,7 @@ function E2VguiCore.GetPanelAttribute(ply,e2EntityID,pnlVar,attributeName)
 end
 
 
-//Converts a normal lua table into an e2Table
+--Converts a normal lua table into an e2Table
 function E2VguiCore.convertToE2Table(tbl)
     /*	{n={},ntypes={},s={},stypes={},size=0}
     n 			- table for number keys
@@ -494,7 +494,7 @@ function E2VguiCore.convertToE2Table(tbl)
 
     for k,v in pairs( tbl ) do
         local vtype = type(v)
-        //convert number to Normal otherwise it won't get recognized as wire datatype
+        --convert number to Normal otherwise it won't get recognized as wire datatype
         if vtype == "number" then vtype = "normal" end
         local keyType = type(k)
 
@@ -502,24 +502,24 @@ function E2VguiCore.convertToE2Table(tbl)
         if wire_expression_types[string.upper(vtype)] != nil then
             e2Type = wire_expression_types[string.upper(vtype)][1]
         elseif vtype == "boolean" and wire_expression_types[string.upper(vtype)] == nil then
-            //handle booleans beforehand because they have no type in e2
+            --handle booleans beforehand because they have no type in e2
             e2Type = wire_expression_types["NORMAL"][1]
         else
             ErrorNoHalt("[SERVER VGUI LIB] Unknown type detected key:"..vtype.." value:"..tostring(v))
             continue
         end
 
-        //determine if the key is a number or anything else
+        --determine if the key is a number or anything else
         local indextype = (keyType == "number" and "n" or "s")
         if indextype == "n" then
             e2table[indextype.."types"][k] = e2Type
         else
-            //convert the key to a string
+            --convert the key to a string
             e2table[indextype.."types"][tostring(k)] = e2Type
         end
 
         if vtype == "table" then
-            //colors are getting detected as table, so we make sure they get parsed as vector4
+            --colors are getting detected as table, so we make sure they get parsed as vector4
             if IsColor(v) then
                 e2table[indextype.."types"][indextype == "n" and k or tostring(k)] = wire_expression_types["VECTOR4"][1]
                 e2table[indextype][k] = {v.r,v.g,v.b,v.a}
@@ -542,15 +542,15 @@ function E2VguiCore.convertToE2Table(tbl)
                 e2table[indextype.."types"][indextype == "n" and k or tostring(k)] = wire_expression_types["VECTOR4"][1]
                 e2table[indextype][k] = v
 			else
-				//TODO:implement protection against recursive tables. Infinite loopsnot
+				--TODO:implement protection against recursive tables. Infinite loopsnot
                 e2table[indextype][k] = E2VguiCore.convertToE2Table(v)
             end
         elseif vtype == "boolean" then
-            //booleans have no type in e2 so parse them as number
+            --booleans have no type in e2 so parse them as number
             e2table[indextype.."types"][indextype == "n" and k or tostring(k)] = wire_expression_types["NORMAL"][1]
             e2table[indextype][k] = v and 1 or 0
         else
-            //everything that has a valid type in e2 just put the value inside
+            --everything that has a valid type in e2 just put the value inside
             e2table[indextype][k] = v
         end
         size = size + 1
@@ -566,7 +566,7 @@ function E2VguiCore.IsE2Table(tbl)
 	if tbl.size == nil then return false end
 	return true
 end
-//Converts a e2table into a lua table
+--Converts a e2table into a lua table
 function E2VguiCore.convertToLuaTable(tbl)
     /*	{n={},ntypes={},s={},stypes={},size=0}
     n 			- table for number keys
@@ -601,7 +601,7 @@ function E2VguiCore.convertLuaTableToArray(tbl)
 	local array = {}
 	for _,value in pairs(tbl) do
 		if istable(value) and not IsColor(value) then
-			//remove table
+			--remove table
 		elseif IsColor(value) then
 			array[#array + 1] = value.r
 			array[#array + 1] = value.g
@@ -697,13 +697,13 @@ end
 -- 	local panel = nil
 -- 	local targets = {}
 -- 	for k,v in pairs(players) do
--- 		//Get the players panel
+-- 		--Get the players panel
 -- 		panel = E2VguiCore.GetPanelByID(v,e2EntityID, uniqueID)
--- 		//check if it is valid
+-- 		--check if it is valid
 -- 		if panel == nil or not istable(panel) then
 -- 			continue
 -- 		end
--- 		//put it in the table to be updated on the client via net-message
+-- 		--put it in the table to be updated on the client via net-message
 -- 		table.insert(targets,v)
 -- 	end
 -- 	net.Start("E2Vgui.SetPanelVisibility")
