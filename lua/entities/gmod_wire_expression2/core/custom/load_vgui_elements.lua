@@ -5,7 +5,7 @@ E2Lib.RegisterExtension("vgui", true, "Allows E2s to create vgui panels.")
 	/lua/entities/gmod_wire_expression2/core/extloader.lua
 	and modified it so it loads my files from the directories (/core/vgui_elements/server and /core/vgui_elements/client).
 	(Normally files inside sub-directories will get ignored by the default
-	loading method -> https:--github.com/wiremod/wire/blob/8f0d491ff83b9c38ab28b3f5d7ebe924fad12a34/lua/entities/gmod_wire_expression2/core/extloader.lua#L74-L75)
+	loading method -> https://github.com/wiremod/wire/blob/8f0d491ff83b9c38ab28b3f5d7ebe924fad12a34/lua/entities/gmod_wire_expression2/core/extloader.lua#L74-L75)
 ]]--
 
 
