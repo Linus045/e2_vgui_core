@@ -73,6 +73,8 @@ E2VguiLib = {
         end,
         multiselect = function(panel,value) panel:SetMultiSelect(value) end,
         dock = function(panel,value) panel:Dock(value) end,
+        dockMargin = function(panel,values) panel:DockMargin(values[1],values[2],values[3],values[4]) end,
+        dockPadding = function(panel,values) panel:DockPadding(values[1],values[2],values[3],values[4]) end,
         enabled = function(panel,value) panel:SetEnabled(value) end,
         icon = function(panel,value) panel:SetIcon(value) end,
         model = function(panel,value) panel:SetModel(value) end,
@@ -82,7 +84,7 @@ E2VguiLib = {
         ambientlight = function(panel,value) panel:SetAmbientLight(value) end,
         animatemodel = function(panel,value) panel:SetAnimated(value) end,
         directionallight = function(panel,values)
-            panel:SetDirectionalLight(values[1],values[2]) 
+            panel:SetDirectionalLight(values[1],values[2])
         end,
         label = function(panel,value) panel:SetLabel(value) end,
         drawOutlinedRect = function(panel,value)

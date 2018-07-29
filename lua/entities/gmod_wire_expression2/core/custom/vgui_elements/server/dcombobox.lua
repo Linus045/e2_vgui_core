@@ -142,34 +142,6 @@ e2function dcombobox dcombobox(number uniqueID,number parentID)
 end
 
 do--[[setter]]--
-	e2function void dcombobox:setPos(number posX,number posY)
-		E2VguiCore.registerAttributeChange(this,"posX", posX)
-		E2VguiCore.registerAttributeChange(this,"posY", posY)
-	end
-
-	e2function void dcombobox:setPos(vector2 pos)
-		E2VguiCore.registerAttributeChange(this,"posX", pos[1])
-		E2VguiCore.registerAttributeChange(this,"posY", pos[2])
-	end
-
-	e2function void dcombobox:setSize(number width,number height)
-		E2VguiCore.registerAttributeChange(this,"width", width)
-		E2VguiCore.registerAttributeChange(this,"height", height)
-	end
-
-	e2function void dcombobox:setSize(vector2 pnlSize)
-		E2VguiCore.registerAttributeChange(this,"width", pnlSize[1])
-		E2VguiCore.registerAttributeChange(this,"height", pnlSize[2])
-	end
-
-	e2function void dcombobox:setWidth(number width)
-		E2VguiCore.registerAttributeChange(this,"width", width)
-	end
-
-	e2function void dcombobox:setHeight(number height)
-		E2VguiCore.registerAttributeChange(this,"height", height)
-	end
-
 	--------------------------------choices--------------------------------
 	e2function void dcombobox:addChoice(string displayText,string data)
 		E2VguiCore.registerAttributeChange(this,"choice", {displayText,data})
@@ -211,41 +183,10 @@ do--[[setter]]--
 	e2function void dcombobox:setSortItems(number sortItems)
 		E2VguiCore.registerAttributeChange(this,"sortItems", sortItems > 0)
 	end
-
-	e2function void dcombobox:setVisible(number visible)
-		local vis = visible > 0
-		E2VguiCore.registerAttributeChange(this,"visible", vis)
-	end
-
-	e2function void dcombobox:dock(number dockType)
-		E2VguiCore.registerAttributeChange(this,"dock", dockType)
-	end
 -- setter
 end
 
 do--[[getter]]--
-	e2function vector2 dcombobox:getPos(entity ply)
-		return {
-			E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"posX") or 0,
-			E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"posY") or 0
-		}
-	end
-
-	e2function vector2 dcombobox:getSize(entity ply)
-		return {
-			E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"width") or 0,
-			E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"height") or 0
-		}
-	end
-
-	e2function number dcombobox:getWidth(entity ply)
-		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"width") or 0
-	end
-
-	e2function number dcombobox:getHeight(entity ply)
-		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"height") or 0
-	end
-
 	e2function string dcombobox:getValue(entity ply)
 		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"value") or ""
 	end
@@ -257,85 +198,5 @@ do--[[getter]]--
 	e2function string dcombobox:getData(entity ply)
 		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"data") or ""
 	end
-
-	e2function number dcombobox:isVisible(entity ply)
-	return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"visible") and 1 or 0
-	end
 -- getter
-end
-
-do--[[utility]]--
-	e2function void dcombobox:create()
-		E2VguiCore.CreatePanel(self,this)
-	end
-
-	e2function void dcombobox:create(array players)
-		E2VguiCore.CreatePanel(self,this,players)
-	end
-
-	e2function void dcombobox:modify()
-		E2VguiCore.ModifyPanel(self,this)
-	end
-
-	e2function void dcombobox:modify(array players)
-		E2VguiCore.ModifyPanel(self,this,players)
-	end
-
-	e2function void dcombobox:modify(n updateChildsToo)
-		E2VguiCore.ModifyPanel(self, this, nil, updateChildsToo > 0)
-	end
-
-	e2function void dcombobox:modify(n updateChildsToo,array players)
-		E2VguiCore.ModifyPanel(self, this, players, updateChildsToo > 0)
-	end
-
-	e2function void dcombobox:closePlayer(entity ply)
-		if IsValid(ply) and ply:IsPlayer() then
-			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
-		end
-	end
-
-	e2function void dcombobox:closeAll()
-		for _,ply in pairs(this["players"]) do
-			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
-		end
-	end
-
-	e2function void dcombobox:addPlayer(entity ply)
-		if IsValid(ply) and ply:IsPlayer() then
-			--check for redundant players will be done in CreatePanel or ModifyPanel
-			--maybe change that ?
-			table.insert(this["players"],ply)
-		end
-	end
-
-	e2function void dcombobox:removePlayer(entity ply)
-		if IsValid(ply) and ply:IsPlayer() then
-			for k,v in pairs(this["players"]) do
-				if ply == v then
-					this["players"][k] = nil
-				end
-			end
-		end
-	end
-
-	e2function void dcombobox:remove(entity ply)
-		if IsValid(ply) and ply:IsPlayer() then
-			for key,pnlPly in pairs(this["players"]) do
-				if pnlPly == ply then
-					this["players"][key] = nil
-				end
-			end
-			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
-		end
-	end
-
-	e2function void dcombobox:removeAll()
-		for _,ply in pairs(this["players"]) do
-			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
-		end
-		this["players"] = {}
-	end
-
--- utility
 end

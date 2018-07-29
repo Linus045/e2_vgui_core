@@ -144,34 +144,6 @@ end
 --[[------------------------------------------------------------------
 								setter
 ------------------------------------------------------------------]]--
-	e2function void dbutton:setPos(number posX,number posY)
-		E2VguiCore.registerAttributeChange(this,"posX", posX)
-		E2VguiCore.registerAttributeChange(this,"posY", posY)
-	end
-
-	e2function void dbutton:setPos(vector2 pos)
-		E2VguiCore.registerAttributeChange(this,"posX", pos[1])
-		E2VguiCore.registerAttributeChange(this,"posY", pos[2])
-	end
-
-	e2function void dbutton:setSize(number width,number height)
-		E2VguiCore.registerAttributeChange(this,"width", width)
-		E2VguiCore.registerAttributeChange(this,"height", height)
-	end
-
-	e2function void dbutton:setSize(vector2 pnlSize)
-		E2VguiCore.registerAttributeChange(this,"width", pnlSize[1])
-		E2VguiCore.registerAttributeChange(this,"height", pnlSize[2])
-	end
-
-	e2function void dbutton:setWidth(number width)
-		E2VguiCore.registerAttributeChange(this,"width", width)
-	end
-
-	e2function void dbutton:setHeight(number height)
-		E2VguiCore.registerAttributeChange(this,"height", height)
-	end
-
 	e2function void dbutton:setColor(vector col)
 		E2VguiCore.registerAttributeChange(this,"color", Color(col[1],col[2],col[3],255))
 	end
@@ -225,54 +197,15 @@ end
 		E2VguiCore.registerAttributeChange(this,"enabled", enabled > 0)
 	end
 
-	e2function void dbutton:setVisible(number visible)
-		local vis = visible > 0
-		E2VguiCore.registerAttributeChange(this,"visible", vis)
-	end
-
-	e2function void dbutton:dock(number dockType)
-		E2VguiCore.registerAttributeChange(this,"dock", dockType)
-	end
-
 --[[------------------------------------------------------------------
 								getter
 ------------------------------------------------------------------]]--
-	e2function vector2 dbutton:getPos(entity ply)
-	return {
-		E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"posX") or 0,
-		E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"posY") or 0
-	}
-	end
-
-	e2function vector2 dbutton:getSize(entity ply)
-	return {
-		E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"width") or 0,
-		E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"height") or 0
-	}
-	end
-
-	e2function number dbutton:getWidth(entity ply)
-		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"width") or 0
-	end
-
-	e2function number dbutton:getHeight(entity ply)
-		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"height") or 0
-	end
-
 	e2function vector dbutton:getColor(entity ply)
 		local col =  E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"color")
 		if col == nil then
 			return {0,0,0}
 		end
 		return {col.r,col.g,col.b}
-	end
-
-	e2function string dbutton:getText(entity ply)
-		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"text") or ""
-	end
-
-	e2function number dbutton:getEnabled(entity ply)
-	return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"enabled") and 1 or 0
 	end
 
 	e2function vector4 dbutton:getColor4(entity ply)
@@ -283,81 +216,10 @@ end
 		return {col.r,col.g,col.b,col.a}
 	end
 
-	e2function number dbutton:isVisible(entity ply)
-		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"visible") and 1 or 0
+	e2function string dbutton:getText(entity ply)
+		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"text") or ""
 	end
 
---[[------------------------------------------------------------------
-								utility
-------------------------------------------------------------------]]--
-	e2function void dbutton:create()
-		E2VguiCore.CreatePanel(self,this)
-	end
-
-	e2function void dbutton:create(array players)
-		E2VguiCore.CreatePanel(self,this,players)
-	end
-
-	e2function void dbutton:modify()
-		E2VguiCore.ModifyPanel(self,this)
-	end
-
-	e2function void dbutton:modify(array players)
-		E2VguiCore.ModifyPanel(self,this,players)
-	end
-
-	e2function void dbutton:modify(n updateChildsToo)
-		E2VguiCore.ModifyPanel(self, this, nil, updateChildsToo > 0)
-	end
-
-	e2function void dbutton:modify(n updateChildsToo,array players)
-		E2VguiCore.ModifyPanel(self, this, players, updateChildsToo > 0)
-	end
-
-	e2function void dbutton:closePlayer(entity ply)
-		if IsValid(ply) and ply:IsPlayer() then
-			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
-		end
-	end
-
-	e2function void dbutton:closeAll()
-		for _,ply in pairs(this["players"]) do
-			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
-		end
-	end
-
-	e2function void dbutton:addPlayer(entity ply)
-		if IsValid(ply) and ply:IsPlayer() then
-			--check for redundant players will be done in CreatePanel or ModifyPanel
-			--maybe change that ?
-			table.insert(this["players"],ply)
-		end
-	end
-
-	e2function void dpanel:removePlayer(entity ply)
-		if IsValid(ply) and ply:IsPlayer() then
-			for k,v in pairs(this["players"]) do
-				if ply == v then
-					this["players"][k] = nil
-				end
-			end
-		end
-	end
-
-	e2function void dbutton:remove(entity ply)
-		if IsValid(ply) and ply:IsPlayer() then
-			for key,pnlPly in pairs(this["players"]) do
-				if pnlPly == ply then
-					this["players"][key] = nil
-				end
-			end
-			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
-		end
-	end
-
-	e2function void dbutton:removeAll()
-		for _,ply in pairs(this["players"]) do
-			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
-		end
-		this["players"] = {}
+	e2function number dbutton:getEnabled(entity ply)
+		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"enabled") and 1 or 0
 	end

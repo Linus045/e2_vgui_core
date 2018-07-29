@@ -140,34 +140,6 @@ e2function dpropertysheet dpropertysheet(number uniqueID,number parentID)
 end
 
 do--[[setter]]--
-	e2function void dpropertysheet:setPos(number posX,number posY)
-		E2VguiCore.registerAttributeChange(this,"posX", posX)
-		E2VguiCore.registerAttributeChange(this,"posY", posY)
-	end
-
-	e2function void dpropertysheet:setPos(vector2 pos)
-		E2VguiCore.registerAttributeChange(this,"posX", pos[1])
-		E2VguiCore.registerAttributeChange(this,"posY", pos[2])
-	end
-
-	e2function void dpropertysheet:setSize(number width,number height)
-		E2VguiCore.registerAttributeChange(this,"width", width)
-		E2VguiCore.registerAttributeChange(this,"height", height)
-	end
-
-	e2function void dpropertysheet:setSize(vector2 pnlSize)
-		E2VguiCore.registerAttributeChange(this,"width", pnlSize[1])
-		E2VguiCore.registerAttributeChange(this,"height", pnlSize[2])
-	end
-
-	e2function void dpropertysheet:setWidth(number width)
-		E2VguiCore.registerAttributeChange(this,"width", width)
-	end
-
-	e2function void dpropertysheet:setHeight(number height)
-		E2VguiCore.registerAttributeChange(this,"height", height)
-	end
-
 	e2function void dpropertysheet:setColor(vector col)
 		E2VguiCore.registerAttributeChange(this,"color", Color(col[1],col[2],col[3],255))
 	end
@@ -188,15 +160,6 @@ do--[[setter]]--
 		E2VguiCore.registerAttributeChange(this,"color", Color(red,green,blue,alpha))
 	end
 
-	e2function void dpropertysheet:setVisible(number visible)
-		local vis = visible > 0
-		E2VguiCore.registerAttributeChange(this,"visible", vis)
-	end
-
-	e2function void dpropertysheet:dock(number dockType)
-		E2VguiCore.registerAttributeChange(this,"dock", dockType)
-	end
-
 	e2function void dpropertysheet:addSheet(string name,xdp panel,string icon)
 		E2VguiCore.registerAttributeChange(this,"addsheet",{["name"] = name, ["panelID"] = panel["paneldata"]["uniqueID"], ["icon"] = icon, ["e2EntityID"] = self.entity:EntIndex() })
 	end
@@ -204,28 +167,6 @@ do--[[setter]]--
 end
 
 do--[[getter]]--
-	e2function vector2 dpropertysheet:getPos(entity ply)
-		return {
-			E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"posX") or 0,
-			E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"posY") or 0
-		}
-	end
-
-	e2function vector2 dpropertysheet:getSize(entity ply)
-		return {
-			E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"width") or 0,
-			E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"height") or 0
-		}
-	end
-
-	e2function number dpropertysheet:getWidth(entity ply)
-		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"width") or 0
-	end
-
-	e2function number dpropertysheet:getHeight(entity ply)
-		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"height") or 0
-	end
-
 	e2function vector dpropertysheet:getColor(entity ply)
 		local col =  E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"color")
 		if col == nil then
@@ -242,91 +183,8 @@ do--[[getter]]--
 		return {col.r,col.g,col.b,col.a}
 	end
 
-	e2function number dpropertysheet:isVisible(entity ply)
-		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"visible") and 1 or 0
-	end
-
 	e2function string dpropertysheet:getText(entity ply)
 		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"text") or ""
 	end
-
-
 -- getter
-end
-
-do--[[utility]]--
-	e2function void dpropertysheet:create()
-		E2VguiCore.CreatePanel(self,this)
-	end
-
-	e2function void dpropertysheet:create(array players)
-		E2VguiCore.CreatePanel(self,this,players)
-	end
-
-	e2function void dpropertysheet:modify()
-		E2VguiCore.ModifyPanel(self,this)
-	end
-
-	e2function void dpropertysheet:modify(array players)
-		E2VguiCore.ModifyPanel(self,this,players)
-	end
-
-	e2function void dpropertysheet:modify(n updateChildsToo)
-		E2VguiCore.ModifyPanel(self, this, nil, updateChildsToo > 0)
-	end
-
-	e2function void dpropertysheet:modify(n updateChildsToo,array players)
-		E2VguiCore.ModifyPanel(self, this, players, updateChildsToo > 0)
-	end
-
-	e2function void dpropertysheet:closePlayer(entity ply)
-		if IsValid(ply) and ply:IsPlayer() then
-			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
-		end
-	end
-
-	e2function void dpropertysheet:closeAll()
-		for _,ply in pairs(this["players"]) do
-			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
-		end
-	end
-
-	e2function void dpropertysheet:addPlayer(entity ply)
-		if IsValid(ply) and ply:IsPlayer() then
-			--check for redundant players will be done in CreatePanel or ModifyPanel
-			--maybe change that ?
-			table.insert(this["players"],ply)
-		end
-	end
-
-	e2function void dpropertysheet:removePlayer(entity ply)
-		if IsValid(ply) and ply:IsPlayer() then
-			for k,v in pairs(this["players"]) do
-				if ply == v then
-					this["players"][k] = nil
-				end
-			end
-		end
-	end
-
-
-	e2function void dpropertysheet:remove(entity ply)
-		if IsValid(ply) and ply:IsPlayer() then
-			for key,pnlPly in pairs(this["players"]) do
-				if pnlPly == ply then
-					this["players"][key] = nil
-				end
-			end
-			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
-		end
-	end
-
-	e2function void dpropertysheet:removeAll()
-		for _,ply in pairs(this["players"]) do
-			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
-		end
-		this["players"] = {}
-	end
-
--- utility
 end

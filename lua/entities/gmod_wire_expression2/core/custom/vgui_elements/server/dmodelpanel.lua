@@ -143,38 +143,6 @@ e2function dmodelpanel dmodelpanel(number uniqueID,number parentID)
 end
 
 do--[[setter]]--
-	e2function void dmodelpanel:setPos(number posX,number posY)
-		E2VguiCore.registerAttributeChange(this,"posX", posX)
-		E2VguiCore.registerAttributeChange(this,"posY", posY)
-	end
-
-	e2function void dmodelpanel:setPos(vector2 pos)
-		E2VguiCore.registerAttributeChange(this,"posX", pos[1])
-		E2VguiCore.registerAttributeChange(this,"posY", pos[2])
-	end
-
-	e2function void dmodelpanel:center()
-		E2VguiCore.registerAttributeChange(this,"putCenter", true)
-	end
-
-	e2function void dmodelpanel:setSize(number width,number height)
-		E2VguiCore.registerAttributeChange(this,"width", width)
-		E2VguiCore.registerAttributeChange(this,"height", height)
-	end
-
-	e2function void dmodelpanel:setSize(vector2 pnlSize)
-		E2VguiCore.registerAttributeChange(this,"width", pnlSize[1])
-		E2VguiCore.registerAttributeChange(this,"height", pnlSize[2])
-	end
-
-	e2function void dmodelpanel:setWidth(number width)
-		E2VguiCore.registerAttributeChange(this,"width", width)
-	end
-
-	e2function void dmodelpanel:setHeight(number height)
-		E2VguiCore.registerAttributeChange(this,"height", height)
-	end
-
 	e2function void dmodelpanel:setColor(vector col)
 		E2VguiCore.registerAttributeChange(this,"color", Color(col[1],col[2],col[3],255))
 	end
@@ -193,11 +161,6 @@ do--[[setter]]--
 
 	e2function void dmodelpanel:setColor(number red,number green,number blue,number alpha)
 		E2VguiCore.registerAttributeChange(this,"color", Color(red,green,blue,alpha))
-	end
-
-	e2function void dmodelpanel:setVisible(number visible)
-		local vis = visible > 0
-		E2VguiCore.registerAttributeChange(this,"visible", vis)
 	end
 
 	e2function void dmodelpanel:setModel(string model)
@@ -245,36 +208,19 @@ do--[[setter]]--
 		E2VguiCore.registerAttributeChange(this,"directionallight", {direction,col} )
 	end
 
+	e2function void dmodelpanel:setDrawOutlinedRect(vector color)
+		local drawColor = Color(color[1],color[2],color[3],255)
+		E2VguiCore.registerAttributeChange(this,"drawOutlinedRect", drawColor)
+	end
 
-	e2function void dmodelpanel:dock(number dockType)
-		E2VguiCore.registerAttributeChange(this,"dock", dockType)
+	e2function void dmodelpanel:setDrawOutlinedRect(vector4 color)
+		local drawColor = Color(color[1],color[2],color[3],color[4])
+		E2VguiCore.registerAttributeChange(this,"drawOutlinedRect", drawColor)
 	end
 -- setter
 end
 
 do--[[getter]]--
-	e2function vector2 dmodelpanel:getPos(entity ply)
-		return {
-			E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"posX") or 0,
-			E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"posY") or 0
-		}
-	end
-
-	e2function vector2 dmodelpanel:getSize(entity ply)
-		return {
-			E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"width") or 0,
-			E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"height") or 0
-		}
-	end
-
-	e2function number dmodelpanel:getWidth(entity ply)
-		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"width") or 0
-	end
-
-	e2function number dmodelpanel:getHeight(entity ply)
-		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"height") or 0
-	end
-
 	e2function vector dmodelpanel:getColor(entity ply)
 		local col =  E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"color")
 		if col == nil then
@@ -291,92 +237,8 @@ do--[[getter]]--
 		return {col.r,col.g,col.b,col.a}
 	end
 
-	e2function number dmodelpanel:isVisible(entity ply)
-		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"visible") and 1 or 0
-	end
-
 	e2function string dmodelpanel:getModel(entity ply)
 		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"model") or ""
 	end
-
 -- getter
-end
-
-do--[[utility]]--
-	e2function void dmodelpanel:create()
-		E2VguiCore.CreatePanel(self,this)
-	end
-
-	e2function void dmodelpanel:create(array players)
-		E2VguiCore.CreatePanel(self,this,players)
-	end
-
-	e2function void dmodelpanel:modify()
-		E2VguiCore.ModifyPanel(self,this)
-	end
-
-	e2function void dmodelpanel:modify(array players)
-		E2VguiCore.ModifyPanel(self,this,players)
-	end
-
-	e2function void dmodelpanel:modify(n updateChildsToo)
-		E2VguiCore.ModifyPanel(self, this, nil, updateChildsToo > 0)
-	end
-
-	e2function void dmodelpanel:modify(n updateChildsToo,array players)
-		E2VguiCore.ModifyPanel(self, this, players, updateChildsToo > 0)
-	end
-
-	e2function void dmodelpanel:makePopup()
-		E2VguiCore.registerAttributeChange(this,"makepopup",true)
-	end
-
-	e2function void dmodelpanel:closePlayer(entity ply)
-		if IsValid(ply) and ply:IsPlayer() then
-			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
-		end
-	end
-
-	e2function void dmodelpanel:closeAll()
-		for _,ply in pairs(this["players"]) do
-			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
-		end
-	end
-
-	e2function void dmodelpanel:addPlayer(entity ply)
-		if IsValid(ply) and ply:IsPlayer() then
-			--check for redundant players will be done in CreatePanel or ModifyPanel
-			--maybe change that ?
-			table.insert(this["players"],ply)
-		end
-	end
-
-	e2function void dmodelpanel:removePlayer(entity ply)
-		if IsValid(ply) and ply:IsPlayer() then
-			for k,v in pairs(this["players"]) do
-				if ply == v then
-					this["players"][k] = nil
-				end
-			end
-		end
-	end
-
-	e2function void dmodelpanel:remove(entity ply)
-		if IsValid(ply) and ply:IsPlayer() then
-			for key,pnlPly in pairs(this["players"]) do
-				if pnlPly == ply then
-					this["players"][key] = nil
-				end
-			end
-			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
-		end
-	end
-
-	e2function void dmodelpanel:removeAll()
-		for _,ply in pairs(this["players"]) do
-			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
-		end
-		this["players"] = {}
-	end
--- utility
 end

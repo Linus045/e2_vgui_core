@@ -134,36 +134,8 @@ e2function dframe dframe(number uniqueID)
 end
 
 do--[[setter]]--
-	e2function void dframe:setPos(number posX,number posY)
-		E2VguiCore.registerAttributeChange(this,"posX", posX)
-		E2VguiCore.registerAttributeChange(this,"posY", posY)
-	end
-
-	e2function void dframe:setPos(vector2 pos)
-		E2VguiCore.registerAttributeChange(this,"posX", pos[1])
-		E2VguiCore.registerAttributeChange(this,"posY", pos[2])
-	end
-
 	e2function void dframe:center()
 		E2VguiCore.registerAttributeChange(this,"putCenter", true)
-	end
-
-	e2function void dframe:setSize(number width,number height)
-		E2VguiCore.registerAttributeChange(this,"width", width)
-		E2VguiCore.registerAttributeChange(this,"height", height)
-	end
-
-	e2function void dframe:setSize(vector2 pnlSize)
-		E2VguiCore.registerAttributeChange(this,"width", pnlSize[1])
-		E2VguiCore.registerAttributeChange(this,"height", pnlSize[2])
-	end
-
-	e2function void dframe:setWidth(number width)
-		E2VguiCore.registerAttributeChange(this,"width", width)
-	end
-
-	e2function void dframe:setHeight(number height)
-		E2VguiCore.registerAttributeChange(this,"height", height)
 	end
 
 	e2function void dframe:setColor(vector col)
@@ -184,11 +156,6 @@ do--[[setter]]--
 
 	e2function void dframe:setColor(number red,number green,number blue,number alpha)
 		E2VguiCore.registerAttributeChange(this,"color", Color(red,green,blue,alpha))
-	end
-
-	e2function void dframe:setVisible(number visible)
-		local vis = visible > 0
-		E2VguiCore.registerAttributeChange(this,"visible", vis)
 	end
 
 	e2function void dframe:setTitle(string title)
@@ -216,35 +183,10 @@ do--[[setter]]--
 		E2VguiCore.registerAttributeChange(this,"deleteOnClose",  delete > 0 )
 	end
 
-	e2function void dframe:dock(number dockType)
-		E2VguiCore.registerAttributeChange(this,"dock", dockType)
-	end
 -- setter
 end
 
 do--[[getter]]--
-	e2function vector2 dframe:getPos(entity ply)
-		return {
-			E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"posX") or 0,
-			E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"posY") or 0
-		}
-	end
-
-	e2function vector2 dframe:getSize(entity ply)
-		return {
-			E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"width") or 0,
-			E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"height") or 0
-		}
-	end
-
-	e2function number dframe:getWidth(entity ply)
-		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"width") or 0
-	end
-
-	e2function number dframe:getHeight(entity ply)
-		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"height") or 0
-	end
-
 	e2function vector dframe:getColor(entity ply)
 		local col =  E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"color")
 		if col == nil then
@@ -259,10 +201,6 @@ do--[[getter]]--
 			return {0,0,0,255}
 		end
 		return {col.r,col.g,col.b,col.a}
-	end
-
-	e2function number dframe:isVisible(entity ply)
-		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"visible") and 1 or 0
 	end
 
 	e2function string dframe:getTitle(entity ply)
@@ -284,82 +222,9 @@ do--[[getter]]--
 end
 
 do--[[utility]]--
-	e2function void dframe:create()
-		E2VguiCore.CreatePanel(self,this)
-	end
-
-	e2function void dframe:create(array players)
-		E2VguiCore.CreatePanel(self,this,players)
-	end
-
-	e2function void dframe:modify()
-		E2VguiCore.ModifyPanel(self,this)
-	end
-
-	e2function void dframe:modify(array players)
-		E2VguiCore.ModifyPanel(self,this,players)
-	end
-
-	e2function void dframe:modify(n updateChildsToo)
-		E2VguiCore.ModifyPanel(self, this, nil, updateChildsToo > 0)
-	end
-
-	e2function void dframe:modify(n updateChildsToo,array players)
-		E2VguiCore.ModifyPanel(self, this, players, updateChildsToo > 0)
-	end
-
 	e2function void dframe:makePopup()
 		E2VguiCore.registerAttributeChange(this,"makepopup",true)
 	end
-
-	e2function void dframe:closePlayer(entity ply)
-		if IsValid(ply) and ply:IsPlayer() then
-			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
-		end
-	end
-
-	e2function void dframe:closeAll()
-		for _,ply in pairs(this["players"]) do
-			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
-		end
-	end
-
-	e2function void dframe:addPlayer(entity ply)
-		if IsValid(ply) and ply:IsPlayer() then
-			--check for redundant players will be done in CreatePanel or ModifyPanel
-			--maybe change that ?
-			table.insert(this["players"],ply)
-		end
-	end
-
-	e2function void dframe:removePlayer(entity ply)
-		if IsValid(ply) and ply:IsPlayer() then
-			for k,v in pairs(this["players"]) do
-				if ply == v then
-					this["players"][k] = nil
-				end
-			end
-		end
-	end
-
-	e2function void dframe:remove(entity ply)
-		if IsValid(ply) and ply:IsPlayer() then
-			for key,pnlPly in pairs(this["players"]) do
-				if pnlPly == ply then
-					this["players"][key] = nil
-				end
-			end
-			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
-		end
-	end
-
-	e2function void dframe:removeAll()
-		for _,ply in pairs(this["players"]) do
-			E2VguiCore.RemovePanel(self.entity:EntIndex(),this["paneldata"]["uniqueID"],ply)
-		end
-		this["players"] = {}
-	end
-
 
 	e2function void dframe:enableMouseInput(number mouseInput)
 		E2VguiCore.registerAttributeChange(this,"mouseinput",  mouseInput > 0 )
