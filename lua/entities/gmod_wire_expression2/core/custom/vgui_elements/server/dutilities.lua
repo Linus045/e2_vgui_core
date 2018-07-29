@@ -4,6 +4,13 @@ E2Lib.registerConstant("DOCK_LEFT", 2) --LEFT
 E2Lib.registerConstant("DOCK_RIGHT", 3) --RIGHT
 E2Lib.registerConstant("DOCK_TOP", 4) --TOP
 E2Lib.registerConstant("DOCK_BOTTOM", 5) --BOTTOM
+
+E2Lib.registerConstant("BOX_FRONT", 0) --FRONT
+E2Lib.registerConstant("BOX_BACK", 1) --BACK
+E2Lib.registerConstant("BOX_RIGHT", 2) --RIGHT
+E2Lib.registerConstant("BOX_LEFT", 3) --LEFT
+E2Lib.registerConstant("BOX_TOP", 4) --TOP
+E2Lib.registerConstant("BOX_BOTTOM", 5) --BOTTOM
 __e2setcost(5)
 e2function number vguiCanSend()
 	local available = E2VguiCore.CanUpdateVgui(self.player)
@@ -90,6 +97,7 @@ local function addFunction(panelName,panelID,OtherPanelID)
 end
 
 --TODO:Move this stuff elsewhere
+--TODO: Add the functions that are used in every panel (e.g. setPos/setSize) to this as well, to reduce redundant code
 E2VguiCore.registerCallback("loaded_elements",function()
 	for _,otherpanelid in pairs(E2VguiCore.e2_types) do
 		--add getPlayers() function for every panel

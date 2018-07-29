@@ -75,6 +75,15 @@ E2VguiLib = {
         dock = function(panel,value) panel:Dock(value) end,
         enabled = function(panel,value) panel:SetEnabled(value) end,
         icon = function(panel,value) panel:SetIcon(value) end,
+        model = function(panel,value) panel:SetModel(value) end,
+        fov = function(panel,value) panel:SetFOV(value) end,
+        campos = function(panel,value) panel:SetCamPos(value) end,
+        lookat = function(panel,value) panel:SetLookAt(value) end,
+        ambientlight = function(panel,value) panel:SetAmbientLight(value) end,
+        animatemodel = function(panel,value) panel:SetAnimated(value) end,
+        directionallight = function(panel,values)
+            panel:SetDirectionalLight(values[1],values[2]) 
+        end,
         label = function(panel,value) panel:SetLabel(value) end,
         drawOutlinedRect = function(panel,value)
             function panel:PaintOver()
