@@ -22,6 +22,10 @@ E2VguiPanels["vgui_elements"]["functions"]["dframe"]["createFunc"] = function(un
 
 	if pnlData["color"] ~= nil then
 		function panel:Paint(w,h)
+			if ( self.m_bBackgroundBlur ) then
+				Derma_DrawBackgroundBlur( self, self.m_fCreateTime )
+			end
+
 			local col = pnlData["color"]
 			local col2 = Color(col.r*0.8%255,col.g*0.8%255,col.b*0.8%255,col.a)
 			local col3 = Color(col.r*0.4%255,col.g*0.4%255,col.b*0.4%255,col.a)
@@ -50,6 +54,10 @@ E2VguiPanels["vgui_elements"]["functions"]["dframe"]["modifyFunc"] = function(un
 	--TODO: optimize the contrast setting
 	if panel["pnlData"]["color"] ~= nil then
 		function panel:Paint(w,h)
+			if ( self.m_bBackgroundBlur ) then
+				Derma_DrawBackgroundBlur( self, self.m_fCreateTime )
+			end
+
 			local col = panel["pnlData"]["color"]
 			local col2 = Color(col.r*0.8%255,col.g*0.8%255,col.b*0.8%255,col.a)
 			local col3 = Color(col.r*0.4%255,col.g*0.4%255,col.b*0.4%255,col.a)

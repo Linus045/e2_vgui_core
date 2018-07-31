@@ -141,11 +141,6 @@ do--[[setter]]--
 	e2function void dcheckbox:setChecked(n checked)
 		E2VguiCore.registerAttributeChange(this,"checked", checked > 0)
 	end
-
-	e2function void dcheckbox:setVisible(number visible)
-		local vis = visible > 0
-		E2VguiCore.registerAttributeChange(this,"visible", vis)
-	end
 -- setter
 end
 

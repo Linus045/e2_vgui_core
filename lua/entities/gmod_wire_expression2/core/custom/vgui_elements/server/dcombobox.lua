@@ -163,9 +163,11 @@ do--[[setter]]--
 		E2VguiCore.registerAttributeChange(this,"choice", {displayText,data})
 	end
 
+	--TODO: Potential problem with sending the array to the client
 	e2function void dcombobox:addChoice(string displayText,array data)
 		E2VguiCore.registerAttributeChange(this,"choice", {displayText,data})
 	end
+	--TODO: Potential problem with sending the table to the client
 
 	e2function void dcombobox:addChoice(string displayText,table data)
 		E2VguiCore.registerAttributeChange(this,"choice", {displayText,E2VguiCore.convertToLuaTable(data)})

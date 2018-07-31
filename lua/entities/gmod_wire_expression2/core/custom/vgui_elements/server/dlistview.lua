@@ -159,19 +159,6 @@ do--[[setter]]--
 		E2VguiCore.registerAttributeChange(this,"addLine", {unpack(line)})
 	end
 
-	e2function vector2 dlistview:getIndex(entity ply)
-		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"index") or 0
-	end
-
-	e2function table dlistview:getValues(entity ply)
-		local values = E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"values")
-		if values ~= nil and istable(values) then
-			local table = E2VgiCore.convertToE2Table(values)
-			return table
-		end
-		return {n={},ntypes={},s={},stypes={},size=0}
-	end
-
 	e2function void dlistview:setMultiSelect(number multiselect)
 		E2VguiCore.registerAttributeChange(this,"multiselect", multiselect > 0)
 	end
@@ -195,8 +182,17 @@ do--[[getter]]--
 		return {col.r,col.g,col.b,col.a}
 	end
 
-	e2function string dlistview:getText(entity ply)
-		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"text") or ""
+	e2function vector2 dlistview:getIndex(entity ply)
+		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"index") or 0
+	end
+
+	e2function table dlistview:getValues(entity ply)
+		local values = E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"values")
+		if values ~= nil and istable(values) then
+			local table = E2VgiCore.convertToE2Table(values)
+			return table
+		end
+		return {n={},ntypes={},s={},stypes={},size=0}
 	end
 
 -- getter

@@ -163,7 +163,7 @@ do--[[setter]]--
 		E2VguiCore.registerAttributeChange(this,"colorvalue", Color(red,green,blue,alpha))
 	end
 
-	e2function void dcolormixer:setLabel(string label)
+	e2function void dcolormixer:setText(string label)
 		E2VguiCore.registerAttributeChange(this,"label", label)
 	end
 

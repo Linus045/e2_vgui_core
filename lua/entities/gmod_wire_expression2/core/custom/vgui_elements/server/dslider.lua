@@ -184,7 +184,7 @@ do--[[setter]]--
 	end
 
 	e2function void dslider:setDark(number dark)
-		E2VguiCore.registerAttributeChange(this,"dark", dark > 0 and true or false)
+		E2VguiCore.registerAttributeChange(this,"dark", dark > 0)
 	end
 -- setter
 end

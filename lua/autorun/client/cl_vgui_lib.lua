@@ -48,7 +48,7 @@ E2VguiLib = {
             end
             panel:SetFont(font)
         end,
-        checked = function(panel,value) panel:SetChecked(value) end,
+        checked = function(panel,value) panel:SetValue(value) end,
         value = function(panel,value) panel:SetValue(value) end,
         choice = function(panel,value) panel:AddChoice(value[1],value[2]) end,
         clear = function(panel,value) panel:Clear() end,
@@ -94,7 +94,7 @@ E2VguiLib = {
             end
         end,
         sortItems = function(panel,value) panel:SetSortItems(value) end,
-        backgroundBlur = function(panel,value) panel:SetBackgroundBlur(value) end
+        backgroundBlur = function(panel,value) print(panel) panel:SetBackgroundBlur(value) end
     }
 }
 

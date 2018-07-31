@@ -162,7 +162,7 @@ do--[[setter]]--
 		E2VguiCore.registerAttributeChange(this,"title",  title )
 	end
 
-	e2function void dframe:setBackgroundBlue(number backgroundBlur)
+	e2function void dframe:setBackgroundBlur(number backgroundBlur)
 		E2VguiCore.registerAttributeChange(this,"backgroundBlur",  backgroundBlur > 0 )
 	end
 
