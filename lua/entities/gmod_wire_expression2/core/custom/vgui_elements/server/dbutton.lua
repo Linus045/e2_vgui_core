@@ -184,6 +184,14 @@ end
 		E2VguiCore.registerAttributeChange(this,"text", text)
 	end
 
+	e2function void dbutton:setFont(string font)
+		E2VguiCore.registerAttributeChange(this,"font", {font , 12})
+	end
+
+	e2function void dbutton:setFont(string font, number fontsize)
+		E2VguiCore.registerAttributeChange(this,"font", {font , fontsize})
+	end
+
 	e2function void dbutton:setCornerRadius(number radius)
 		E2VguiCore.registerAttributeChange(this,"radius", radius)
 	end
