@@ -94,7 +94,7 @@ E2VguiLib = {
             end
         end,
         sortItems = function(panel,value) panel:SetSortItems(value) end,
-        backgroundBlur = function(panel,value) print(panel) panel:SetBackgroundBlur(value) end
+        backgroundBlur = function(panel,value) panel:SetBackgroundBlur(value) end
     }
 }
 
