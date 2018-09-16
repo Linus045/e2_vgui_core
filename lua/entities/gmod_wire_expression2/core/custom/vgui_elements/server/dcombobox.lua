@@ -172,6 +172,27 @@ do--[[setter]]--
 	e2function void dcombobox:addChoice(string displayText,table data)
 		E2VguiCore.registerAttributeChange(this,"choice", {displayText,E2VguiCore.convertToLuaTable(data)})
 	end
+
+	e2function void dcombobox:addChoices(array dataList)
+		for index,value in pairs(dataList) do
+			if type(value) != "string" and type(value) != "number" then
+				continue
+			end
+			E2VguiCore.registerAttributeChange(this,"choice", {value,index})
+		end
+	end
+
+	e2function void dcombobox:addChoices(table dataList)
+		local luaTbl = E2VguiCore.convertToLuaTable(dataList)
+		for key,value in pairs(luaTbl) do
+			if type(value) != "string" and type(value) != "number" then
+				continue
+			end
+			E2VguiCore.registerAttributeChange(this,"choice", {key,tostring(value)})
+		end
+	end
+
+
 	--------------------------------choices--------------------------------
 
 	e2function void dcombobox:clear()

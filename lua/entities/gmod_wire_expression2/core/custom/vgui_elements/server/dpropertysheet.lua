@@ -163,6 +163,10 @@ do--[[setter]]--
 	e2function void dpropertysheet:addSheet(string name,xdp panel,string icon)
 		E2VguiCore.registerAttributeChange(this,"addsheet",{["name"] = name, ["panelID"] = panel["paneldata"]["uniqueID"], ["icon"] = icon, ["e2EntityID"] = self.entity:EntIndex() })
 	end
+
+	e2function void dpropertysheet:closeTab(string name)
+		E2VguiCore.registerAttributeChange(this,"closeTab",name)
+	end
 -- setter
 end
 

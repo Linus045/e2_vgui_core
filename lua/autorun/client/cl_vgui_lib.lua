@@ -28,6 +28,8 @@ E2VguiLib = {
         decimals = function(panel,value) panel:SetDecimals(value) end,
         max = function(panel,value) panel:SetMax(value) end,
         min = function(panel,value) panel:SetMin(value) end,
+        removeLine = function(panel,value) if IsValid(panel:GetLine(value)) then panel:RemoveLine(value) end end,
+        sortByColumn = function(panel,value) panel:SortByColumn(value[1],value[2]) end,
         textcolor = function(panel,value) panel:SetTextColor(value) end,
         font = function(panel,values)
             local fontname = values[1]
@@ -69,6 +71,20 @@ E2VguiLib = {
         addLine = function(panel,...)
             if #panel.Lines < 200 then --if we exceed 200 lines don't add more
                 panel:AddLine(unpack(...))
+            end
+        end,
+        closeTab = function(panel,value)
+            local pnl = nil
+            for index,tab in pairs(panel:GetItems()) do
+                if tab.Name == value then
+                    pnl = tab["Tab"]
+                end
+            end
+
+            if IsValid(pnl) then
+                //prevent it from removing the tab if only one is left
+                if #panel.Items == 1 then return end
+                panel:CloseTab(pnl,true)
             end
         end,
         multiselect = function(panel,value) panel:SetMultiSelect(value) end,
