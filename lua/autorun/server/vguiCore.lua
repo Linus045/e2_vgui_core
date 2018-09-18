@@ -116,8 +116,8 @@ Args:
 Return: true OR false
 ---------------------------------------------------------------------------]]
 function E2VguiCore.IsBlocked(ply,target)
-	if target == nil then return true end
-	if ply == nil then return true end
+	if target == nil or not IsValid(target) then return true end
+	if ply == nil or not IsValid(ply) then return true end
 	if E2VguiCore.BlockedPlayer == nil then return true end
 	if E2VguiCore.BlockedPlayer[target:SteamID()] == nil then return false end
 	for k,v in pairs(E2VguiCore.BlockedPlayer[target:SteamID()]) do

@@ -195,11 +195,11 @@ do--[[getter]]--
 		return {n={},ntypes={},s={},stypes={},size=0}
 	end
 
-	e2function void dlistview:clear(entity ply)
+	e2function void dlistview:clear()
 		E2VguiCore.registerAttributeChange(this,"clear", true)
 	end
 
-	e2function void dlistview:removeLine(entity ply,number line)
+	e2function void dlistview:removeLine(number line)
 		E2VguiCore.registerAttributeChange(this,"removeLine", line)
 	end
 
