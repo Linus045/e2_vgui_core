@@ -211,6 +211,24 @@ E2VguiCore.registerCallback("loaded_elements",function()
         end
         ,5)
 
+		--add setVisible(N,E) function for every panel
+		registerFunction( "setVisible", id..":ne", "", function(self,args)
+			local op1 = args[2]
+			local op2 = args[3]
+			local op3 = args[4]
+
+			local panel = op1[1](self,op1)
+			local vis = op2[1](self,op2)
+			local ply = op3[1](self,op3)
+
+			if IsValid(ply) and ply:IsPlayer() then
+				E2VguiCore.registerAttributeChange(panel,"visible", vis > 0)
+				E2VguiCore.ModifyPanel(self, panel, {ply}, false)
+			end
+		end
+		,5)
+
+
 
         --add dock(N) function for every panel
         registerFunction( "dock", id..":n", "", function(self,args)

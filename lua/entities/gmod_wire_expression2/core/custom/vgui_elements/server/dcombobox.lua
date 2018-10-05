@@ -167,15 +167,19 @@ do--[[setter]]--
 	e2function void dcombobox:addChoice(string displayText,array data)
 		E2VguiCore.registerAttributeChange(this,"choice", {displayText,data})
 	end
-	--TODO: Potential problem with sending the table to the client
 
+	--TODO: Potential problem with sending the table to the client
 	e2function void dcombobox:addChoice(string displayText,table data)
 		E2VguiCore.registerAttributeChange(this,"choice", {displayText,E2VguiCore.convertToLuaTable(data)})
 	end
 
 	e2function void dcombobox:addChoices(array dataList)
 		for index,value in pairs(dataList) do
-			if type(value) != "string" and type(value) != "number" then
+			if type(value) == "Player" then
+				value = value:Nick()
+			elseif type(value) == "Entity" then
+				value = tostring(value)
+			elseif type(value) != "string" and type(value) != "number" then
 				continue
 			end
 			E2VguiCore.registerAttributeChange(this,"choice", {value,index})
@@ -185,10 +189,14 @@ do--[[setter]]--
 	e2function void dcombobox:addChoices(table dataList)
 		local luaTbl = E2VguiCore.convertToLuaTable(dataList)
 		for key,value in pairs(luaTbl) do
-			if type(value) != "string" and type(value) != "number" then
+			if type(value) == "Player" then
+				value = value
+			elseif type(value) == "Entity" then
+				value = value
+			elseif type(value) != "string" and type(value) != "number" then
 				continue
 			end
-			E2VguiCore.registerAttributeChange(this,"choice", {key,tostring(value)})
+			E2VguiCore.registerAttributeChange(this,"choice", {key,value})
 		end
 	end
 

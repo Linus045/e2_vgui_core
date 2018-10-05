@@ -575,23 +575,27 @@ function E2VguiCore.convertToLuaTable(tbl)
     stypes 	- string indices
     */
     local luatable = {}
-	for key,value in pairs(tbl.s) do
-		if istable(value) then
-			if E2VguiCore.IsE2Table(value) then
-				luatable[key] = E2VguiCore.convertToLuaTable(value)
+	if tbl.s != nil then
+		for key,value in pairs(tbl.s) do
+			if istable(value) then
+				if E2VguiCore.IsE2Table(value) then
+					luatable[key] = E2VguiCore.convertToLuaTable(value)
+				else
+	--				luatable[key] = E2VguiCore.convertToLuaTable(E2VguiCore.convertToE2Table(value))
+					luatable[key] = value
+				end
 			else
---				luatable[key] = E2VguiCore.convertToLuaTable(E2VguiCore.convertToE2Table(value))
 				luatable[key] = value
 			end
-		else
-			luatable[key] = value
 		end
 	end
-	for key,value in pairs(tbl.n) do
-		if istable(value) and not IsColor(value) then
-			luatable[key] = E2VguiCore.convertToLuaTable(value)
-		else
-			luatable[key] = value
+	if tbl.n != nil then
+		for key,value in pairs(tbl.n) do
+			if istable(value) and not IsColor(value) then
+				luatable[key] = E2VguiCore.convertToLuaTable(value)
+			else
+				luatable[key] = value
+			end
 		end
 	end
 	return luatable
