@@ -115,8 +115,6 @@ end
 	Args:
 	Return: dcombobox
 ---------------------------------------------------------------------------]]
-
-
 e2function dcombobox dcombobox(number uniqueID)
 	local players = {self.player}
 	if self.entity.e2_vgui_core_default_players != nil and self.entity.e2_vgui_core_default_players[self.entity:EntIndex()] != nil then
@@ -202,7 +200,6 @@ do--[[setter]]--
 
 
 	--------------------------------choices--------------------------------
-
 	e2function void dcombobox:clear()
 		E2VguiCore.registerAttributeChange(this,"clear", true)
 	end
