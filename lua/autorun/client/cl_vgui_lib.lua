@@ -158,6 +158,7 @@ function E2VguiLib.applyAttributes(panel,attributes,otherFormat)
     end
 end
 
+--this updates the pos and size values of the panel that is stored on the server
 function E2VguiLib.UpdatePosAndSizeServer(e2EntityID,uniqueID,panel)
     net.Start("E2Vgui.UpdateServerValues")
     net.WriteInt(e2EntityID,32)
@@ -199,7 +200,7 @@ function E2VguiLib.GetChildPanelIDs(uniqueID,e2EntityID,pnlList)
 end
 
 
---function to block a player, will use name but actually blocks the steamID
+--function to block a player, will use name to identify but actually blocks the steamID
 function E2VguiLib.BlockPlayer(name)
     local target = nil
     for k,v in pairs(player.GetAll()) do
