@@ -182,7 +182,7 @@ do--[[getter]]--
 		return {col.r,col.g,col.b,col.a}
 	end
 
-	e2function vector2 dlistview:getIndex(entity ply)
+	e2function number dlistview:getIndex(entity ply)
 		return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"index") or 0
 	end
 
