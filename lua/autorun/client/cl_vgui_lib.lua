@@ -6,7 +6,7 @@ E2VguiPanels = {
 }
 
 E2VguiLib = {
-    ["BlockedPlayers"] = {}, --list of players this player blocked (they are not allowed to create panels for this player)
+    ["Buddies"] = {}, --list of buddies (they are allowed to create panels for this player)
     ["panelFunctions"] = { --functions for every attribute
         text = function(panel,value) panel:SetText(value) end,
         width = function(panel,value) panel:SetWidth(value) end,
@@ -200,8 +200,8 @@ function E2VguiLib.GetChildPanelIDs(uniqueID,e2EntityID,pnlList)
 end
 
 
---function to block a player, will use name to identify but actually blocks the steamID
-function E2VguiLib.BlockPlayer(name)
+--function to buddy a player, will use name to identify but actually buddies the steamID (updates the datebase and sends new update to server)
+function E2VguiLib.AddBuddyPlayerByName(name)
     local target = nil
     for k,v in pairs(player.GetAll()) do
         if v:Nick() == name then
@@ -210,17 +210,24 @@ function E2VguiLib.BlockPlayer(name)
         end
     end
     if target == nil or target:IsBot() then return end
-    net.Start("E2Vgui.BlockUnblockClient")
+    E2VguiLib.AddBuddyPlayer(target)
+end
+
+--function to buddy a player (updates the datebase and sends new update to server)
+function E2VguiLib.AddBuddyPlayer(target)
+    if not IsValid(target) or target:IsBot() then return end
+    net.Start("E2Vgui.AddRemoveBuddy")
     net.WriteBool(true)
     net.WriteEntity(target)
     net.SendToServer()
-    E2VguiLib.BlockedPlayers[target:SteamID()] = true
-    print("[E2VguiCore] Blocked "..target:Nick() .. "! He can't create derma panels on your client anymore!")
+    E2VguiLib.AddBuddyToDatabase(target)
+    E2VguiLib.ReloadE2VguiPermissionMenu()
+    print("[E2VguiCore] Added "..target:Nick() .. " as buddy! He can create derma panels on your client!")
 end
 
 
---function to unblock a player
-function E2VguiLib.UnblockPlayer(name)
+--unbuddy a player (updates the datebase and sends new update to server)
+function E2VguiLib.RemoveBuddyByName(name)
     local target = nil
     for k,v in pairs(player.GetAll()) do
         if v:Nick() == name then
@@ -229,19 +236,26 @@ function E2VguiLib.UnblockPlayer(name)
         end
     end
     if target == nil or target:IsBot() then return end
-    net.Start("E2Vgui.BlockUnblockClient")
+    E2VguiLib.RemoveBuddy(target)
+end
+
+--unbuddy a player (updates the datebase and sends update to server)
+function E2VguiLib.RemoveBuddy(target)
+    if target == nil or target:IsBot() then return end
+    net.Start("E2Vgui.AddRemoveBuddy")
     net.WriteBool(false)
     net.WriteEntity(target)
     net.SendToServer()
-    E2VguiLib.BlockedPlayers[target:SteamID()] = false
-    print("[E2VguiCore] Unblocked "..target:Nick() .. "! He can now create derma panels on your client again!")
+    E2VguiLib.Buddies[target:SteamID()] = false
+    E2VguiLib.RemoveBuddyFromDatabase(target:SteamID())
+    E2VguiLib.ReloadE2VguiPermissionMenu()
+    print("[E2VguiCore] Removed "..target:Nick() .. " as buddy! He can't create derma panels on your client anymore!")
 end
 
-
---function to return all blocked players
-function E2VguiLib.GetBlockedPlayers()
+--returns all buddies
+function E2VguiLib.GetBuddyPlayers()
     local tbl = {}
-    for k,v in pairs(E2VguiLib.BlockedPlayers) do
+    for k,v in pairs(E2VguiLib.Buddies) do
         table.insert(tbl,player.GetBySteamID(k))
     end
     return tbl
@@ -279,57 +293,57 @@ end
 --[[-------------------------------------------------------------------------
 CONSOLE COMMANDS
 ---------------------------------------------------------------------------]]
-concommand.Add( "wire_vgui_listblockedplayers",
+concommand.Add( "wire_vgui_listbuddies",
 function( ply, cmd, args )
-    local blockedPlayers = E2VguiLib.GetBlockedPlayers()
-    if #blockedPlayers <= 0 then
-        print("No players blocked!")
+    local buddyPlayers = E2VguiLib.GetBuddiesFromDatabase()
+    if #buddyPlayers <= 0 then
+        print("[E2VguiCore] No buddies exist!")
         return
     end
-    print("Blocked Players:")
+    print("[E2VguiCore] Buddied Players:")
     print("---------------------------------------")
-    for k,v in pairs(blockedPlayers) do
-        print("- "..v:Nick().." - "..v:SteamID())
+    for k,entry in pairs(buddyPlayers) do
+        print(entry.UserName.." - "..entry.SteamID)
     end
     print("---------------------------------------")
 end
 ,nil,
-"Prints a list of all blocked players",0)
+"Prints a list of all buddies",0)
 
-concommand.Add( "wire_vgui_blockplayer",
+concommand.Add( "wire_vgui_addbuddy",
 function( ply, cmd, args )
     if #args == 0 then return end
     local name = args[1]
-    E2VguiLib.BlockPlayer(name)
+    E2VguiLib.AddBuddyPlayerByName(name)
 end
 ,function()
     local tbl = {}
     for k,v in pairs(player.GetAll()) do
-        if v != LocalPlayer() and E2VguiLib.BlockedPlayers[v:SteamID()] != true then
-            table.insert(tbl,"wire_vgui_blockplayer " .. "\""..v:Nick() .. "\"")
+        if v != LocalPlayer() and not v:IsBot() and E2VguiLib.Buddies[v:SteamID()] != true then
+            table.insert(tbl,"wire_vgui_addbuddy " .. "\""..v:Nick() .. "\"")
         end
     end
     return tbl
 end,
-"Blocks a client so he can't create derma panels on your client with E2",0)
+"Adds a player to your buddy list which allows him to create derma panels on your client with E2",0)
 
-concommand.Add( "wire_vgui_unblockplayer",
+concommand.Add( "wire_vgui_removebuddy",
 function( ply, cmd, args )
     if #args == 0 then return end
     local name = args[1]
-    E2VguiLib.UnblockPlayer(name)
+    E2VguiLib.RemoveBuddyByName(name)
 end
 ,function()
     local tbl = {}
-    for k,v in pairs(E2VguiLib.BlockedPlayers) do
+    for k,v in pairs(E2VguiLib.Buddies) do
         local ply = player.GetBySteamID( k )
         if ply != LocalPlayer():SteamID() then
-            table.insert(tbl,"wire_vgui_unblockplayer " .. "\"".. ply:Nick() .. "\"")
+            table.insert(tbl,"wire_vgui_removebuddy " .. "\"".. ply:Nick() .. "\"")
         end
     end
     return tbl
 end,
-"Unblocks a client so he can create derma panels on your client with E2",0)
+"Removes a buddy from your list so he can't create derma panels on your client anymore",0)
 
 
 
@@ -443,4 +457,127 @@ function E2VguiLib.convertToLuaTable(tbl)
 		end
 	end
     return luatable
+end
+
+function E2VguiLib.ReloadE2VguiPermissionMenu(panel)
+    if panel == nil then
+        if E2VguiLib.E2VguiPermissionMenuPanel == nil then
+            return
+        else
+            panel = E2VguiLib.E2VguiPermissionMenuPanel
+        end
+    end
+    E2VguiLib.E2VguiPermissionMenuPanel = panel
+
+    panel:Clear()
+    local btnReload = vgui.Create("DButton")
+	btnReload:SetText("Reload")
+	btnReload.DoClick = function(self)
+		E2VguiLib.ReloadE2VguiPermissionMenu()
+	end
+	panel:AddItem(btnReload)
+
+	local lvPermissions =  vgui.Create( "DListView")
+	lvPermissions:SetHeight(200)
+	lvPermissions:AddColumn("Name")
+	lvPermissions:AddColumn("Steam ID")
+
+	local buddies = E2VguiLib.GetBuddiesFromDatabase()
+	for i, buddy in ipairs(buddies) do
+		lvPermissions:AddLine(buddy.UserName, buddy.SteamID)
+	end
+
+	panel:AddItem(lvPermissions)
+
+	local btnRemove = vgui.Create("DButton")
+	btnRemove:SetText("Remove selected Buddy")
+	btnRemove.DoClick = function(self)
+		local lineIdx, linePnl = lvPermissions:GetSelectedLine()
+		if linePnl != nil then
+            local steamID = linePnl:GetColumnText(2)
+            local ply = player.GetBySteamID(steamID)
+            if ply != nil then
+                E2VguiLib.RemoveBuddy(ply)
+            else
+                E2VguiLib.RemoveBuddyFromDatabase(steamID)
+            end
+		end
+		E2VguiLib.ReloadE2VguiPermissionMenu()
+	end
+	panel:AddItem(btnRemove)
+
+	local label = vgui.Create("DLabel")
+	label:SetText("Click to add as buddy:")
+	label:SetDark(true)
+	panel:AddItem(label)
+
+    for i, ply in ipairs( player.GetAll() ) do
+        if ply == LocalPlayer() then continue end
+		local isBuddy = false
+		for i, buddy in ipairs(buddies) do
+			if buddy.SteamID == ply:SteamID() then
+				isBuddy = true
+				break
+			end
+		end
+		if isBuddy == false and not ply:IsBot() then
+			local button = vgui.Create("DButton")
+			button:SetText(ply:Nick())
+			button.DoClick = function(self)
+				self:Remove()
+				E2VguiLib.AddBuddyPlayer(ply)
+				E2VguiLib.ReloadE2VguiPermissionMenu()
+			end
+			panel:AddItem(button)
+		end
+	end
+end 
+
+hook.Add( "PopulateToolMenu", "CreateE2VguiPermissionMenu", function() 
+	spawnmenu.AddToolCategory( "Utilities", "#spawnmenu.utilities.e2vguicore", "E2 Vgui Core")
+	spawnmenu.AddToolMenuOption( "Utilities", "#spawnmenu.utilities.e2vguicore", "E2VguiPermissionMenu", "Permissions", "", "", E2VguiLib.ReloadE2VguiPermissionMenu)
+end)
+
+function E2VguiLib.CreateBuddyTableIfNotExist()
+	return sql.Query("CREATE TABLE IF NOT EXISTS e2_vgui_buddy_list(SteamID TEXT PRIMARY KEY, UserName TEXT)")
+end
+
+function E2VguiLib.GetBuddiesFromDatabase()
+    E2VguiLib.CreateBuddyTableIfNotExist()
+    local result = sql.Query("SELECT SteamID,UserName FROM e2_vgui_buddy_list")
+	return result or {}
+end
+
+function E2VguiLib.AddBuddyToDatabase(ply)
+    E2VguiLib.CreateBuddyTableIfNotExist()
+    result = sql.Query("INSERT INTO e2_vgui_buddy_list(SteamID, UserName) VALUES('"..ply:SteamID().."', '".. ply:Nick() .."')")
+    E2VguiLib.Buddies[ply:SteamID()] = true
+	E2VguiLib.RegisterBuddiesOnServer()
+end
+
+function E2VguiLib.RemoveBuddyFromDatabase(steamID)
+	local result = sql.Query("SELECT name FROM sqlite_master WHERE type='table' AND name='{e2_vgui_buddy_list}'");
+	if result == nil then
+		result = sql.Query("DELETE FROM e2_vgui_buddy_list WHERE SteamID='".. steamID .."';")
+    end
+    E2VguiLib.Buddies[steamID] = nil
+	E2VguiLib.RegisterBuddiesOnServer()
+end
+
+--sends the buddy list to the server
+function E2VguiLib.RegisterBuddiesOnServer()
+	net.Start("E2Vgui.RegisterBuddiesOnServer")
+	local buddies = {}
+
+    for k, v in pairs(E2VguiLib.Buddies) do
+        E2VguiLib.Buddies[k] = nil
+    end
+
+    for k,buddy in pairs(E2VguiLib.GetBuddiesFromDatabase()) do
+		table.insert(buddies, buddy.SteamID)
+		E2VguiLib.Buddies[buddy.SteamID] = true
+	end
+
+    net.WriteTable(buddies)
+    net.SendToServer()
 end

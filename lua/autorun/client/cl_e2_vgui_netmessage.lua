@@ -120,3 +120,10 @@ net.Receive("E2Vgui.ClosePanels",function()
 		E2VguiPanels["panels"][e2Index] = nil
 	end
 end)
+
+net.Receive("E2Vgui.RequestBuddies", function()
+	print("Net Receive E2Vgui.RequestBuddies")
+	if E2VguiLib != nil then
+		E2VguiLib.RegisterBuddiesOnServer()
+	end
+end)
