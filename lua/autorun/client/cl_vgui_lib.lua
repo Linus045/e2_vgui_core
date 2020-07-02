@@ -67,7 +67,15 @@ E2VguiLib = {
             if values["icon"] == "" then values["icon"] = nil end
             panel:AddSheet(values["name"],sheet_pnl,values["icon"])
         end,
-        addColumn = function(panel,values) panel:AddColumn(values["column"],values["position"]) end,
+        addColumn = function(panel,values)
+            local column = panel:AddColumn(values["column"],values["position"])
+            if values["columnWidth"] != nil then
+                local width = math.Clamp(values["columnWidth"], 0, 5000)
+                if width > 0 then
+                    column:SetFixedWidth(width)
+                end
+            end
+        end,
         addLine = function(panel,...)
             if #panel.Lines < 200 then --if we exceed 200 lines don't add more
                 panel:AddLine(unpack(...))

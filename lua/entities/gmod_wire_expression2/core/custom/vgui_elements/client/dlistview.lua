@@ -95,6 +95,7 @@ E2Helper.Descriptions["closeAll(xdv:)"] = "Closes the Panel on all players of pl
 
 
 E2Helper.Descriptions["addColumn(xdv:s)"] = "Adds a column to the Listview."
-E2Helper.Descriptions["addColumn(xdv:sn)"] = "Adds a column to the Listview."
+E2Helper.Descriptions["addColumn(xdv:sn)"] = "Adds a column to the Listview. If width is 0, it will autosize to fill the space."
+E2Helper.Descriptions["addColumn(xdv:snn)"] = "Adds a column to the Listview. if width is 0, it will autosize to fill the space.\nFor the position, order of operation matters here, adding columns with the wrong position index can cause LUA errors."
 E2Helper.Descriptions["addLine(xdv:s)"] = "Adds a line to the list Listview. (Hardcoded max of 200 lines)"
 E2Helper.Descriptions["setMultiSelect(xdv:n)"] = "Sets whether multiple lines can be selected by the user by using the Ctrl or Shift key"

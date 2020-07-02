@@ -140,11 +140,18 @@ end
 
 do--[[setter]]--
 	e2function void dlistview:addColumn(string column)
-		E2VguiCore.registerAttributeChange(this,"addColumn", {["column"] = column,["material"] = nil,["position"] = nil})
+		E2VguiCore.registerAttributeChange(this,"addColumn", {["column"] = column, ["columnWidth"] = nil, ["position"] = nil})
 	end
 
-	e2function void dlistview:addColumn(string column, number position)
-		E2VguiCore.registerAttributeChange(this,"addColumn", {["column"] = column, ["position"] = position})
+	e2function void dlistview:addColumn(string column, number width)
+		E2VguiCore.registerAttributeChange(this,"addColumn", {["column"] = column, ["columnWidth"] = width, ["position"] = nil})
+	end
+
+	e2function void dlistview:addColumn(string column, number width, number position)
+		if position < 1 then
+			position = 1
+		end
+		E2VguiCore.registerAttributeChange(this,"addColumn", {["column"] = column, ["columnWidth"] = width, ["position"] = position})
 	end
 
 	e2function void dlistview:addLine(...)
@@ -189,7 +196,7 @@ do--[[getter]]--
 	e2function table dlistview:getValues(entity ply)
 		local values = E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"values")
 		if values ~= nil and istable(values) then
-			local table = E2VgiCore.convertToE2Table(values)
+			local table = E2VguiCore.convertToE2Table(values)
 			return table
 		end
 		return {n={},ntypes={},s={},stypes={},size=0}
