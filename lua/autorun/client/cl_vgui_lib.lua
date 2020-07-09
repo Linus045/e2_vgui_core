@@ -6,7 +6,11 @@ E2VguiPanels = {
 }
 
 E2VguiLib = {
+    ["MenuPanel"] =  nil,
+    ["E2VguiPermissionMenuPanelLastSelectedPanelName"] = nil,
+    ["E2VguiPermissionConVar"] = nil,
     ["Buddies"] = {}, --list of buddies (they are allowed to create panels for this player)
+    ["BlockedPlayers"] = {}, --list of blocked players (they are not allowed to create panels for this player)
     ["panelFunctions"] = { --functions for every attribute
         text = function(panel,value) panel:SetText(value) end,
         width = function(panel,value) panel:SetWidth(value) end,
@@ -270,6 +274,66 @@ function E2VguiLib.GetBuddyPlayers()
 end
 
 
+--function to block a player, will use name to identify but actually blocks the steamID (updates the database and sends new update to server)
+function E2VguiLib.BlockPlayerByName(name)
+    local target = nil
+    for k,v in pairs(player.GetAll()) do
+        if v:Nick() == name then
+            target = v
+            break
+        end
+    end
+    if target == nil or target:IsBot() then return end
+    E2VguiLib.BlockPlayer(target)
+end
+
+--function to block a player (updates the database and sends new update to server)
+function E2VguiLib.BlockPlayer(target)
+    if not IsValid(target) or target:IsBot() then return end
+    net.Start("E2Vgui.BlockUnblockPlayer")
+    net.WriteBool(true)
+    net.WriteEntity(target)
+    net.SendToServer()
+    E2VguiLib.AddBlockedPlayerToDatabase(target)
+    E2VguiLib.ReloadE2VguiPermissionMenu()
+    print("[E2VguiCore] Blocked "..target:Nick() .. "! He can no longer create derma panels on your client!")
+end
+
+--unblocks a player (updates the database and sends new update to server)
+function E2VguiLib.UnblockPlayerByName(name)
+    local target = nil
+    for k,v in pairs(player.GetAll()) do
+        if v:Nick() == name then
+            target = v
+            break
+        end
+    end
+    if target == nil or target:IsBot() then return end
+    E2VguiLib.UnblockPlayer(target)
+end
+
+--unblocks a player (updates the database and sends update to server)
+function E2VguiLib.UnblockPlayer(target)
+    if target == nil or target:IsBot() then return end
+    net.Start("E2Vgui.BlockUnblockPlayer")
+    net.WriteBool(false)
+    net.WriteEntity(target)
+    net.SendToServer()
+    E2VguiLib.BlockedPlayers[target:SteamID()] = false
+    E2VguiLib.RemoveBlockedPlayerFromDatabase(target:SteamID())
+    E2VguiLib.ReloadE2VguiPermissionMenu()
+    print("[E2VguiCore] Unblocked "..target:Nick() .. "! He can create derma panels on your client again!")
+end
+
+--returns all blocked players
+function E2VguiLib.GetBlockedPlayers()
+    local tbl = {}
+    for k, v in pairs(E2VguiLib.BlockedPlayers) do
+        table.insert(tbl,player.GetBySteamID(k))
+    end
+    return tbl
+end
+
 --used to remove the panel clientside and automatically informs the server
 --e.g. when you close a Dframe with the close button
 function E2VguiLib.RemovePanelWithChilds(panel,e2EntityID)
@@ -345,7 +409,7 @@ end
     local tbl = {}
     for k,v in pairs(E2VguiLib.Buddies) do
         local ply = player.GetBySteamID( k )
-        if ply != LocalPlayer():SteamID() then
+        if ply != false then
             table.insert(tbl,"wire_vgui_removebuddy " .. "\"".. ply:Nick() .. "\"")
         end
     end
@@ -353,10 +417,57 @@ end
 end,
 "Removes a buddy from your list so he can't create derma panels on your client anymore",0)
 
+concommand.Add( "wire_vgui_listblockedplayers",
+function( ply, cmd, args )
+    local blockedPlayers = E2VguiLib.GetBlockedPlayerFromDatabase()
+    if #blockedPlayers <= 0 then
+        print("[E2VguiCore] No blocked players exist!")
+        return
+    end
+    print("[E2VguiCore] Blocked Players:")
+    print("---------------------------------------")
+    for k,entry in pairs(blockedPlayers) do
+        print(entry.UserName.." - "..entry.SteamID)
+    end
+    print("---------------------------------------")
+end
+,nil,
+"Prints a list of all blocked players",0)
 
+concommand.Add( "wire_vgui_unblockplayer",
+function( ply, cmd, args )
+    if #args == 0 then return end
+    local name = args[1]
+    E2VguiLib.UnblockPlayerByName(name)
+end
+,function()
+    local tbl = {}
+    for k,v in pairs(E2VguiLib.BlockedPlayers) do
+        local ply = player.GetBySteamID( k )
+        if ply != false then
+            table.insert(tbl,"wire_vgui_unblockplayer " .. "\""..ply:Nick() .. "\"")
+        end
+    end
+    return tbl
+end,
+"Unblocks a player which allows him to create derma panels on your client with E2",0)
 
-
-
+concommand.Add( "wire_vgui_blockplayer",
+function( ply, cmd, args )
+    if #args == 0 then return end
+    local name = args[1]
+    E2VguiLib.BlockPlayerByName(name)
+end
+,function()
+    local tbl = {}
+    for k,v in pairs(player.GetAll()) do
+        if v != LocalPlayer() and not v:IsBot() and E2VguiLib.BlockedPlayers[v:SteamID()] != true then
+            table.insert(tbl,"wire_vgui_blockplayer " .. "\"".. v:Nick() .. "\"")
+        end
+    end
+    return tbl
+end,
+"Blocks a player so he can't create derma panels on your client anymore",0)
 
 
 
@@ -467,83 +578,179 @@ function E2VguiLib.convertToLuaTable(tbl)
     return luatable
 end
 
-function E2VguiLib.ReloadE2VguiPermissionMenu(panel)
-    if panel == nil then
-        if E2VguiLib.E2VguiPermissionMenuPanel == nil then
-            return
-        else
-            panel = E2VguiLib.E2VguiPermissionMenuPanel
-        end
-    end
-    E2VguiLib.E2VguiPermissionMenuPanel = panel
 
+function E2VguiLib.CreateE2VguiPermissionMenu(panel)
+    if E2VguiLib.MenuPanel != nil then return end
+
+    E2VguiLib.MenuPanel = panel
     panel:Clear()
+    local pnlWidth, pnlHeight = E2VguiLib.MenuPanel:GetParent():GetSize()
+
     local btnReload = vgui.Create("DButton")
 	btnReload:SetText("Reload")
 	btnReload.DoClick = function(self)
-		E2VguiLib.ReloadE2VguiPermissionMenu()
+        E2VguiLib.ReloadE2VguiPermissionMenu()
 	end
-	panel:AddItem(btnReload)
+    panel:AddItem(btnReload)
 
-	local lvPermissions =  vgui.Create( "DListView")
-	lvPermissions:SetHeight(200)
-	lvPermissions:AddColumn("Name")
-	lvPermissions:AddColumn("Steam ID")
+    E2VguiLib.MenuPanel.sheet = vgui.Create( "DPropertySheet")
+    E2VguiLib.MenuPanel.sheet:SetHeight(pnlHeight - 200)
+    panel:AddItem(E2VguiLib.MenuPanel.sheet)
 
-	local buddies = E2VguiLib.GetBuddiesFromDatabase()
-	for i, buddy in ipairs(buddies) do
-		lvPermissions:AddLine(buddy.UserName, buddy.SteamID)
-	end
+    -- buddy sheet
+    E2VguiLib.MenuPanel.buddyPanel = vgui.Create("DScrollPanel", E2VguiLib.MenuPanel.sheet )
+    E2VguiLib.MenuPanel.buddyPanel:DockMargin(5,5,5,5)
+    E2VguiLib.MenuPanel.buddyPanel:Dock(FILL)
 
-	panel:AddItem(lvPermissions)
+    E2VguiLib.MenuPanel.sheet:AddSheet( "Buddies", E2VguiLib.MenuPanel.buddyPanel, "icon16/tick.png" )
 
-	local btnRemove = vgui.Create("DButton")
-	btnRemove:SetText("Remove selected Buddy")
-	btnRemove.DoClick = function(self)
-		local lineIdx, linePnl = lvPermissions:GetSelectedLine()
+    E2VguiLib.MenuPanel.lvBuddies = E2VguiLib.MenuPanel.buddyPanel:Add("DListView")
+    E2VguiLib.MenuPanel.lvBuddies:Dock(TOP)
+    E2VguiLib.MenuPanel.lvBuddies:SetHeight(300)
+    E2VguiLib.MenuPanel.lvBuddies:AddColumn("Name")
+    E2VguiLib.MenuPanel.lvBuddies:AddColumn("Steam ID")
+    E2VguiLib.MenuPanel.buddyPanel:AddItem(E2VguiLib.MenuPanel.lvBuddies)
+
+    local btnRemoveBuddy = E2VguiLib.MenuPanel.buddyPanel:Add("DButton")
+    btnRemoveBuddy:SetText("Remove selected Buddy")
+    btnRemoveBuddy:Dock(TOP)
+    btnRemoveBuddy.DoClick = function(self)
+		local lineIdx, linePnl = E2VguiLib.MenuPanel.lvBuddies:GetSelectedLine()
 		if linePnl != nil then
             local steamID = linePnl:GetColumnText(2)
             local ply = player.GetBySteamID(steamID)
-            if ply != nil then
+            if ply != false then
                 E2VguiLib.RemoveBuddy(ply)
             else
                 E2VguiLib.RemoveBuddyFromDatabase(steamID)
             end
 		end
 		E2VguiLib.ReloadE2VguiPermissionMenu()
-	end
-	panel:AddItem(btnRemove)
+    end
 
-	local label = vgui.Create("DLabel")
-	label:SetText("Click to add as buddy:")
-	label:SetDark(true)
-	panel:AddItem(label)
+    E2VguiLib.MenuPanel.addBuddyPanel = E2VguiLib.MenuPanel.buddyPanel:Add("DScrollPanel")
+    E2VguiLib.MenuPanel.addBuddyPanel:DockMargin(5,5,5,5)
+    E2VguiLib.MenuPanel.addBuddyPanel:SetHeight(500)
+    E2VguiLib.MenuPanel.addBuddyPanel:Dock(TOP)
 
-    for i, ply in ipairs( player.GetAll() ) do
-        if ply == LocalPlayer() then continue end
-		local isBuddy = false
-		for i, buddy in ipairs(buddies) do
-			if buddy.SteamID == ply:SteamID() then
-				isBuddy = true
-				break
-			end
-		end
-		if isBuddy == false and not ply:IsBot() then
-			local button = vgui.Create("DButton")
-			button:SetText(ply:Nick())
-			button.DoClick = function(self)
-				self:Remove()
-				E2VguiLib.AddBuddyPlayer(ply)
-				E2VguiLib.ReloadE2VguiPermissionMenu()
-			end
-			panel:AddItem(button)
-		end
-	end
+
+    --blocked sheet
+    E2VguiLib.MenuPanel.blockedPanel = vgui.Create( "DScrollPanel", E2VguiLib.MenuPanel.sheet )
+    E2VguiLib.MenuPanel.blockedPanel:DockMargin(5,5,5,5)
+    E2VguiLib.MenuPanel.blockedPanel:Dock(FILL)
+
+    E2VguiLib.MenuPanel.sheet:AddSheet( "Blocked", E2VguiLib.MenuPanel.blockedPanel, "icon16/cross.png" )
+
+    E2VguiLib.MenuPanel.lvBlocked = E2VguiLib.MenuPanel.blockedPanel:Add("DListView")
+    E2VguiLib.MenuPanel.lvBlocked:Dock(TOP)
+    E2VguiLib.MenuPanel.lvBlocked:SetHeight(300)
+    E2VguiLib.MenuPanel.lvBlocked:AddColumn("Name")
+    E2VguiLib.MenuPanel.lvBlocked:AddColumn("Steam ID")
+    E2VguiLib.MenuPanel.blockedPanel:AddItem(E2VguiLib.MenuPanel.lvBlocked)
+
+    local btnRemoveBlockedPlayer = vgui.Create("DButton", E2VguiLib.MenuPanel.blockedPanel)
+    btnRemoveBlockedPlayer:SetText("Unblock selected player")
+    btnRemoveBlockedPlayer:Dock(TOP)
+    btnRemoveBlockedPlayer.DoClick = function(self)
+        local lineIdx, linePnl = E2VguiLib.MenuPanel.lvBlocked:GetSelectedLine()
+        if linePnl != nil then
+            local steamID = linePnl:GetColumnText(2)
+            local ply = player.GetBySteamID(steamID)
+            if ply != false then
+                E2VguiLib.UnblockPlayer(ply)
+            else
+                E2VguiLib.RemoveBlockedPlayerFromDatabase(steamID)
+            end
+        end
+        E2VguiLib.ReloadE2VguiPermissionMenu()
+    end
+
+    E2VguiLib.MenuPanel.addBlockedPanel = E2VguiLib.MenuPanel.blockedPanel:Add("DScrollPanel")
+    E2VguiLib.MenuPanel.addBlockedPanel:DockMargin(5,5,5,5)
+    E2VguiLib.MenuPanel.addBlockedPanel:SetHeight(500)
+    E2VguiLib.MenuPanel.addBlockedPanel:Dock(TOP)
+
+    E2VguiLib.ReloadE2VguiPermissionMenu()
+end
+
+function E2VguiLib.ReloadE2VguiPermissionMenu()
+    if E2VguiLib.MenuPanel == nil then return end
+
+    if E2VguiLib.E2VguiPermissionConVar == nil then
+        E2VguiLib.RequestConVar("wire_vgui_permissionDefault")
+        E2VguiLib.MenuPanel.buddyPanel:GetCanvas():SetVisible(false)
+        E2VguiLib.MenuPanel.blockedPanel:GetCanvas():SetVisible(false)
+    elseif E2VguiLib.E2VguiPermissionConVar >= 0 and E2VguiLib.E2VguiPermissionConVar <= 3 then
+        E2VguiLib.MenuPanel.buddyPanel:GetCanvas():SetVisible(true)
+        E2VguiLib.MenuPanel.blockedPanel:GetCanvas():SetVisible(false)
+
+        E2VguiLib.MenuPanel.lvBuddies:Clear()
+        local buddies = E2VguiLib.GetBuddiesFromDatabase()
+        for i, buddy in ipairs(buddies) do
+            E2VguiLib.MenuPanel.lvBuddies:AddLine(buddy.UserName, buddy.SteamID)
+        end
+
+        E2VguiLib.MenuPanel.addBuddyPanel:GetCanvas():Clear()
+
+        for i, ply in ipairs(player.GetAll()) do
+            if ply == LocalPlayer() then continue end
+            local isBuddy = false
+            for i, buddy in ipairs(buddies) do
+                if buddy.SteamID == ply:SteamID() then
+                    isBuddy = true
+                    break
+                end
+            end
+
+            if not isBuddy and not ply:IsBot() then
+                local button = E2VguiLib.MenuPanel.addBuddyPanel:Add("DButton")
+                button:SetText(ply:Nick())
+                button:Dock(TOP)
+                button.DoClick = function(self)
+                    self:Remove()
+                    E2VguiLib.AddBuddyPlayer(ply)
+                    E2VguiLib.ReloadE2VguiPermissionMenu()
+                end
+            end
+        end
+    elseif E2VguiLib.E2VguiPermissionConVar == 4 then
+        E2VguiLib.MenuPanel.buddyPanel:GetCanvas():SetVisible(false)
+        E2VguiLib.MenuPanel.blockedPanel:GetCanvas():SetVisible(true)
+
+        local blockedPlayers = E2VguiLib.GetBlockedPlayerFromDatabase()
+        E2VguiLib.MenuPanel.lvBlocked:Clear()
+        for i, blockedPlayer in ipairs(blockedPlayers) do
+            E2VguiLib.MenuPanel.lvBlocked:AddLine(blockedPlayer.UserName, blockedPlayer.SteamID)
+        end
+
+        E2VguiLib.MenuPanel.addBlockedPanel:Clear()
+
+        for i, ply in ipairs( player.GetAll() ) do
+            if ply == LocalPlayer() then continue end
+            local isBlocked = false
+            for i, blockedPlayer in ipairs(blockedPlayers) do
+                if blockedPlayer.SteamID == ply:SteamID() then
+                    isBlocked = true
+                    break
+                end
+            end
+            if isBlocked == false and not ply:IsBot() then
+                local button = E2VguiLib.MenuPanel.addBlockedPanel:Add("DButton")
+                button:SetText(ply:Nick())
+                button:Dock(TOP)
+                button.DoClick = function(self)
+                    self:Remove()
+                    E2VguiLib.BlockPlayer(ply)
+                    E2VguiLib.ReloadE2VguiPermissionMenu()
+                end
+            end
+        end
+    end
 end 
 
 hook.Add( "PopulateToolMenu", "CreateE2VguiPermissionMenu", function() 
 	spawnmenu.AddToolCategory( "Utilities", "#spawnmenu.utilities.e2vguicore", "E2 Vgui Core")
-	spawnmenu.AddToolMenuOption( "Utilities", "#spawnmenu.utilities.e2vguicore", "E2VguiPermissionMenu", "Permissions", "", "", E2VguiLib.ReloadE2VguiPermissionMenu)
+    spawnmenu.AddToolMenuOption( "Utilities", "#spawnmenu.utilities.e2vguicore", "E2VguiPermissionMenu", "Permissions", "", "", E2VguiLib.CreateE2VguiPermissionMenu)
 end)
 
 function E2VguiLib.CreateBuddyTableIfNotExist()
@@ -574,7 +781,6 @@ end
 
 --sends the buddy list to the server
 function E2VguiLib.RegisterBuddiesOnServer()
-	net.Start("E2Vgui.RegisterBuddiesOnServer")
 	local buddies = {}
 
     for k, v in pairs(E2VguiLib.Buddies) do
@@ -586,6 +792,76 @@ function E2VguiLib.RegisterBuddiesOnServer()
 		E2VguiLib.Buddies[buddy.SteamID] = true
 	end
 
+    net.Start("E2Vgui.RegisterBuddiesOnServer")
     net.WriteTable(buddies)
     net.SendToServer()
 end
+
+
+function E2VguiLib.CreateBlockedPlayerTableIfNotExist()
+    return sql.Query("CREATE TABLE IF NOT EXISTS e2_vgui_blocked_player_list(SteamID TEXT PRIMARY KEY, UserName TEXT)")
+end
+
+function E2VguiLib.GetBlockedPlayerFromDatabase()
+    E2VguiLib.CreateBlockedPlayerTableIfNotExist()
+    local result = sql.Query("SELECT SteamID,UserName FROM e2_vgui_blocked_player_list")
+    return result or {}
+end
+
+function E2VguiLib.AddBlockedPlayerToDatabase(ply)
+    E2VguiLib.CreateBlockedPlayerTableIfNotExist()
+    result = sql.Query("INSERT INTO e2_vgui_blocked_player_list(SteamID, UserName) VALUES('"..ply:SteamID().."', '".. ply:Nick() .."')")
+    E2VguiLib.BlockedPlayers[ply:SteamID()] = true
+	E2VguiLib.RegisterBlockedPlayersOnServer()
+end
+
+function E2VguiLib.RemoveBlockedPlayerFromDatabase(steamID)
+	local result = sql.Query("SELECT name FROM sqlite_master WHERE type='table' AND name='{e2_vgui_blocked_player_list}'");
+	if result == nil then
+		result = sql.Query("DELETE FROM e2_vgui_blocked_player_list WHERE SteamID='".. steamID .."';")
+    end
+    E2VguiLib.BlockedPlayers[steamID] = nil
+	E2VguiLib.RegisterBlockedPlayersOnServer()
+end
+
+--sends the blocked players to the server
+function E2VguiLib.RegisterBlockedPlayersOnServer()
+	local blockedPlayers = {}
+
+    for k, v in pairs(E2VguiLib.BlockedPlayers) do
+        E2VguiLib.BlockedPlayers[k] = nil
+    end
+
+    for k,blockedPlayer in pairs(E2VguiLib.GetBlockedPlayerFromDatabase()) do
+        table.insert(blockedPlayers, blockedPlayer.SteamID)
+        E2VguiLib.BlockedPlayers[blockedPlayer.SteamID] = true
+    end
+
+	net.Start("E2Vgui.RegisterBlockedPlayersOnServer")
+    net.WriteTable(blockedPlayers)
+    net.SendToServer()
+end
+
+function E2VguiLib.RequestConVar(name)
+    net.Start("E2Vgui.ConVarUpdate")
+    net.WriteString(name)
+    net.SendToServer()
+end
+
+function E2VguiLib.UpdateConVar(name, value)
+    if name == "wire_vgui_permissionDefault" then
+        E2VguiLib.E2VguiPermissionConVar = value
+        E2VguiLib.ReloadE2VguiPermissionMenu()
+    end
+end
+
+net.Receive("E2Vgui.RequestBuddies", function()
+    E2VguiLib.RegisterBuddiesOnServer()
+    E2VguiLib.RegisterBlockedPlayersOnServer()
+end)
+
+net.Receive("E2Vgui.ConVarUpdate", function()
+    local name = net.ReadString()
+    local value = net.ReadInt(4)
+    E2VguiLib.UpdateConVar(name, value)
+end)

@@ -4,7 +4,8 @@ E2VguiCore = {
 	["e2_types"] = {},
 	["callbacks"] = {},
 	["Trigger"] = {},
-	["Buddies"] = {}
+	["Buddies"] = {},
+	["BlockedPlayers"] = {}
 }
 
 util.AddNetworkString("E2Vgui.CreatePanel")
@@ -18,6 +19,9 @@ util.AddNetworkString("E2Vgui.AddRemoveBuddy")
 util.AddNetworkString("E2Vgui.UpdateServerValues")
 util.AddNetworkString("E2Vgui.RegisterBuddiesOnServer")
 util.AddNetworkString("E2Vgui.RequestBuddies")
+util.AddNetworkString("E2Vgui.RegisterBlockedPlayersOnServer")
+util.AddNetworkString("E2Vgui.BlockUnblockPlayer")
+util.AddNetworkString("E2Vgui.ConVarUpdate")
 
 local sbox_E2_Vgui_maxVgui 				= CreateConVar("wire_vgui_maxPanels",100,{FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE},"Sets the max amount of panels you can create with E2")
 local sbox_E2_Vgui_maxVguiPerSecond 	= CreateConVar("wire_vgui_maxPanelsPerSecond",20,{FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE},"Sets the max amount of panels you can create/modify/update with E2 (All these send netmessages and too many would crash the client [Client overflow])")
@@ -26,8 +30,12 @@ local sbox_E2_Vgui_permissionDefault 	= CreateConVar("wire_vgui_permissionDefaul
 	(0)  - DEFAULT: E2Owner needs to be a buddy of the target player.
 	(1)  - Players can create only on their client.
 	(2)  - Like DEFAULT, but admins and superadmins can use it on everyone regardless of buddy permissions
-	(3)  - Like DEFAULT, but superadmins can use it on everyone regardless of buddy permissions]])
+	(3)  - Like DEFAULT, but superadmins can use it on everyone regardless of buddy permissions
+	(4)  - Always allow creation of panels by default, but clients can still block it in the utilities menu]])
 
+cvars.AddChangeCallback("wire_vgui_permissionDefault", function(convar_name, value_old, value_new)
+	E2VguiCore.BroadcastConVarToClients(sbox_E2_Vgui_permissionDefault)
+end)
 --spam protection for PNL:create()/PNL:modify() calls
 local TimeStamp = 0
 local function E2VguiResetTemp()
@@ -79,7 +87,7 @@ function E2VguiCore.CanTarget(ply,target)
 	if not ply:IsPlayer() or not target:IsPlayer() then return false end
 
 	local setting = sbox_E2_Vgui_permissionDefault:GetInt()
-	if setting < 0 or setting > 3 then
+	if setting < 0 or setting > 4 then
 		sbox_E2_Vgui_permissionDefault:SetInt(0)
 		setting = 0
 	end
@@ -91,6 +99,8 @@ function E2VguiCore.CanTarget(ply,target)
 		if ply == target or ply:IsSuperAdmin() or ply:IsAdmin() or E2VguiCore.IsBuddy(ply, target) then return true end
 	elseif setting == 3 then
 		if ply == target or ply:IsSuperAdmin() or E2VguiCore.IsBuddy(ply, target) then return true end
+	elseif setting == 4 then
+		return not E2VguiCore.IsBlocked(ply, target)
 	end
 	return false
 end
@@ -118,6 +128,28 @@ function E2VguiCore.IsBuddy(ply,target)
 	return false
 end
 
+
+--[[-------------------------------------------------------------------------
+				E2VguiCore.IsBlocked
+Desc: Returns if the player can create a dermapanel on the target. Buddylist is ignored, BlockedList is used instead.
+		(See console command 'wire_vgui_permissionDefault 4')
+Args:
+	ply:		the player who wants creates the panel
+	target:		the target
+Return: true OR false
+---------------------------------------------------------------------------]]
+function E2VguiCore.IsBlocked(ply,target)
+	if target == nil or not IsValid(target) then return false end
+	if ply == nil or not IsValid(ply) then return false end
+	if E2VguiCore.BlockedPlayers == nil then return false end
+	if E2VguiCore.BlockedPlayers[target:SteamID()] == nil then return false end
+	for k,v in pairs(E2VguiCore.BlockedPlayers[target:SteamID()]) do
+		if E2VguiCore.BlockedPlayers[target:SteamID()][ply:SteamID()] == true then
+			return true
+		end
+	end
+	return false
+end
 
 --[[-------------------------------------------------------------------------
 				E2VguiCore.BuddyClient
@@ -154,6 +186,43 @@ function E2VguiCore.UnbuddyClient(ply,target)
 	if ply == target then return end
 	if E2VguiCore.Buddies[ply:SteamID()] != nil then
 		E2VguiCore.Buddies[ply:SteamID()][target:SteamID()] = nil
+	end
+end
+
+--[[-------------------------------------------------------------------------
+				E2VguiCore.BlockClient
+Desc: Blocks the target the player requests so he can't create derma panels anymore
+		(See console command 'wire_vgui_addbuddy/removebuddy')
+Args:
+	ply:		the player who wants to block
+	target:		the target
+Return: nil
+---------------------------------------------------------------------------]]
+function E2VguiCore.BlockClient(ply,target)
+	if ply == nil or target == nil then return end
+	if not ply:IsPlayer() or not target:IsPlayer() then return end
+	if ply == target then return end
+	if E2VguiCore.BlockedPlayers[ply:SteamID()] == nil then
+		E2VguiCore.BlockedPlayers[ply:SteamID()] = {}
+	end
+	E2VguiCore.BlockedPlayers[ply:SteamID()][target:SteamID()] = true
+end
+
+--[[-------------------------------------------------------------------------
+				E2VguiCore.UnblockClient
+Desc: Unlocks the target the player requests so he can create derma panels again
+	(See console command 'wire_vgui_addbuddy/removebuddy')
+Args:
+	ply:		the player who wants to unblock
+	target:		the target
+Return: nil
+---------------------------------------------------------------------------]]
+function E2VguiCore.UnblockClient(ply,target)
+	if ply == nil or target == nil then return end
+	if not ply:IsPlayer() or not target:IsPlayer() then return end
+	if ply == target then return end
+	if E2VguiCore.BlockedPlayers[ply:SteamID()] != nil then
+		E2VguiCore.BlockedPlayers[ply:SteamID()][target:SteamID()] = nil
 	end
 end
 
@@ -860,6 +929,38 @@ net.Receive("E2Vgui.RegisterBuddiesOnServer", function(len, ply)
 	E2VguiCore.WhitelistBuddies(ply, buddies)
 end)
 
+--Gets triggered when a client sends their blocked list to the server
+net.Receive("E2Vgui.RegisterBlockedPlayersOnServer", function(len, ply)
+	local blockedPlayers = net.ReadTable()
+	E2VguiCore.BlockPlayers(ply, blockedPlayers)
+end)
+
+net.Receive("E2Vgui.ConVarUpdate", function(len, ply)
+	local name = net.ReadString()
+	local conVar = GetConVar(name)
+	E2VguiCore.SendConVarToClient(conVar, ply)
+end)
+
+function E2VguiCore.BroadcastConVarToClients(conVar)
+	if conVar == nil then return end
+
+	net.Start("E2Vgui.ConVarUpdate")
+	net.WriteString(conVar:GetName())
+	net.WriteInt(conVar:GetInt(), 4)
+	net.Broadcast()
+end
+
+function E2VguiCore.SendConVarToClient(conVar, ply)
+	if not IsValid(ply) or not ply:IsPlayer() then return end
+	if conVar == nil then return end
+
+	net.Start("E2Vgui.ConVarUpdate")
+	net.WriteString(conVar:GetName())
+	net.WriteInt(conVar:GetInt(), 4)
+	net.Send(ply)
+end
+
+
 --Updates the player's buddy list (gets triggered when a new player joins or a buddy is added/removed)
 function E2VguiCore.WhitelistBuddies(ply, buddies)
 	for k, target in pairs(player.GetAll()) do
@@ -871,6 +972,21 @@ function E2VguiCore.WhitelistBuddies(ply, buddies)
 		local buddy = player.GetBySteamID(steamID)
 		if IsValid(buddy) then
 			E2VguiCore.BuddyClient(ply,buddy)
+		end
+	end
+end
+
+--Updates the player's block list (gets triggered when a new player joins or a player gets blocked/unblocked)
+function E2VguiCore.BlockPlayers(ply, blockedPlayers)
+	for k, target in pairs(player.GetAll()) do
+		if target:IsBot() then continue end
+		E2VguiCore.UnblockClient(ply,target)
+	end
+
+	for k, steamID in pairs(blockedPlayers) do
+		local blockedPlayer = player.GetBySteamID(steamID)
+		if blockedPlayer != false then
+			E2VguiCore.BlockClient(ply,blockedPlayer)
 		end
 	end
 end
