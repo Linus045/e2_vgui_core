@@ -1,78 +1,77 @@
 E2VguiPanels["vgui_elements"]["functions"]["dtextentry"] = {}
 E2VguiPanels["vgui_elements"]["functions"]["dtextentry"]["createFunc"] = function(uniqueID, pnlData, e2EntityID,changes)
-	local parent = E2VguiLib.GetPanelByID(pnlData["parentID"],e2EntityID)
-	local panel = vgui.Create("DTextEntry",parent)
-	E2VguiLib.applyAttributes(panel,pnlData,true)
-	local data = E2VguiLib.applyAttributes(panel,changes)
-	table.Merge(pnlData,data)
+    local parent = E2VguiLib.GetPanelByID(pnlData["parentID"],e2EntityID)
+    local panel = vgui.Create("DTextEntry",parent)
+    E2VguiLib.applyAttributes(panel,pnlData,true)
+    local data = E2VguiLib.applyAttributes(panel,changes)
+    table.Merge(pnlData,data)
 
-	--notify server of removal and also update client table
-	function panel:OnRemove()
-		E2VguiLib.RemovePanelWithChilds(self,e2EntityID)
-	end
+    --notify server of removal and also update client table
+    function panel:OnRemove()
+        E2VguiLib.RemovePanelWithChilds(self,e2EntityID)
+    end
+    function panel:OnGetFocus()
+        --we try to go up the parents to find the DFrame so we can request keyboardinput again
+        local frame = self
+        local inc = 0
+        while(frame:GetParent() != nil) do
+            if inc >= 10 then return end --protection against infinite loops
+            frame = frame:GetParent()
+            --if it has the keyboardinput attribute it must be a dframe element so break
+            if frame["pnlData"] != nil and frame["pnlData"]["keyboardinput"] != nil then break end
+        end
+        frame:SetKeyboardInputEnabled(true)
+    end
 
-	function panel:OnGetFocus()
-		--we try to go up the parents to find the DFrame so we can request keyboardinput again
-		local frame = self
-		local inc = 0
-		while(frame:GetParent() != nil) do
-			if inc >= 10 then return end --protection against infinite loops
-			frame = frame:GetParent()
-			--if it has the keyboardinput attribute it must be a dframe element so break
-			if frame["pnlData"] != nil and frame["pnlData"]["keyboardinput"] != nil then break end
-		end
-		frame:SetKeyboardInputEnabled(true)
-	end
+    --might be called unnecessarily often at the same time
+    function panel:OnLoseFocus()
+        local uniqueID = self["uniqueID"]
+        if uniqueID != nil then
+            net.Start("E2Vgui.TriggerE2")
+                net.WriteInt(e2EntityID,32)
+                net.WriteInt(uniqueID,32)
+                net.WriteString("DTextEntry")
+                net.WriteTable({
+                    text = self:GetValue()
+                })
+            net.SendToServer()
+        end
 
-	--might be called unnecessarily often at the same time
-	function panel:OnLoseFocus()
-		local uniqueID = self["uniqueID"]
-		if uniqueID != nil then
-			net.Start("E2Vgui.TriggerE2")
-				net.WriteInt(e2EntityID,32)
-				net.WriteInt(uniqueID,32)
-				net.WriteString("DTextEntry")
-				net.WriteTable({
-					text = self:GetValue()
-				})
-			net.SendToServer()
-		end
+        --we try to go up the parents to find the DFrame so we can request keyboardinput again
+        local frame = self
+        local inc = 0
+        while(frame:GetParent() != nil) do
+            if inc >= 10 then return end --protection against infinite loops
+            frame = frame:GetParent()
+            if frame["pnlData"] != nil and frame["pnlData"]["keyboardinput"] != nil then break end
+        end
+        --read the setting defined for the dframe and set it back to its original value
+        if frame["pnlData"] == nil then return end
+        frame:SetKeyboardInputEnabled(frame["pnlData"]["keyboardinput"])
 
-		--we try to go up the parents to find the DFrame so we can request keyboardinput again
-		local frame = self
-		local inc = 0
-		while(frame:GetParent() != nil) do
-			if inc >= 10 then return end --protection against infinite loops
-			frame = frame:GetParent()
-			if frame["pnlData"] != nil and frame["pnlData"]["keyboardinput"] != nil then break end
-		end
-		--read the setting defined for the dframe and set it back to its original value
-		if frame["pnlData"] == nil then return end
-		frame:SetKeyboardInputEnabled(frame["pnlData"]["keyboardinput"])
+    end
 
-	end
-
-	panel["uniqueID"] = uniqueID
-	panel["pnlData"] = pnlData
-	E2VguiLib.RegisterNewPanel(e2EntityID ,uniqueID, panel)
-	E2VguiLib.UpdatePosAndSizeServer(e2EntityID,uniqueID,panel)
-	return true
+    panel["uniqueID"] = uniqueID
+    panel["pnlData"] = pnlData
+    E2VguiLib.RegisterNewPanel(e2EntityID ,uniqueID, panel)
+    E2VguiLib.UpdatePosAndSizeServer(e2EntityID,uniqueID,panel)
+    return true
 end
 
 
 E2VguiPanels["vgui_elements"]["functions"]["dtextentry"]["modifyFunc"] = function(uniqueID, e2EntityID, changes)
-	local panel = E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
-	if panel == nil or not IsValid(panel)  then return end
+    local panel = E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
+    if panel == nil or not IsValid(panel)  then return end
 
-	local data = E2VguiLib.applyAttributes(panel,changes)
-	table.Merge(panel["pnlData"],data)
+    local data = E2VguiLib.applyAttributes(panel,changes)
+    table.Merge(panel["pnlData"],data)
 
-	E2VguiLib.UpdatePosAndSizeServer(e2EntityID,uniqueID,panel)
-	return true
+    E2VguiLib.UpdatePosAndSizeServer(e2EntityID,uniqueID,panel)
+    return true
 end
 
 --[[-------------------------------------------------------------------------
-	HELPER FUNCTIONS
+    HELPER FUNCTIONS
 ---------------------------------------------------------------------------]]
 E2Helper.Descriptions["dtextentry(n)"] = "Index\ninits a new Textentry."
 E2Helper.Descriptions["dtextentry(nn)"] = "Index, Parent Id\ninits a new Textentry."

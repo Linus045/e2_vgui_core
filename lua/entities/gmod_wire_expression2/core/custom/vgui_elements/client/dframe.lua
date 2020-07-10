@@ -1,78 +1,78 @@
 E2VguiPanels["vgui_elements"]["functions"]["dframe"] = {}
 E2VguiPanels["vgui_elements"]["functions"]["dframe"]["createFunc"] = function(uniqueID, pnlData, e2EntityID,changes)
-	local panel = vgui.Create("DFrame")
-	E2VguiLib.applyAttributes(panel,pnlData,true)
-	local data = E2VguiLib.applyAttributes(panel,changes)
-	table.Merge(pnlData,data)
+    local panel = vgui.Create("DFrame")
+    E2VguiLib.applyAttributes(panel,pnlData,true)
+    local data = E2VguiLib.applyAttributes(panel,changes)
+    table.Merge(pnlData,data)
 
-	--notify server of removal and also update client table
-	function panel:OnRemove()
-		E2VguiLib.RemovePanelWithChilds(self,e2EntityID)
-	end
+    --notify server of removal and also update client table
+    function panel:OnRemove()
+        E2VguiLib.RemovePanelWithChilds(self,e2EntityID)
+    end
 
-	function panel:OnClose()
-		net.Start("E2Vgui.UpdateServerValues")
-			net.WriteInt(e2EntityID,32)
-			net.WriteInt(uniqueID,32)
-			net.WriteTable({
-				visible = false
-			})
-		net.SendToServer()
-	end
+    function panel:OnClose()
+        net.Start("E2Vgui.UpdateServerValues")
+            net.WriteInt(e2EntityID,32)
+            net.WriteInt(uniqueID,32)
+            net.WriteTable({
+                visible = false
+            })
+        net.SendToServer()
+    end
 
-	if pnlData["color"] ~= nil then
-		function panel:Paint(w,h)
-			if ( self.m_bBackgroundBlur ) then
-				Derma_DrawBackgroundBlur( self, self.m_fCreateTime )
-			end
+    if pnlData["color"] ~= nil then
+        function panel:Paint(w,h)
+            if ( self.m_bBackgroundBlur ) then
+                Derma_DrawBackgroundBlur( self, self.m_fCreateTime )
+            end
 
-			local col = pnlData["color"]
-			local col2 = Color(col.r*0.8%255,col.g*0.8%255,col.b*0.8%255,col.a)
-			local col3 = Color(col.r*0.4%255,col.g*0.4%255,col.b*0.4%255,col.a)
+            local col = pnlData["color"]
+            local col2 = Color(col.r*0.8%255,col.g*0.8%255,col.b*0.8%255,col.a)
+            local col3 = Color(col.r*0.4%255,col.g*0.4%255,col.b*0.4%255,col.a)
 
-			draw.RoundedBox(5,0,0,w,h,col3)
-			draw.RoundedBox(5,1,1,w-2,h-2,col)
-			draw.RoundedBoxEx(5,1,1,w-2,25-2,col2,true,true,false,false)
-		end
-	end
+            draw.RoundedBox(5,0,0,w,h,col3)
+            draw.RoundedBox(5,1,1,w-2,h-2,col)
+            draw.RoundedBoxEx(5,1,1,w-2,25-2,col2,true,true,false,false)
+        end
+    end
 
-	panel["uniqueID"] = uniqueID
-	panel["pnlData"] = pnlData
-	E2VguiLib.RegisterNewPanel(e2EntityID ,uniqueID, panel)
-	E2VguiLib.UpdatePosAndSizeServer(e2EntityID,uniqueID,panel)
-	return true
+    panel["uniqueID"] = uniqueID
+    panel["pnlData"] = pnlData
+    E2VguiLib.RegisterNewPanel(e2EntityID ,uniqueID, panel)
+    E2VguiLib.UpdatePosAndSizeServer(e2EntityID,uniqueID,panel)
+    return true
 end
 
 
 E2VguiPanels["vgui_elements"]["functions"]["dframe"]["modifyFunc"] = function(uniqueID, e2EntityID, changes)
-	local panel = E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
-	if panel == nil or not IsValid(panel)  then return end
+    local panel = E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
+    if panel == nil or not IsValid(panel)  then return end
 
-	local data = E2VguiLib.applyAttributes(panel,changes)
-	table.Merge(panel["pnlData"],data)
+    local data = E2VguiLib.applyAttributes(panel,changes)
+    table.Merge(panel["pnlData"],data)
 
-	--TODO: optimize the contrast setting
-	if panel["pnlData"]["color"] ~= nil then
-		function panel:Paint(w,h)
-			if ( self.m_bBackgroundBlur ) then
-				Derma_DrawBackgroundBlur( self, self.m_fCreateTime )
-			end
+    --TODO: optimize the contrast setting
+    if panel["pnlData"]["color"] ~= nil then
+        function panel:Paint(w,h)
+            if ( self.m_bBackgroundBlur ) then
+                Derma_DrawBackgroundBlur( self, self.m_fCreateTime )
+            end
 
-			local col = panel["pnlData"]["color"]
-			local col2 = Color(col.r*0.8%255,col.g*0.8%255,col.b*0.8%255,col.a)
-			local col3 = Color(col.r*0.4%255,col.g*0.4%255,col.b*0.4%255,col.a)
-			draw.RoundedBox(5,0,0,w,h,col3)
-			draw.RoundedBox(5,1,1,w-2,h-2,col)
-			draw.RoundedBoxEx(5,1,1,w-2,25-2,col2,true,true,false,false)
-		end
-	end
-	E2VguiLib.UpdatePosAndSizeServer(e2EntityID,uniqueID,panel)
-	return true
+            local col = panel["pnlData"]["color"]
+            local col2 = Color(col.r*0.8%255,col.g*0.8%255,col.b*0.8%255,col.a)
+            local col3 = Color(col.r*0.4%255,col.g*0.4%255,col.b*0.4%255,col.a)
+            draw.RoundedBox(5,0,0,w,h,col3)
+            draw.RoundedBox(5,1,1,w-2,h-2,col)
+            draw.RoundedBoxEx(5,1,1,w-2,25-2,col2,true,true,false,false)
+        end
+    end
+    E2VguiLib.UpdatePosAndSizeServer(e2EntityID,uniqueID,panel)
+    return true
 end
 
 
 --[[-------------------------------------------------------------------------
-	HELPER FUNCTIONS
+    HELPER FUNCTIONS
 --------------------------------------------------------------------------]]
 E2Helper.Descriptions["dframe(n)"] = "Index\ninits a new DFrame."
 --E2Helper.Descriptions["dframe(nn)"] = "Creates a Dframe element with parent id. Use xdf:create() to create the Panel."
@@ -88,9 +88,9 @@ E2Helper.Descriptions["setColor(xdf:nnn)"] = "Sets the color of the Panel."
 E2Helper.Descriptions["setColor(xdf:nnnn)"] = "Sets the color of the Panel."
 E2Helper.Descriptions["getColor(xdf:)"] = "Returns the color of the Panel."
 E2Helper.Descriptions["getColor4(xdf:)"] = "Returns the color of the Panel."
-E2Helper.Descriptions["setVisible(xdf:n)"] 	= "Makes the Panel invisible or visible. For all players on the Panel's players list."
-E2Helper.Descriptions["setBackgroundBlur(xdf:n)"] 	= "Blurs background behind the frame."
-E2Helper.Descriptions["setIcon(xdf:s)"] 	= "The image file to use, relative to '/materials/'\nIcon names can be found here: http://wiki.garrysmod.com/page/Silkicons \nNote: use \"icon16/<Icon-name>.png\" as material name for icons. E.g. \"icon16/accept.png\""
+E2Helper.Descriptions["setVisible(xdf:n)"] = "Makes the Panel invisible or visible. For all players on the Panel's players list."
+E2Helper.Descriptions["setBackgroundBlur(xdf:n)"] = "Blurs background behind the frame."
+E2Helper.Descriptions["setIcon(xdf:s)"] = "The image file to use, relative to '/materials/'\nIcon names can be found here: http://wiki.garrysmod.com/page/Silkicons \nNote: use \"icon16/<Icon-name>.png\" as material name for icons. E.g. \"icon16/accept.png\""
 E2Helper.Descriptions["isVisible(xdf:)"] = "Returns wheather the Panel is visible or not."
 E2Helper.Descriptions["addPlayer(xdf:e)"] = "Adds a player to the Panel's player list.\nthese players gonne see the Panel"
 E2Helper.Descriptions["removePlayer(xdf:e)"] = "Removes a player from the Panel's player list."

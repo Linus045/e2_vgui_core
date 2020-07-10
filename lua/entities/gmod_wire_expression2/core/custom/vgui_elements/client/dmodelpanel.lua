@@ -1,78 +1,78 @@
 E2VguiPanels["vgui_elements"]["functions"]["dmodelpanel"] = {}
 E2VguiPanels["vgui_elements"]["functions"]["dmodelpanel"]["createFunc"] = function(uniqueID, pnlData, e2EntityID,changes)
-	local parent = E2VguiLib.GetPanelByID(pnlData["parentID"],e2EntityID)
-	local panel = vgui.Create("DModelPanel",parent)
+    local parent = E2VguiLib.GetPanelByID(pnlData["parentID"],e2EntityID)
+    local panel = vgui.Create("DModelPanel",parent)
 
 
-	--if autoAdjust is enabled, override the function before we call setModel() in applyAttributes()
-	if pnlData["autoadjust"] == true then
-		local setmodel = panel.SetModel --old setModel function
-		panel.SetModel = function(...)
-			setmodel(...)
-			if panel.Entity != nil then
-				local mn, mx = panel.Entity:GetRenderBounds()
-				local size = 0
-				size = math.max( size, math.abs( mn.x ) + math.abs( mx.x ) )
-				size = math.max( size, math.abs( mn.y ) + math.abs( mx.y ) )
-				size = math.max( size, math.abs( mn.z ) + math.abs( mx.z ) )
-				local height = math.abs( mn.z ) + math.abs( mx.z )
-				panel:SetCamPos( Vector( size * 1.5, 0, height/1.5 ) )
-				panel:SetLookAt( Vector(0,0, height/ 2) )
-			end
-		end
-	end
-	panel["oldrotate"] = panel.LayoutEntity
-	if pnlData["rotatemodel"] == false then
-		panel.LayoutEntity = function(ent) end
-	else
-		panel.LayoutEntity = panel["oldrotate"]
-	end
+    --if autoAdjust is enabled, override the function before we call setModel() in applyAttributes()
+    if pnlData["autoadjust"] == true then
+        local setmodel = panel.SetModel --old setModel function
+        panel.SetModel = function(...)
+            setmodel(...)
+            if panel.Entity != nil then
+                local mn, mx = panel.Entity:GetRenderBounds()
+                local size = 0
+                size = math.max( size, math.abs( mn.x ) + math.abs( mx.x ) )
+                size = math.max( size, math.abs( mn.y ) + math.abs( mx.y ) )
+                size = math.max( size, math.abs( mn.z ) + math.abs( mx.z ) )
+                local height = math.abs( mn.z ) + math.abs( mx.z )
+                panel:SetCamPos( Vector( size * 1.5, 0, height/1.5 ) )
+                panel:SetLookAt( Vector(0,0, height/ 2) )
+            end
+        end
+    end
+    panel["oldrotate"] = panel.LayoutEntity
+    if pnlData["rotatemodel"] == false then
+        panel.LayoutEntity = function(ent) end
+    else
+        panel.LayoutEntity = panel["oldrotate"]
+    end
 
-	E2VguiLib.applyAttributes(panel,pnlData,true)
-	local data = E2VguiLib.applyAttributes(panel,changes)
-	table.Merge(pnlData,data)
+    E2VguiLib.applyAttributes(panel,pnlData,true)
+    local data = E2VguiLib.applyAttributes(panel,changes)
+    table.Merge(pnlData,data)
 
-	--notify server of removal and also update client table
-	function panel:OnRemove()
-		E2VguiLib.RemovePanelWithChilds(self,e2EntityID)
-	end
+    --notify server of removal and also update client table
+    function panel:OnRemove()
+        E2VguiLib.RemovePanelWithChilds(self,e2EntityID)
+    end
 
-	if pnlData["color"] ~= nil then
-		panel:SetColor(pnlData["color"])
-	end
+    if pnlData["color"] ~= nil then
+        panel:SetColor(pnlData["color"])
+    end
 
-	panel["uniqueID"] = uniqueID
-	panel["pnlData"] = pnlData
-	E2VguiLib.RegisterNewPanel(e2EntityID ,uniqueID, panel)
-	E2VguiLib.UpdatePosAndSizeServer(e2EntityID,uniqueID,panel)
-	return true
+    panel["uniqueID"] = uniqueID
+    panel["pnlData"] = pnlData
+    E2VguiLib.RegisterNewPanel(e2EntityID ,uniqueID, panel)
+    E2VguiLib.UpdatePosAndSizeServer(e2EntityID,uniqueID,panel)
+    return true
 end
 
 
 E2VguiPanels["vgui_elements"]["functions"]["dmodelpanel"]["modifyFunc"] = function(uniqueID, e2EntityID, changes)
-	local panel = E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
-	if panel == nil or not IsValid(panel)  then return end
+    local panel = E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
+    if panel == nil or not IsValid(panel)  then return end
 
-	local data = E2VguiLib.applyAttributes(panel,changes)
-	table.Merge(panel["pnlData"],data)
+    local data = E2VguiLib.applyAttributes(panel,changes)
+    table.Merge(panel["pnlData"],data)
 
-	if panel["pnlData"]["color"] ~= nil then
-		panel:SetColor(panel["pnlData"]["color"])
-	end
+    if panel["pnlData"]["color"] ~= nil then
+        panel:SetColor(panel["pnlData"]["color"])
+    end
 
-	if panel["pnlData"]["rotatemodel"] == false then
-		panel.LayoutEntity = function(ent) end
-	else
-		panel.LayoutEntity = panel["oldrotate"]
-	end
+    if panel["pnlData"]["rotatemodel"] == false then
+        panel.LayoutEntity = function(ent) end
+    else
+        panel.LayoutEntity = panel["oldrotate"]
+    end
 
-	E2VguiLib.UpdatePosAndSizeServer(e2EntityID,uniqueID,panel)
-	return true
+    E2VguiLib.UpdatePosAndSizeServer(e2EntityID,uniqueID,panel)
+    return true
 end
 
 
 --[[-------------------------------------------------------------------------
-	HELPER FUNCTIONS
+    HELPER FUNCTIONS
 --------------------------------------------------------------------------]]
 E2Helper.Descriptions["dmodelpanel(n)"] = "Index\ninits a new DModelPanel."
 --E2Helper.Descriptions["dmodelpanel(nn)"] = "Creates a Dframe element with parent id. Use xdf:create() to create the Panel."

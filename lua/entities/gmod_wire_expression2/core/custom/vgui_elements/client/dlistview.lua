@@ -1,72 +1,72 @@
 E2VguiPanels["vgui_elements"]["functions"]["dlistview"] = {}
 E2VguiPanels["vgui_elements"]["functions"]["dlistview"]["createFunc"] = function(uniqueID, pnlData, e2EntityID,changes)
-	local parent = E2VguiLib.GetPanelByID(pnlData["parentID"],e2EntityID)
-	local panel = vgui.Create("DListView",parent)
-	pnlData["addColumn"] = nil --otherwise it will get added twice
-	pnlData["addLine"] = nil --otherwise it will get added twice
-	E2VguiLib.applyAttributes(panel,pnlData,true)
-	local data = E2VguiLib.applyAttributes(panel,changes)
-	table.Merge(pnlData,data)
+    local parent = E2VguiLib.GetPanelByID(pnlData["parentID"],e2EntityID)
+    local panel = vgui.Create("DListView",parent)
+    pnlData["addColumn"] = nil --otherwise it will get added twice
+    pnlData["addLine"] = nil --otherwise it will get added twice
+    E2VguiLib.applyAttributes(panel,pnlData,true)
+    local data = E2VguiLib.applyAttributes(panel,changes)
+    table.Merge(pnlData,data)
 
-	--notify server of removal and also update client table
-	function panel:OnRemove()
-		E2VguiLib.RemovePanelWithChilds(self,e2EntityID)
-	end
+    --notify server of removal and also update client table
+    function panel:OnRemove()
+        E2VguiLib.RemovePanelWithChilds(self,e2EntityID)
+    end
 
-	function panel:OnRowSelected(lineID,linePnl)
-		local uniqueID = self["uniqueID"]
-		if uniqueID != nil then
-				local sendData = function()
-					local selected = self:GetSelected()
-					local values = {}
-					for row=1,#selected do
-						values[row] = {}
-						for column=1, #self.Columns do
-							local header = self.Columns[column].Header:GetText()
-							local text = selected[row]:GetValue(column)
-							values[row][header] = text
-						end
-					end
-					net.Start("E2Vgui.TriggerE2")
-					net.WriteInt(e2EntityID,32)
-					net.WriteInt(uniqueID,32)
-					net.WriteString("DListView")
-					net.WriteTable({
-						["index"] = lineID,
-						["values"] = values
-					})
-					net.SendToServer()
-				end
-				--if we have multiselect enabled, this function gets called for every element we selected
-				--to prevent sending a message for every element we use a timer that gets reset
-				--once a new entry is added within a certain delay
-				if timer.Exists("E2Vui_sendDListEntries") then
-					timer.Adjust("E2Vui_sendDListEntries",0.3,1,sendData)
-				else
-					timer.Create("E2Vui_sendDListEntries",0.3,1,sendData)
-				end
-		end
-	end
-	panel["uniqueID"] = uniqueID
-	panel["pnlData"] = pnlData
-	E2VguiLib.RegisterNewPanel(e2EntityID ,uniqueID, panel)
-	E2VguiLib.UpdatePosAndSizeServer(e2EntityID,uniqueID,panel)
-	return true
+    function panel:OnRowSelected(lineID,linePnl)
+        local uniqueID = self["uniqueID"]
+        if uniqueID != nil then
+                local sendData = function()
+                    local selected = self:GetSelected()
+                    local values = {}
+                    for row=1,#selected do
+                        values[row] = {}
+                        for column=1, #self.Columns do
+                            local header = self.Columns[column].Header:GetText()
+                            local text = selected[row]:GetValue(column)
+                            values[row][header] = text
+                        end
+                    end
+                    net.Start("E2Vgui.TriggerE2")
+                    net.WriteInt(e2EntityID,32)
+                    net.WriteInt(uniqueID,32)
+                    net.WriteString("DListView")
+                    net.WriteTable({
+                        ["index"] = lineID,
+                        ["values"] = values
+                    })
+                    net.SendToServer()
+                end
+                --if we have multiselect enabled, this function gets called for every element we selected
+                --to prevent sending a message for every element we use a timer that gets reset
+                --once a new entry is added within a certain delay
+                if timer.Exists("E2Vui_sendDListEntries") then
+                    timer.Adjust("E2Vui_sendDListEntries",0.3,1,sendData)
+                else
+                    timer.Create("E2Vui_sendDListEntries",0.3,1,sendData)
+                end
+        end
+    end
+    panel["uniqueID"] = uniqueID
+    panel["pnlData"] = pnlData
+    E2VguiLib.RegisterNewPanel(e2EntityID ,uniqueID, panel)
+    E2VguiLib.UpdatePosAndSizeServer(e2EntityID,uniqueID,panel)
+    return true
 end
 
 
 E2VguiPanels["vgui_elements"]["functions"]["dlistview"]["modifyFunc"] = function(uniqueID, e2EntityID, changes)
-	local panel = E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
-	if panel == nil or not IsValid(panel)  then return end
+    local panel = E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
+    if panel == nil or not IsValid(panel)  then return end
 
-	local data = E2VguiLib.applyAttributes(panel,changes)
-	table.Merge(panel["pnlData"],data)
-	E2VguiLib.UpdatePosAndSizeServer(e2EntityID,uniqueID,panel)
-	return true
+    local data = E2VguiLib.applyAttributes(panel,changes)
+    table.Merge(panel["pnlData"],data)
+    E2VguiLib.UpdatePosAndSizeServer(e2EntityID,uniqueID,panel)
+    return true
 end
 
 --[[-------------------------------------------------------------------------
-	HELPER FUNCTIONS
+    HELPER FUNCTIONS
 ---------------------------------------------------------------------------]]
 E2Helper.Descriptions["dlistview(n)"] = "Index\ninits a new Listview."
 E2Helper.Descriptions["dlistview(nn)"] = "Index, Parent Id\ninits a new Listview."

@@ -135,7 +135,7 @@ function E2VguiLib.RegisterNewPanel(e2EntityID ,uniqueID, pnl)
     E2VguiPanels.panels[e2EntityID][uniqueID] = pnl
     pnl["pnlData"]["e2EntityID"] = e2EntityID
     --  TODO:Add hooks later ?
-    --	hook.Run("E2VguiLib.RegisterNewPanel",LocalPlayer(),e2EntityID,pnl)
+    --  hook.Run("E2VguiLib.RegisterNewPanel",LocalPlayer(),e2EntityID,pnl)
 end
 
 
@@ -154,8 +154,8 @@ function E2VguiLib.applyAttributes(panel,attributes,otherFormat)
         local pnlData = {}
         for key,value in pairs(attributes) do
             if E2VguiLib.panelFunctions[key] != nil and value != nil then
-        		E2VguiLib.panelFunctions[key](panel,value)
-        	end
+                E2VguiLib.panelFunctions[key](panel,value)
+            end
             pnlData[key] = value
         end
         return pnlData
@@ -165,8 +165,8 @@ function E2VguiLib.applyAttributes(panel,attributes,otherFormat)
             local key = values[1]
             local value = values[2]
             if E2VguiLib.panelFunctions[key] != nil and value != nil then
-        		E2VguiLib.panelFunctions[key](panel,value)
-        	end
+                E2VguiLib.panelFunctions[key](panel,value)
+            end
             pnlData[key] = value
         end
         return pnlData
@@ -479,11 +479,11 @@ UTIL FUNCTIONS
 ---------------------------------------------------------------------------]]
 --simple function to convert between lua tables and e2 tables
 function E2VguiLib.convertToE2Table(tbl)
-    /*	{n={},ntypes={},s={},stypes={},size=0}
-    n 			- table for number keys
-    ntypes 	- number indics
-    s 			- table for string keys
-    stypes 	- string indices
+    /*  {n={},ntypes={},s={},stypes={},size=0}
+    n       - table for number keys
+    ntypes  - number indics
+    s       - table for string keys
+    stypes  - string indices
     */
     local e2table = {n={},ntypes={},s={},stypes={},size=0}
     local size = 0
@@ -519,25 +519,25 @@ function E2VguiLib.convertToE2Table(tbl)
             if IsColor(v) then
                 e2table[indextype.."types"][indextype == "n" and k or tostring(k)] = wire_expression_types["VECTOR4"][1]
                 e2table[indextype][k] = {v.r,v.g,v.b,v.a}
-				--[[
-					First we check if its a nested table,
-					otherwise it's a normal table or vector-table
-				]]
-			--check if it contains sub-tables, so it's not a vector3 or vector4
-			elseif type(v[1]) == "table" then
-				--TODO:this check isn't 100% proof
-				--TODO:implement protection against recursive tables. Infinite loops!
-				e2table[indextype][k] = E2VguiCore.convertToE2Table(v)
-			elseif table.IsSequential(v) and #v==2 and type(v[1]) == "number" and type(v[2]) == "number" then
+                --[[
+                    First we check if its a nested table,
+                    otherwise it's a normal table or vector-table
+                ]]
+            --check if it contains sub-tables, so it's not a vector3 or vector4
+            elseif type(v[1]) == "table" then
+                --TODO:this check isn't 100% proof
+                --TODO:implement protection against recursive tables. Infinite loops!
+                e2table[indextype][k] = E2VguiCore.convertToE2Table(v)
+            elseif table.IsSequential(v) and #v==2 and type(v[1]) == "number" and type(v[2]) == "number" then
                 e2table[indextype.."types"][indextype == "n" and k or tostring(k)] = wire_expression_types["VECTOR2"][1]
                 e2table[indextype][k] = v
-			elseif table.IsSequential(v) and #v==3 and type(v[1]) == "number" and type(v[2]) == "number" and type(v[3]) == "number" then
+            elseif table.IsSequential(v) and #v==3 and type(v[1]) == "number" and type(v[2]) == "number" and type(v[3]) == "number" then
                 e2table[indextype.."types"][indextype == "n" and k or tostring(k)] = wire_expression_types["VECTOR"][1]
                 e2table[indextype][k] = v
-			elseif table.IsSequential(v) and #v==4 and type(v[1]) == "number" and type(v[2]) == "number" and type(v[3]) == "number" and type(v[4]) == "number" then --its a vector4
+            elseif table.IsSequential(v) and #v==4 and type(v[1]) == "number" and type(v[2]) == "number" and type(v[3]) == "number" and type(v[4]) == "number" then --its a vector4
                 e2table[indextype.."types"][indextype == "n" and k or tostring(k)] = wire_expression_types["VECTOR4"][1]
                 e2table[indextype][k] = v
-			else
+            else
                 --TODO:implement protection against recursive tables. Infinite loops!
                 e2table[indextype][k] = E2VguiCore.convertToE2Table(v)
             end
@@ -557,27 +557,27 @@ end
 
 --Converts a e2table into a lua table
 function E2VguiLib.convertToLuaTable(tbl)
-    /*	{n={},ntypes={},s={},stypes={},size=0}
-    n 			- table for number keys
-    ntypes 	- number indics
-    s 			- table for string keys
-    stypes 	- string indices
+    /*  {n={},ntypes={},s={},stypes={},size=0}
+    n       - table for number keys
+    ntypes  - number indics
+    s       - table for string keys
+    stypes  - string indices
     */
     local luatable = {}
-	for key,value in pairs(tbl.s) do
-		if istable(value) then
-			luatable[key] = E2VguiLib.convertToLuaTable(value)
-		else
-			luatable[key] = value
-		end
-	end
-	for key,value in pairs(tbl.n) do
-		if istable(value) then
-			luatable[key] = E2VguiLib.convertToLuaTable(value)
-		else
-			luatable[key] = value
-		end
-	end
+    for key,value in pairs(tbl.s) do
+        if istable(value) then
+            luatable[key] = E2VguiLib.convertToLuaTable(value)
+        else
+            luatable[key] = value
+        end
+    end
+    for key,value in pairs(tbl.n) do
+        if istable(value) then
+            luatable[key] = E2VguiLib.convertToLuaTable(value)
+        else
+            luatable[key] = value
+        end
+    end
     return luatable
 end
 
@@ -590,10 +590,10 @@ function E2VguiLib.CreateE2VguiPermissionMenu(panel)
     local pnlWidth, pnlHeight = E2VguiLib.MenuPanel:GetParent():GetSize()
 
     local btnReload = vgui.Create("DButton")
-	btnReload:SetText("Reload")
-	btnReload.DoClick = function(self)
+    btnReload:SetText("Reload")
+    btnReload.DoClick = function(self)
         E2VguiLib.ReloadE2VguiPermissionMenu()
-	end
+    end
     panel:AddItem(btnReload)
 
     E2VguiLib.MenuPanel.sheet = vgui.Create( "DPropertySheet")
@@ -618,8 +618,8 @@ function E2VguiLib.CreateE2VguiPermissionMenu(panel)
     btnRemoveBuddy:SetText("Remove selected Buddy")
     btnRemoveBuddy:Dock(TOP)
     btnRemoveBuddy.DoClick = function(self)
-		local lineIdx, linePnl = E2VguiLib.MenuPanel.lvBuddies:GetSelectedLine()
-		if linePnl != nil then
+        local lineIdx, linePnl = E2VguiLib.MenuPanel.lvBuddies:GetSelectedLine()
+        if linePnl != nil then
             local steamID = linePnl:GetColumnText(2)
             local ply = player.GetBySteamID(steamID)
             if ply != false then
@@ -627,8 +627,8 @@ function E2VguiLib.CreateE2VguiPermissionMenu(panel)
             else
                 E2VguiLib.RemoveBuddyFromDatabase(steamID)
             end
-		end
-		E2VguiLib.ReloadE2VguiPermissionMenu()
+        end
+        E2VguiLib.ReloadE2VguiPermissionMenu()
     end
 
     E2VguiLib.MenuPanel.addBuddyPanel = E2VguiLib.MenuPanel.buddyPanel:Add("DScrollPanel")
@@ -752,48 +752,48 @@ function E2VguiLib.ReloadE2VguiPermissionMenu()
 end 
 
 hook.Add( "PopulateToolMenu", "CreateE2VguiPermissionMenu", function() 
-	spawnmenu.AddToolCategory( "Utilities", "#spawnmenu.utilities.e2vguicore", "E2 Vgui Core")
+    spawnmenu.AddToolCategory( "Utilities", "#spawnmenu.utilities.e2vguicore", "E2 Vgui Core")
     spawnmenu.AddToolMenuOption( "Utilities", "#spawnmenu.utilities.e2vguicore", "E2VguiPermissionMenu", "Permissions", "", "", E2VguiLib.CreateE2VguiPermissionMenu)
 end)
 
 function E2VguiLib.CreateBuddyTableIfNotExist()
-	return sql.Query("CREATE TABLE IF NOT EXISTS e2_vgui_buddy_list(SteamID TEXT PRIMARY KEY, UserName TEXT)")
+    return sql.Query("CREATE TABLE IF NOT EXISTS e2_vgui_buddy_list(SteamID TEXT PRIMARY KEY, UserName TEXT)")
 end
 
 function E2VguiLib.GetBuddiesFromDatabase()
     E2VguiLib.CreateBuddyTableIfNotExist()
     local result = sql.Query("SELECT SteamID,UserName FROM e2_vgui_buddy_list")
-	return result or {}
+    return result or {}
 end
 
 function E2VguiLib.AddBuddyToDatabase(ply)
     E2VguiLib.CreateBuddyTableIfNotExist()
     result = sql.Query("INSERT INTO e2_vgui_buddy_list(SteamID, UserName) VALUES('"..ply:SteamID().."', '".. ply:Nick() .."')")
     E2VguiLib.Buddies[ply:SteamID()] = true
-	E2VguiLib.RegisterBuddiesOnServer()
+    E2VguiLib.RegisterBuddiesOnServer()
 end
 
 function E2VguiLib.RemoveBuddyFromDatabase(steamID)
-	local result = sql.Query("SELECT name FROM sqlite_master WHERE type='table' AND name='{e2_vgui_buddy_list}'");
-	if result == nil then
-		result = sql.Query("DELETE FROM e2_vgui_buddy_list WHERE SteamID='".. steamID .."';")
+    local result = sql.Query("SELECT name FROM sqlite_master WHERE type='table' AND name='{e2_vgui_buddy_list}'");
+    if result == nil then
+        result = sql.Query("DELETE FROM e2_vgui_buddy_list WHERE SteamID='".. steamID .."';")
     end
     E2VguiLib.Buddies[steamID] = nil
-	E2VguiLib.RegisterBuddiesOnServer()
+    E2VguiLib.RegisterBuddiesOnServer()
 end
 
 --sends the buddy list to the server
 function E2VguiLib.RegisterBuddiesOnServer()
-	local buddies = {}
+    local buddies = {}
 
     for k, v in pairs(E2VguiLib.Buddies) do
         E2VguiLib.Buddies[k] = nil
     end
 
     for k,buddy in pairs(E2VguiLib.GetBuddiesFromDatabase()) do
-		table.insert(buddies, buddy.SteamID)
-		E2VguiLib.Buddies[buddy.SteamID] = true
-	end
+        table.insert(buddies, buddy.SteamID)
+        E2VguiLib.Buddies[buddy.SteamID] = true
+    end
 
     net.Start("E2Vgui.RegisterBuddiesOnServer")
     net.WriteTable(buddies)
@@ -815,21 +815,21 @@ function E2VguiLib.AddBlockedPlayerToDatabase(ply)
     E2VguiLib.CreateBlockedPlayerTableIfNotExist()
     result = sql.Query("INSERT INTO e2_vgui_blocked_player_list(SteamID, UserName) VALUES('"..ply:SteamID().."', '".. ply:Nick() .."')")
     E2VguiLib.BlockedPlayers[ply:SteamID()] = true
-	E2VguiLib.RegisterBlockedPlayersOnServer()
+    E2VguiLib.RegisterBlockedPlayersOnServer()
 end
 
 function E2VguiLib.RemoveBlockedPlayerFromDatabase(steamID)
-	local result = sql.Query("SELECT name FROM sqlite_master WHERE type='table' AND name='{e2_vgui_blocked_player_list}'");
-	if result == nil then
-		result = sql.Query("DELETE FROM e2_vgui_blocked_player_list WHERE SteamID='".. steamID .."';")
+    local result = sql.Query("SELECT name FROM sqlite_master WHERE type='table' AND name='{e2_vgui_blocked_player_list}'");
+    if result == nil then
+        result = sql.Query("DELETE FROM e2_vgui_blocked_player_list WHERE SteamID='".. steamID .."';")
     end
     E2VguiLib.BlockedPlayers[steamID] = nil
-	E2VguiLib.RegisterBlockedPlayersOnServer()
+    E2VguiLib.RegisterBlockedPlayersOnServer()
 end
 
 --sends the blocked players to the server
 function E2VguiLib.RegisterBlockedPlayersOnServer()
-	local blockedPlayers = {}
+    local blockedPlayers = {}
 
     for k, v in pairs(E2VguiLib.BlockedPlayers) do
         E2VguiLib.BlockedPlayers[k] = nil
@@ -840,7 +840,7 @@ function E2VguiLib.RegisterBlockedPlayersOnServer()
         E2VguiLib.BlockedPlayers[blockedPlayer.SteamID] = true
     end
 
-	net.Start("E2Vgui.RegisterBlockedPlayersOnServer")
+    net.Start("E2Vgui.RegisterBlockedPlayersOnServer")
     net.WriteTable(blockedPlayers)
     net.SendToServer()
 end
