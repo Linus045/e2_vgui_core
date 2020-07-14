@@ -181,6 +181,11 @@ do--[[setter]]--
         E2VguiCore.registerAttributeChange(this,"lookat",  pos )
     end
 
+    e2function void dmodelpanel:setLookAng(angle rotation)
+        local rot = Angle(rotation[1],rotation[2],rotation[3])
+        E2VguiCore.registerAttributeChange(this,"lookang", rot)
+    end
+
     e2function void dmodelpanel:autoAdjust()
         E2VguiCore.registerAttributeChange(this,"autoadjust",  true )
     end

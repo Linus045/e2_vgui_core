@@ -109,6 +109,7 @@ E2VguiLib = {
         fov = function(panel,value) panel:SetFOV(value) end,
         campos = function(panel,value) panel:SetCamPos(value) end,
         lookat = function(panel,value) panel:SetLookAt(value) end,
+        lookang = function(panel, value) panel:SetLookAng(value) end,
         ambientlight = function(panel,value) panel:SetAmbientLight(value) end,
         animatemodel = function(panel,value) panel:SetAnimated(value) end,
         directionallight = function(panel,values)
