@@ -83,7 +83,7 @@ E2Helper.Descriptions["setMin(xds:n)"] = "Sets the minimum Value"
 E2Helper.Descriptions["setMax(xds:n)"] = "Sets the maximum Value."
 E2Helper.Descriptions["setDecimals(xds:n)"] = "Hides the close Slider."
 E2Helper.Descriptions["setValue(xds:n)"] = "Set the curren Slider Value."
-E2Helper.Descriptions["setDark(xds:)"] = "Sets the Theme of the Slider to the dark Theme."
+E2Helper.Descriptions["setDark(xds:n)"] = "Sets the Theme of the Slider to the dark Theme."
 
 E2Helper.Descriptions["getColor(xds:e)"] = "Returns the color."
 E2Helper.Descriptions["getColor4(xds:e)"] = "Returns the color."

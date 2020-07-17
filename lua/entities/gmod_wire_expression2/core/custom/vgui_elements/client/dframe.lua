@@ -97,7 +97,7 @@ E2Helper.Descriptions["getSizable(xdf:e)"] = "Returns if the frame is resizable.
 E2Helper.Descriptions["getShowCloseButton(xdf:e)"] = "Returns if the close button is visible."
 E2Helper.Descriptions["getDeleteOnClose(xdf:e)"] = "Returns if the frame gets removed on close."
 
-E2Helper.Descriptions["makePopup(xdf:n)"] = "Makes the frame pop up after using DFrame:create(). See enableMouseInput() and enableKeyboardInput()."
+E2Helper.Descriptions["makePopup(xdf:)"] = "Makes the frame pop up after using DFrame:create(). See enableMouseInput() and enableKeyboardInput()."
 E2Helper.Descriptions["enableMouseInput(xdf:n)"] = "Enables the mouse input after using DFrame:create()."
 E2Helper.Descriptions["enableKeyboardInput(xdf:n)"] = "Enables the keyboard input after using DFrame:create()."
 

@@ -77,7 +77,7 @@ E2Helper.Descriptions["dtextentry(n)"] = "Creates a new textentry with the given
 E2Helper.Descriptions["dtextentry(nn)"] = "Creates a new textentry with the given index and parents it to the given panel. Can also be a DFrame or DPanel instance."
 
 E2Helper.Descriptions["setText(xdt:s)"] = "Sets the text of the textentry."
-E2Helper.Descriptions["getText(xdt:)"] = "Returns the text of the textentry."
+E2Helper.Descriptions["getText(xdt:e)"] = "Returns the text of the textentry."
 
 --default functions
 E2Helper.Descriptions["setPos(xdt:nn)"] = "Sets the position."
