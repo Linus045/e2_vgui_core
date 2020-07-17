@@ -173,22 +173,6 @@ do--[[setter]]--
 end
 
 do--[[getter]]--
-    e2function vector dlistview:getColor(entity ply)
-        local col =  E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"color")
-        if col == nil then
-            return {0,0,0}
-        end
-        return {col.r,col.g,col.b}
-    end
-
-    e2function vector4 dlistview:getColor4(entity ply)
-        local col =  E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"color")
-        if col == nil then
-            return {0,0,0,255}
-        end
-        return {col.r,col.g,col.b,col.a}
-    end
-
     e2function number dlistview:getIndex(entity ply)
         return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"index") or 0
     end

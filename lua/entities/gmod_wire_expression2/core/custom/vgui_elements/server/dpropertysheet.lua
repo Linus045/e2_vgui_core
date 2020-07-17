@@ -186,9 +186,5 @@ do--[[getter]]--
         end
         return {col.r,col.g,col.b,col.a}
     end
-
-    e2function string dpropertysheet:getText(entity ply)
-        return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"text") or ""
-    end
 -- getter
 end

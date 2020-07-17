@@ -245,6 +245,6 @@ end
         return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"enabled") and 1 or 0
     end
 
-    e2function string dimagebutton:getText(entity ply)
+    e2function string dimagebutton:getImage(entity ply)
         return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"image") or ""
     end

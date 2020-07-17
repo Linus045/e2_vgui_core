@@ -155,8 +155,12 @@ do--[[setter]]--
 end
 
 do--[[getter]]--
+    e2function number dcheckboxlabel:getText(entity ply)
+        return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"text")
+    end
+
     e2function number dcheckboxlabel:getChecked(entity ply)
-    return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"checked") and 1 or 0
+        return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"checked") and 1 or 0
     end
 
     e2function number dcheckboxlabel:getIndent(entity ply)
