@@ -100,7 +100,8 @@ E2Helper.Descriptions["getDeleteOnClose(xdf:e)"] = "Returns if the frame gets re
 E2Helper.Descriptions["makePopup(xdf:)"] = "Makes the frame pop up after using DFrame:create(). See enableMouseInput() and enableKeyboardInput()."
 E2Helper.Descriptions["enableMouseInput(xdf:n)"] = "Enables the mouse input after using DFrame:create()."
 E2Helper.Descriptions["enableKeyboardInput(xdf:n)"] = "Enables the keyboard input after using DFrame:create()."
-
+E2Helper.Descriptions["linkToVehicle(xdf:e)"] = "Links the frame to a vehicle entity. When linked, the frame will automatically open and close (uses setVisible() internally) when entering or leaving the vehicle.\n setDeleteOnClose(0) is recommended."
+E2Helper.Descriptions["removeLinkFromVehicle(xdf:)"] = "Removes the link the vehicle entity."
 
 --default functions
 E2Helper.Descriptions["setPos(xdf:nn)"] = "Sets the position."

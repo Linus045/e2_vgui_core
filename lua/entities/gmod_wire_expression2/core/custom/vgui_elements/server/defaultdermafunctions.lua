@@ -223,7 +223,7 @@ E2VguiCore.registerCallback("loaded_elements",function()
 
             if IsValid(ply) and ply:IsPlayer() then
                 E2VguiCore.registerAttributeChange(panel,"visible", vis > 0)
-                E2VguiCore.ModifyPanel(self, panel, {ply}, false)
+                E2VguiCore.ModifyPanel(self.player, self.entity, panel, {ply}, false)
             end
         end
         ,5)
@@ -307,7 +307,7 @@ E2VguiCore.registerCallback("loaded_elements",function()
             local op1 = args[2]
             local panel = op1[1](self,op1)
 
-            E2VguiCore.ModifyPanel(self,panel)
+            E2VguiCore.ModifyPanel(self.player, self.entity, panel)
         end
         ,5)
 
@@ -320,7 +320,7 @@ E2VguiCore.registerCallback("loaded_elements",function()
             local panel = op1[1](self,op1)
             local players = op2[1](self,op2)
 
-            E2VguiCore.ModifyPanel(self,panel,players)
+            E2VguiCore.ModifyPanel(self.player, self.entity, panel, players)
         end
         ,5)
 

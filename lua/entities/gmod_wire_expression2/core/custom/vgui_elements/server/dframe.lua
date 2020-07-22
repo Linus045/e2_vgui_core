@@ -183,7 +183,14 @@ do--[[setter]]--
         E2VguiCore.registerAttributeChange(this,"deleteOnClose",  delete > 0 )
     end
 
--- setter
+    e2function void dframe:linkToVehicle(entity vehicle)
+        E2VguiCore.linkToVehicle(self, this, vehicle)
+    end
+
+    e2function void dframe:removeLinkFromVehicle()
+        E2VguiCore.removeLinkFromVehicle(self, this)
+    end
+    -- setter
 end
 
 do--[[getter]]--

@@ -5,7 +5,8 @@ E2VguiCore = {
     ["callbacks"] = {},
     ["Trigger"] = {},
     ["Buddies"] = {},
-    ["BlockedPlayers"] = {}
+    ["BlockedPlayers"] = {},
+    ["LinkedVehicles"] = {}
 }
 
 util.AddNetworkString("E2Vgui.CreatePanel")
@@ -370,14 +371,15 @@ Args:
     updateChildsToo: boolean - whether or not update the child panels as well
 Return: <>
 ---------------------------------------------------------------------------]]
-function E2VguiCore.ModifyPanel(e2self, panel, players, updateChildsToo)
-    if e2self == nil then return end
+function E2VguiCore.ModifyPanel(e2Owner, e2Entity, panel, players, updateChildsToo)
+    if not IsValid(e2Owner) then return end
+    if not IsValid(e2Entity) then return end
     if panel == nil then return end
     --invalid panel, return
     if #panel.players == 0 and players == nil then return end
     if table.Count(panel.paneldata) == 0 then return end
 
-    local e2EntityID = e2self.entity:EntIndex()
+    local e2EntityID = e2Entity:EntIndex()
     local players = players or panel["players"]
     local paneldata = panel["paneldata"]
     local changes = panel["changes"]
@@ -392,11 +394,11 @@ function E2VguiCore.ModifyPanel(e2self, panel, players, updateChildsToo)
     end
 
     --Check if the player hit the spam protection limit
-    if not E2VguiCore.CanUpdateVgui(e2self.player) then return end
-    e2self.player.e2vgui_tempPanels = e2self.player.e2vgui_tempPanels + 1
+    if not E2VguiCore.CanUpdateVgui(e2Owner) then return end
+    e2Owner.e2vgui_tempPanels = e2Owner.e2vgui_tempPanels + 1
 
     players = E2VguiCore.FilterPlayers(players) --remove redundant names and not-player entries
-    players = E2VguiCore.FilterPermission(players,e2self.player) --check if e2self.player is allowed to use vguicore
+    players = E2VguiCore.FilterPermission(players,e2Owner) --check if e2Owner is allowed to use vguicore
     if table.Count(players) == 0 then return end --there are no players to create the panel for therefore return
 
     --convert changes table format to paneldata's table's format
@@ -413,9 +415,9 @@ function E2VguiCore.ModifyPanel(e2self, panel, players, updateChildsToo)
 
     --TODO: prevent recursion - Infinite loops
     if updateChildsToo == true then
-        local childpanels = E2VguiCore.GetChildren(e2self,panel)
+        local childpanels = E2VguiCore.GetChildren(e2Entity,panel)
         for _,childpnl in pairs(childpanels) do
-            E2VguiCore.ModifyPanel(e2self, childpnl, nil, true)
+            E2VguiCore.ModifyPanel(e2Owner, e2Entity, childpnl, nil, true)
         end
     end
     local stillOpen = {}
@@ -475,11 +477,11 @@ Args:
 Return: table with all children panels
 ---------------------------------------------------------------------------]]
 --TODO: prevent recursion - Infinite loops
-function E2VguiCore.GetChildren(e2self,panel)
+function E2VguiCore.GetChildren(e2Entity,panel)
     local children = {}
     for _,ply in pairs(panel["players"]) do
-        if ply.e2_vgui_core != nil and ply.e2_vgui_core[e2self.entity:EntIndex()] != nil then
-            for _,value in pairs(ply.e2_vgui_core[e2self.entity:EntIndex()]) do
+        if ply.e2_vgui_core != nil and ply.e2_vgui_core[e2Entity:EntIndex()] != nil then
+            for _,value in pairs(ply.e2_vgui_core[e2Entity:EntIndex()]) do
                 if value["paneldata"] and value["paneldata"]["parentID"] == panel["paneldata"]["uniqueID"] then
                     table.insert(children,value)
                 end
@@ -776,6 +778,69 @@ function E2VguiCore.convertLuaTableToArray(tbl)
     return array
 end
 
+function E2VguiCore.linkToVehicle(e2self, panel, vehicle)
+    if not IsValid(vehicle) then return end
+    if not vehicle:IsVehicle() then return end
+    if not vehicle:IsValidVehicle() then return end
+    local e2Index = e2self.entity:EntIndex()
+    if E2VguiCore.LinkedVehicles[e2Index] == nil then
+        E2VguiCore.LinkedVehicles[e2Index] = {}
+    end
+    E2VguiCore.LinkedVehicles[e2Index][panel.paneldata.uniqueID] = {
+        ["vehicle"] = vehicle,
+        ["e2Owner"] = e2self.player
+    }
+end
+
+function E2VguiCore.removeLinkFromVehicle(e2self, panel)
+    if e2self == nil then return end
+    if panel == nil then return end
+
+    local e2Index = e2self.entity:EntIndex()
+    if E2VguiCore.LinkedVehicles[e2Index] then
+        E2VguiCore.LinkedVehicles[e2Index][panel.paneldata.uniqueID] = nil
+    end
+end
+
+function E2VguiCore.PlayerEnteredVehicle(player, vehicle, role)
+    for e2EntityID, linkedPanels in pairs(E2VguiCore.LinkedVehicles) do
+        for panelID, linkedEntry in pairs(linkedPanels) do
+            local linkedVehicle = linkedEntry.vehicle
+            local e2Owner = linkedEntry.e2Owner
+            if linkedVehicle == vehicle then
+                local panel = E2VguiCore.GetPanelByID(player,e2EntityID,panelID)
+                if panel != nil then
+                    local e2Entity = ents.GetByIndex(e2EntityID)
+                    if IsValid(e2Entity) then
+                        E2VguiCore.registerAttributeChange(panel,"visible", true)
+                        E2VguiCore.ModifyPanel(e2Owner, e2Entity, panel, {player}, false)
+                    end
+                end
+                break
+            end
+        end
+    end
+end
+
+function E2VguiCore.PlayerLeaveVehicle(player, vehicle)
+    for e2EntityID, linkedPanels in pairs(E2VguiCore.LinkedVehicles) do
+        for panelID, linkedEntry in pairs(linkedPanels) do
+            local linkedVehicle = linkedEntry.vehicle
+            local e2Owner = linkedEntry.e2Owner
+            if linkedVehicle == vehicle then
+                local panel = E2VguiCore.GetPanelByID(player,e2EntityID,panelID)
+                if panel != nil then
+                    local e2Entity = ents.GetByIndex(e2EntityID)
+                    if IsValid(e2Entity) then
+                        E2VguiCore.registerAttributeChange(panel,"visible", false)
+                        E2VguiCore.ModifyPanel(e2Owner, e2Entity, panel, {player}, false)
+                    end
+                end
+                break
+            end
+        end
+    end
+end
 --[[-------------------------------------------------------------------------
                         DERMA PANEL ADDING/MODIFY FOR SERVER SYNC
 ---------------------------------------------------------------------------]]
@@ -870,6 +935,13 @@ hook.Add("PlayerInitialSpawn", "E2VguiRegisterBuddyOnPlayerJoin", function(clien
     net.Broadcast()
 end)
 
+hook.Add("PlayerEnteredVehicle", "E2VguiOpenVguiOnEnterVehicle", function(player, vehicle, role) 
+    E2VguiCore.PlayerEnteredVehicle(player, vehicle, role)
+end)
+
+hook.Add("PlayerLeaveVehicle", "E2VguiCloseVguiOnLeaveVehicle", function(player, vehicle)
+    E2VguiCore.PlayerLeaveVehicle(player, vehicle)
+end)
 --[[-------------------------------------------------------------------------
                         NETMESSAGES
 ---------------------------------------------------------------------------]]
