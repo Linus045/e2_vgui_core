@@ -190,6 +190,10 @@ do--[[setter]]--
 	e2function void dlabel:setWrap(number textwrap)
 		E2VguiCore.registerAttributeChange(this,"textwrap", textwrap > 0)
 	end
+
+	e2function void dlabel:sizeToContents()
+		E2VguiCore.registerAttributeChange(this,"sizeToContents", true)
+	end
 -- setter
 end
 

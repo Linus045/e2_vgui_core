@@ -126,7 +126,8 @@ E2VguiLib = {
         backgroundBlur = function(panel,value) panel:SetBackgroundBlur(value) end,
         image = function(panel, value) panel:SetImage(value) end,
         keepAspect = function(panel, value) panel:SetKeepAspect(value) end,
-        stretchToFit = function(panel, value) panel:SetStretchToFit(value) end
+        stretchToFit = function(panel, value) panel:SetStretchToFit(value) end,
+        sizeToContents = function(panel, value) panel:SizeToContents() end
     }
 }
 

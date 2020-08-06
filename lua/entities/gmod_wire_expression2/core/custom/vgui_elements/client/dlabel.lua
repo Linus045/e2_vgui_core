@@ -47,6 +47,7 @@ E2Helper.Descriptions["setDrawOutlinedRect(xdl:v)"] = "Draws an outlined rect ar
 E2Helper.Descriptions["setDrawOutlinedRect(xdl:xv4)"] = "Draws an outlined rect around the text with the given color."
 E2Helper.Descriptions["setAutoStretchVertical(xdl:n)"] = "Automatically adjusts the height of the label dependent of the height of the text inside of it."
 E2Helper.Descriptions["setWrap(xdl:n)"] = "Sets whether text wrapping should be enabled or disabled on label. Use DLabel:SetAutoStretchVertical to automatically correct vertical size."
+E2Helper.Descriptions["sizeToContents(xdl:)"] = "Resizes the panel so that its width and height fit all of the content inside. Note: Will cause weird results when wrapping (see xdl:setWrap) is enabled ."
 
 E2Helper.Descriptions["getColor(xdl:e)"] = "Returns the text color."
 E2Helper.Descriptions["getColor4(xdl:e)"] = "Returns the text color."
