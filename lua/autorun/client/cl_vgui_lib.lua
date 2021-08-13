@@ -263,7 +263,6 @@ function E2VguiLib.RemoveBuddy(target)
     net.WriteBool(false)
     net.WriteEntity(target)
     net.SendToServer()
-    E2VguiLib.Buddies[target:SteamID()] = false
     E2VguiLib.RemoveBuddyFromDatabase(target:SteamID())
     E2VguiLib.ReloadE2VguiPermissionMenu()
     print("[E2VguiCore] Removed "..target:Nick() .. " as buddy! He can't create derma panels on your client anymore!")
@@ -324,7 +323,6 @@ function E2VguiLib.UnblockPlayer(target)
     net.WriteBool(false)
     net.WriteEntity(target)
     net.SendToServer()
-    E2VguiLib.BlockedPlayers[target:SteamID()] = false
     E2VguiLib.RemoveBlockedPlayerFromDatabase(target:SteamID())
     E2VguiLib.ReloadE2VguiPermissionMenu()
     print("[E2VguiCore] Unblocked "..target:Nick() .. "! He can create derma panels on your client again!")
@@ -770,18 +768,26 @@ end
 
 function E2VguiLib.AddBuddyToDatabase(ply)
     E2VguiLib.CreateBuddyTableIfNotExist()
-    result = sql.Query("INSERT INTO e2_vgui_buddy_list(SteamID, UserName) VALUES('"..ply:SteamID().."', '".. ply:Nick() .."')")
-    E2VguiLib.Buddies[ply:SteamID()] = true
-    E2VguiLib.RegisterBuddiesOnServer()
+    result = sql.Query("INSERT INTO e2_vgui_buddy_list(SteamID, UserName) VALUES('"..ply:SteamID().."', ".. sql.SQLStr(ply:Nick()) ..")")
+    if result == nil then
+        E2VguiLib.Buddies[ply:SteamID()] = true
+        E2VguiLib.RegisterBuddiesOnServer()
+    else
+        ErrorNoHalt("[E2VguiCore] Error while trying to buddy player (SQL Error)")
+    end
 end
 
 function E2VguiLib.RemoveBuddyFromDatabase(steamID)
     local result = sql.Query("SELECT name FROM sqlite_master WHERE type='table' AND name='{e2_vgui_buddy_list}'");
     if result == nil then
         result = sql.Query("DELETE FROM e2_vgui_buddy_list WHERE SteamID='".. steamID .."';")
+        if result == nil then
+            E2VguiLib.Buddies[steamID] = nil
+            E2VguiLib.RegisterBuddiesOnServer()
+        else
+            ErrorNoHalt("[E2VguiCore] Error while trying to unbuddy player (SQL Error)")
+        end
     end
-    E2VguiLib.Buddies[steamID] = nil
-    E2VguiLib.RegisterBuddiesOnServer()
 end
 
 --sends the buddy list to the server
@@ -815,18 +821,26 @@ end
 
 function E2VguiLib.AddBlockedPlayerToDatabase(ply)
     E2VguiLib.CreateBlockedPlayerTableIfNotExist()
-    result = sql.Query("INSERT INTO e2_vgui_blocked_player_list(SteamID, UserName) VALUES('"..ply:SteamID().."', '".. ply:Nick() .."')")
-    E2VguiLib.BlockedPlayers[ply:SteamID()] = true
-    E2VguiLib.RegisterBlockedPlayersOnServer()
+    result = sql.Query("INSERT INTO e2_vgui_blocked_player_list(SteamID, UserName) VALUES('"..ply:SteamID().."', ".. sql.SQLStr(ply:Nick()) ..")")
+    if result == nil then
+        E2VguiLib.BlockedPlayers[ply:SteamID()] = true
+        E2VguiLib.RegisterBlockedPlayersOnServer()
+    else
+        ErrorNoHalt("[E2VguiCore] Error while trying to block player (SQL Error)")
+    end
 end
 
 function E2VguiLib.RemoveBlockedPlayerFromDatabase(steamID)
     local result = sql.Query("SELECT name FROM sqlite_master WHERE type='table' AND name='{e2_vgui_blocked_player_list}'");
     if result == nil then
         result = sql.Query("DELETE FROM e2_vgui_blocked_player_list WHERE SteamID='".. steamID .."';")
-    end
-    E2VguiLib.BlockedPlayers[steamID] = nil
-    E2VguiLib.RegisterBlockedPlayersOnServer()
+        if result == nil then
+            E2VguiLib.BlockedPlayers[steamID] = nil
+            E2VguiLib.RegisterBlockedPlayersOnServer()
+        else
+            ErrorNoHalt("[E2VguiCore] Error while trying to unblock player (SQL Error)")
+        end
+   end
 end
 
 --sends the blocked players to the server
