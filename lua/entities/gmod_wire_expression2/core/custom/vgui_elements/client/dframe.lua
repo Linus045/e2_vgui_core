@@ -132,3 +132,4 @@ E2Helper.Descriptions["remove(xdf:e)"] = "Removes this element only on the speci
 E2Helper.Descriptions["removeAll(xdf:)"] = "Removes this element from all players in the player list and clears the element's player list."
 E2Helper.Descriptions["getPlayers(xdf:)"] = "Retrieve the current player list of this element."
 E2Helper.Descriptions["setPlayers(xdf:r)"] = "Sets the player list for this element."
+E2Helper.Descriptions["isValid(xdf:)"] = "Returns whether or not the element is valid. Elements that were not created by the element's constructor, such as persist variables that have not been assigned to, and table lookups that are not present, are not valid and do not perform any action when modified."

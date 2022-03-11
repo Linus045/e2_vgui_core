@@ -111,4 +111,5 @@ E2Helper.Descriptions["remove(xde:e)"] = "Removes this element only on the speci
 E2Helper.Descriptions["removeAll(xde:)"] = "Removes this element from all players in the player list and clears the element's player list."
 E2Helper.Descriptions["getPlayers(xde:)"] = "Retrieve the current player list of this element."
 E2Helper.Descriptions["setPlayers(xde:r)"] = "Sets the player list for this element."
+E2Helper.Descriptions["isValid(xde:)"] = "Returns whether or not the element is valid. Elements that were not created by the element's constructor, such as persist variables that have not been assigned to, and table lookups that are not present, are not valid and do not perform any action when modified."
 
