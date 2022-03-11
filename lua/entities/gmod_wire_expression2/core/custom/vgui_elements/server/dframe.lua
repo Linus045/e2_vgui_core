@@ -175,6 +175,14 @@ do--[[setter]]--
     E2VguiCore.registerAttributeChange(this,"sizable",  sizable > 0 )
     end
 
+    e2function void dframe:setMinWidth(number width)
+        E2VguiCore.registerAttributeChange(this, "minWidth", width)
+    end
+
+    e2function void dframe:setMinHeight(number height)
+        E2VguiCore.registerAttributeChange(this, "minHeight", height)
+    end
+
     e2function void dframe:showCloseButton(number showCloseButton)
         E2VguiCore.registerAttributeChange(this,"showCloseButton",  showCloseButton > 0 )
     end
@@ -216,6 +224,14 @@ do--[[getter]]--
 
     e2function number dframe:getSizable(entity ply)
         return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"sizable") or 0
+    end
+
+    e2function vector2 dframe:getMinWidth(entity ply)
+        return E2VguiCore.GetPanelAttribute(ply, self.entity:EntIndex(), this, "minWidth") or 0
+    end
+
+    e2function vector2 dframe:getMinHeight(entity ply)
+        return E2VguiCore.GetPanelAttribute(ply, self.entity:EntIndex(), this, "minHeight") or 0
     end
 
     e2function number dframe:getShowCloseButton(entity ply)

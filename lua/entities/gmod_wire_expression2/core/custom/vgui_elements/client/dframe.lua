@@ -86,6 +86,8 @@ E2Helper.Descriptions["setTitle(xdf:s)"] = "Set the title of the frame."
 E2Helper.Descriptions["setBackgroundBlur(xdf:n)"] = "Blurs background behind the frame."
 E2Helper.Descriptions["setIcon(xdf:s)"] = "The image file to use, relative to '/materials/'\nIcon names can be found here: http://wiki.garrysmod.com/page/Silkicons \nNote: use \"icon16/<Icon-name>.png\" as material name for icons. E.g. \"icon16/accept.png\""
 E2Helper.Descriptions["setSizable(xdf:n)"] = "Makes the frame resizable."
+E2Helper.Descriptions["setMinWidth(xdf:n)"] = "Sets the frame's minimum width that it can be resized to. Only has an effect when sizable is also enabled."
+E2Helper.Descriptions["setMinHeight(xdf:n)"] = "Sets the frame's minimum height that it can be resized to. Only has an effect when sizable is also enabled."
 E2Helper.Descriptions["showCloseButton(xdf:n)"] = "Shows or hides the close button."
 E2Helper.Descriptions["setDeleteOnClose(xdf:n)"] = "Removes the frame when the close button is pressed or simply hides it (setVisible(0))."
 
@@ -94,6 +96,8 @@ E2Helper.Descriptions["getColor4(xdf:e)"] = "Returns the color of the frame."
 
 E2Helper.Descriptions["getTitle(xdf:e)"] = "Returns the title of the frame"
 E2Helper.Descriptions["getSizable(xdf:e)"] = "Returns if the frame is resizable."
+E2Helper.Descriptions["getMinWidth(xdf:e)"] = "Returns the frame's minimum width."
+E2Helper.Descriptions["getMinHeight(xdf:e)"] = "Returns the frame's minimum height."
 E2Helper.Descriptions["getShowCloseButton(xdf:e)"] = "Returns if the close button is visible."
 E2Helper.Descriptions["getDeleteOnClose(xdf:e)"] = "Returns if the frame gets removed on close."
 
