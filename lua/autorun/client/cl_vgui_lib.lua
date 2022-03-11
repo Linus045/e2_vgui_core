@@ -100,6 +100,10 @@ E2VguiLib = {
             end
         end,
         multiselect = function(panel,value) panel:SetMultiSelect(value) end,
+        alignLeft = function(panel, value) panel:AlignLeft(value) end,
+        alignRight = function(panel, value) panel:AlignRight(value) end,
+        alignTop = function(panel, value) panel:AlignTop(value) end,
+        alignBottom = function(panel, value) panel:AlignBottom(value) end,
         dock = function(panel,value) panel:Dock(value) end,
         dockMargin = function(panel,values) panel:DockMargin(values[1],values[2],values[3],values[4]) end,
         dockPadding = function(panel,values) panel:DockPadding(values[1],values[2],values[3],values[4]) end,
