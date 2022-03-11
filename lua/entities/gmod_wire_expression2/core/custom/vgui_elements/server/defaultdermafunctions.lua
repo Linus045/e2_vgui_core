@@ -440,5 +440,13 @@ E2VguiCore.registerCallback("loaded_elements",function()
         end
         ,5)
 
+        --add isValid() function for every panel
+        registerFunction( "isValid", id..":", "n", function(self,args)
+            local op1 = args[2]
+            local panel = op1[1](self,op1)
+            return panel and 1 or 0
+        end
+        ,5)
+
     end
 end)
