@@ -36,7 +36,7 @@ end)
 
 --6th argument type checker without return,
 --7th arguement type checker with return. False for valid type and True for invalid
-registerType("dframe", "xdf", {["players"] = {}, ["paneldata"] = {},["changes"] = {}},
+registerType("dframe", "xdf", nil,
     nil,
     nil,
     function(retval)

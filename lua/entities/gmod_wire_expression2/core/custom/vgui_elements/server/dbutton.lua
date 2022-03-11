@@ -30,7 +30,7 @@ E2VguiCore.AddDefaultPanelTable("dbutton",function(uniqueID,parentPnlID)
 end)
 --6th argument type checker without return,
 --7th arguement type checker with return. False for valid type and True for invalid
-registerType("dbutton", "xdb", {["players"] = {}, ["paneldata"] = {},["changes"] = {}},
+registerType("dbutton", "xdb", nil,
     nil,
     nil,
     function(retval)
