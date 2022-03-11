@@ -30,7 +30,7 @@ E2VguiCore.AddDefaultPanelTable("dcombobox",function(uniqueID,parentPnlID)
 end)
 --6th argument type checker without return,
 --7th arguement type checker with return. False for valid type and True for invalid
-registerType("dcombobox", "xcb", {["players"] = {}, ["paneldata"] = {},["changes"] = {}},
+registerType("dcombobox", "xcb", nil,
     nil,
     nil,
     function(retval)

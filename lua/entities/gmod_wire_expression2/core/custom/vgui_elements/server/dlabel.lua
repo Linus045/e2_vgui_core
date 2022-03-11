@@ -29,7 +29,7 @@ E2VguiCore.AddDefaultPanelTable("dlabel",function(uniqueID,parentPnlID)
 end)
 --6th argument type checker without return,
 --7th arguement type checker with return. False for valid type and True for invalid
-registerType("dlabel", "xdl", {["players"] = {}, ["paneldata"] = {},["changes"] = {}},
+registerType("dlabel", "xdl", nil,
 	nil,
 	nil,
 	function(retval)

@@ -28,7 +28,7 @@ E2VguiCore.AddDefaultPanelTable("dcheckboxlabel",function(uniqueID,parentPnlID)
 end)
 --6th argument type checker without return,
 --7th arguement type checker with return. False for valid type and True for invalid
-registerType("dcheckboxlabel", "xbl", {["players"] = {}, ["paneldata"] = {},["changes"] = {}},
+registerType("dcheckboxlabel", "xbl", nil,
     nil,
     nil,
     function(retval)

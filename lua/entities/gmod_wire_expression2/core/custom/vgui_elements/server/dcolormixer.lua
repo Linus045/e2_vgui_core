@@ -30,7 +30,7 @@ E2VguiCore.AddDefaultPanelTable("dcolormixer",function(uniqueID,parentPnlID)
 end)
 --6th argument type checker without return,
 --7th arguement type checker with return. False for valid type and True for invalid
-registerType("dcolormixer", "xde", {["players"] = {}, ["paneldata"] = {},["changes"] = {}},
+registerType("dcolormixer", "xde", nil,
     nil,
     nil,
     function(retval)

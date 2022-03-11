@@ -28,7 +28,7 @@ E2VguiCore.AddDefaultPanelTable("dpropertysheet",function(uniqueID,parentPnlID)
 end)
 --6th argument type checker without return,
 --7th arguement type checker with return. False for valid type and True for invalid
-registerType("dpropertysheet", "xdo", {["players"] = {}, ["paneldata"] = {},["changes"] = {}},
+registerType("dpropertysheet", "xdo", nil,
     nil,
     nil,
     function(retval)

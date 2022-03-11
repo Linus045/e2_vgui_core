@@ -26,7 +26,7 @@ E2VguiCore.AddDefaultPanelTable("dcheckbox",function(uniqueID,parentPnlID)
 end)
 --6th argument type checker without return,
 --7th arguement type checker with return. False for valid type and True for invalid
-registerType("dcheckbox", "xdc", {["players"] = {}, ["paneldata"] = {},["changes"] = {}},
+registerType("dcheckbox", "xdc", nil,
     nil,
     nil,
     function(retval)
