@@ -141,17 +141,7 @@ do--[[setter]]--
     e2function void dtextentry:setText(string text)
         E2VguiCore.registerAttributeChange(this,"text", text)
     end
--- setter
-end
 
-do--[[getter]]--
-    e2function string dtextentry:getText(entity ply)
-        return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"text") or ""
-    end
--- getter
-end
-
-do--[[setter]]--
     e2function void dtextentry:setNumeric(number numeric)
         E2VguiCore.registerAttributeChange(this,"numeric", numeric)
     end
@@ -159,6 +149,10 @@ do--[[setter]]--
 end
 
 do--[[getter]]--
+    e2function string dtextentry:getText(entity ply)
+        return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"text") or ""
+    end
+
     e2function number dtextentry:getNumeric(entity ply)
         return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"numeric") and 1 or 0
     end
