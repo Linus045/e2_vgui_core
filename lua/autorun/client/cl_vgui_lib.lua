@@ -103,6 +103,7 @@ E2VguiLib = {
         dock = function(panel,value) panel:Dock(value) end,
         dockMargin = function(panel,values) panel:DockMargin(values[1],values[2],values[3],values[4]) end,
         dockPadding = function(panel,values) panel:DockPadding(values[1],values[2],values[3],values[4]) end,
+        noClipping = function(panel,value) panel:NoClipping(value) end,
         enabled = function(panel,value) panel:SetEnabled(value) end,
         icon = function(panel,value) panel:SetIcon(value) end,
         model = function(panel,value) panel:SetModel(value) end,

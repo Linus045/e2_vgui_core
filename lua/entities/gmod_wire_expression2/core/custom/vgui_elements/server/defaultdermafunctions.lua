@@ -300,6 +300,32 @@ E2VguiCore.registerCallback("loaded_elements",function()
         end
         ,5)
 
+        --add setNoClipping() function for every panel
+        registerFunction( "setNoClipping", id..":n", "", function(self,args)
+            local op1 = args[2]
+            local op2 = args[3]
+
+            local panel = op1[1](self,op1)
+            local noClipping = op2[1](self,op2)
+
+            if not panel then return end
+
+            E2VguiCore.registerAttributeChange(panel, "noClipping", noClipping == 1)
+        end
+        ,5)
+
+        --add getNoClipping() function for every panel
+        registerFunction( "getNoClipping", id..":e", "n", function(self,args)
+            local op1 = args[2]
+            local op2 = args[3]
+
+            local panel = op1[1](self,op1)
+            local ply = op2[1](self,op2)
+
+            return panel and E2VguiCore.GetPanelAttribute(ply, self.entity:EntIndex(), panel, "noClipping") and 1 or 0
+        end
+        ,5)
+
 
         --add create() function for every panel
         registerFunction( "create", id..":", "", function(self,args)
