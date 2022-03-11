@@ -127,7 +127,8 @@ E2VguiLib = {
         image = function(panel, value) panel:SetImage(value) end,
         keepAspect = function(panel, value) panel:SetKeepAspect(value) end,
         stretchToFit = function(panel, value) panel:SetStretchToFit(value) end,
-        sizeToContents = function(panel, value) panel:SizeToContents() end
+        sizeToContents = function(panel, value) panel:SizeToContents() end,
+        numeric = function(panel, value) panel:SetNumeric(value) end
     }
 }
 
