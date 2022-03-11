@@ -199,6 +199,46 @@ E2VguiCore.registerCallback("loaded_elements",function()
         ,5)
 
 
+        --add setSize(NN) function for every panel other then frame
+        registerFunction( "setMinSize", id..":nn", "", function(self,args)
+            local op1 = args[2]
+            local op2 = args[3]
+            local op3 = args[4]
+
+            local panel = op1[1](self,op1)
+            local width = op2[1](self,op2)
+            local height = op3[1](self,op3)
+
+            E2VguiCore.registerAttributeChange(panel,"minSize", {width, height})
+        end
+        ,5)
+
+
+        --add setSize(XV2) function for every panel other then frame
+        registerFunction( "setMinSize", id..":xv2", "", function(self,args)
+            local op1 = args[2]
+            local op2 = args[3]
+
+            local panel = op1[1](self,op1)
+            local size = op2[1](self,op2)
+
+            E2VguiCore.registerAttributeChange(panel,"minSize", size)
+        end
+        ,5)
+
+
+        --add getSize(E) function for every panel other then frame
+        registerFunction( "getMinSize", id..":e", "xv2", function(self,args)
+            local op1 = args[2]
+            local op2 = args[3]
+            local panel = op1[1](self,op1)
+            local ply = op2[1](self,op2)
+
+            return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),panel,"minSize") or {0, 0}
+        end
+        ,5)
+
+
         --add setVisible(N) function for every panel
         registerFunction( "setVisible", id..":n", "", function(self,args)
             local op1 = args[2]

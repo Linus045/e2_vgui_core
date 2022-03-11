@@ -15,6 +15,9 @@ E2VguiLib = {
         text = function(panel,value) panel:SetText(value) end,
         width = function(panel,value) panel:SetWidth(value) end,
         height = function(panel,value) panel:SetHeight(value) end,
+        minSize = function(panel, values) panel:SetMinimumSize(unpack(values)) end,
+        minWidth = function(panel, value) panel:SetMinWidth(value) end,
+        minHeight = function(panel, value) panel:SetMinHeight(value) end,
         title = function(panel,value) panel:SetTitle(value) end,
         --TODO implement parenting functions
         --parent = function(panel,value,...) panel:SetParent(E2VguiLib.GetPanelByID(value,panel["pnlData"]["e2EntityID"])) end,
