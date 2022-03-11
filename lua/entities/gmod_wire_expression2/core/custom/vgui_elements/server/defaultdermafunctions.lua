@@ -230,6 +230,59 @@ E2VguiCore.registerCallback("loaded_elements",function()
 
 
 
+        --add alignLeft(N) function for every panel
+        registerFunction( "alignLeft", id..":n", "", function(self,args)
+            local op1 = args[2]
+            local op2 = args[3]
+
+            local panel = op1[1](self,op1)
+            local offset = op2[1](self,op2)
+
+            E2VguiCore.registerAttributeChange(panel,"alignLeft", offset)
+        end
+        ,5)
+
+
+        --add alignRight(N) function for every panel
+        registerFunction( "alignRight", id..":n", "", function(self,args)
+            local op1 = args[2]
+            local op2 = args[3]
+
+            local panel = op1[1](self,op1)
+            local offset = op2[1](self,op2)
+
+            E2VguiCore.registerAttributeChange(panel,"alignRight", offset)
+        end
+        ,5)
+
+
+        --add alignTop(N) function for every panel
+        registerFunction( "alignTop", id..":n", "", function(self,args)
+            local op1 = args[2]
+            local op2 = args[3]
+
+            local panel = op1[1](self,op1)
+            local offset = op2[1](self,op2)
+
+            E2VguiCore.registerAttributeChange(panel,"alignTop", offset)
+        end
+        ,5)
+
+
+        --add alignBottom(N) function for every panel
+        registerFunction( "alignBottom", id..":n", "", function(self,args)
+            local op1 = args[2]
+            local op2 = args[3]
+
+            local panel = op1[1](self,op1)
+            local offset = op2[1](self,op2)
+
+            E2VguiCore.registerAttributeChange(panel,"alignBottom", offset)
+        end
+        ,5)
+
+
+
         --add dock(N) function for every panel
         registerFunction( "dock", id..":n", "", function(self,args)
             local op1 = args[2]
