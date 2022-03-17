@@ -451,6 +451,8 @@ Args:
 Return: <>
 ---------------------------------------------------------------------------]]
 function E2VguiCore.registerAttributeChange(panel,attributeName, ...)
+    if not E2VguiCore.IsPanelInitialised(panel) then return end
+
     --TODO: check if the attributeName exists for this panel type
     panel.changes[#panel["changes"]+1] = {attributeName,...}
 end
@@ -465,6 +467,18 @@ Return: nil
 ---------------------------------------------------------------------------]]
 function E2VguiCore.AddDefaultPanelTable(pnlType,func)
     E2VguiCore["defaultPanelTable"][pnlType] = func
+end
+
+
+--[[-------------------------------------------------------------------------
+                E2VguiCore.IsPanelInitialised
+Desc:   Checks if the passed panel is initialised (e.g. dframe(...), dbutton(...) constructor was called)
+Args:
+    panel:    the panel data
+Return: boolean
+---------------------------------------------------------------------------]]
+function E2VguiCore.IsPanelInitialised(panel)
+    return panel ~= nil and istable(panel)
 end
 
 
@@ -629,6 +643,8 @@ Args:
 Return: the attribute value or nil
 ---------------------------------------------------------------------------]]
 function E2VguiCore.GetPanelAttribute(ply,e2EntityID,pnlVar,attributeName)
+    if not E2VguiCore.IsPanelInitialised(pnlVar) then return nil end
+
     local pnl = E2VguiCore.GetPanelByID(ply,e2EntityID, pnlVar["paneldata"]["uniqueID"])
     if pnl != nil then
         return pnl["paneldata"][attributeName]
