@@ -150,4 +150,7 @@ E2Helper.Descriptions["removeAll(xib:)"] = "Removes this element from all player
 E2Helper.Descriptions["getPlayers(xib:)"] = "Retrieve the current player list of this element."
 E2Helper.Descriptions["setPlayers(xib:r)"] = "Sets the player list for this element."
 E2Helper.Descriptions["isValid(xib:)"] = "Returns whether or not the element is valid. Elements that were not created by the element's constructor, such as persist variables that have not been assigned to, and table lookups that are not present, are not valid and do not perform any action when modified."
-
+E2Helper.Descriptions["alignTop(xib:n)"] = "Aligns the panel with the specified offset to it's parent (or screen if it has no parent)."
+E2Helper.Descriptions["alignBottom(xib:n)"] = "Aligns the panel with the specified offset to it's parent (or screen if it has no parent)."
+E2Helper.Descriptions["alignLeft(xib:n)"] = "Aligns the panel with the specified offset to it's parent (or screen if it has no parent)."
+E2Helper.Descriptions["alignRight(xib:n)"] = "Aligns the panel with the specified offset to it's parent (or screen if it has no parent)."

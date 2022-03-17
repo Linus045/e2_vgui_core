@@ -114,4 +114,7 @@ E2Helper.Descriptions["removeAll(xde:)"] = "Removes this element from all player
 E2Helper.Descriptions["getPlayers(xde:)"] = "Retrieve the current player list of this element."
 E2Helper.Descriptions["setPlayers(xde:r)"] = "Sets the player list for this element."
 E2Helper.Descriptions["isValid(xde:)"] = "Returns whether or not the element is valid. Elements that were not created by the element's constructor, such as persist variables that have not been assigned to, and table lookups that are not present, are not valid and do not perform any action when modified."
-
+E2Helper.Descriptions["alignTop(xde:n)"] = "Aligns the panel with the specified offset to it's parent (or screen if it has no parent)."
+E2Helper.Descriptions["alignBottom(xde:n)"] = "Aligns the panel with the specified offset to it's parent (or screen if it has no parent)."
+E2Helper.Descriptions["alignLeft(xde:n)"] = "Aligns the panel with the specified offset to it's parent (or screen if it has no parent)."
+E2Helper.Descriptions["alignRight(xde:n)"] = "Aligns the panel with the specified offset to it's parent (or screen if it has no parent)."
