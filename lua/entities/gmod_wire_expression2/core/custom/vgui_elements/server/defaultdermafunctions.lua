@@ -421,7 +421,7 @@ E2VguiCore.registerCallback("loaded_elements",function()
 
             if not panel then return end
 
-            E2VguiCore.registerAttributeChange(panel, "noClipping", noClipping == 1)
+            E2VguiCore.registerAttributeChange(panel, "noClipping", noClipping > 0)
         end
         ,5)
 
