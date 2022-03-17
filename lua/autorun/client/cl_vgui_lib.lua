@@ -15,6 +15,9 @@ E2VguiLib = {
         text = function(panel,value) panel:SetText(value) end,
         width = function(panel,value) panel:SetWidth(value) end,
         height = function(panel,value) panel:SetHeight(value) end,
+        minSize = function(panel, values) panel:SetMinimumSize(unpack(values)) end,
+        minWidth = function(panel, value) panel:SetMinWidth(value) end,
+        minHeight = function(panel, value) panel:SetMinHeight(value) end,
         title = function(panel,value) panel:SetTitle(value) end,
         --TODO implement parenting functions
         --parent = function(panel,value,...) panel:SetParent(E2VguiLib.GetPanelByID(value,panel["pnlData"]["e2EntityID"])) end,
@@ -100,9 +103,14 @@ E2VguiLib = {
             end
         end,
         multiselect = function(panel,value) panel:SetMultiSelect(value) end,
+        alignLeft = function(panel, value) panel:AlignLeft(value) end,
+        alignRight = function(panel, value) panel:AlignRight(value) end,
+        alignTop = function(panel, value) panel:AlignTop(value) end,
+        alignBottom = function(panel, value) panel:AlignBottom(value) end,
         dock = function(panel,value) panel:Dock(value) end,
         dockMargin = function(panel,values) panel:DockMargin(values[1],values[2],values[3],values[4]) end,
         dockPadding = function(panel,values) panel:DockPadding(values[1],values[2],values[3],values[4]) end,
+        noClipping = function(panel,value) panel:NoClipping(value) end,
         enabled = function(panel,value) panel:SetEnabled(value) end,
         icon = function(panel,value) panel:SetIcon(value) end,
         model = function(panel,value) panel:SetModel(value) end,
@@ -127,7 +135,8 @@ E2VguiLib = {
         image = function(panel, value) panel:SetImage(value) end,
         keepAspect = function(panel, value) panel:SetKeepAspect(value) end,
         stretchToFit = function(panel, value) panel:SetStretchToFit(value) end,
-        sizeToContents = function(panel, value) panel:SizeToContents() end
+        sizeToContents = function(panel, value) panel:SizeToContents() end,
+        numeric = function(panel, value) panel:SetNumeric(value) end
     }
 }
 

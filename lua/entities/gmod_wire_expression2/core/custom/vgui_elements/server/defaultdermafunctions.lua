@@ -26,6 +26,10 @@ E2VguiCore.registerCallback("loaded_elements",function()
                     registerFunction( panelName, "n"..id, otherpanelid, function(self,args)
                         local op1, op2 = args[2], args[3]
                         local uniqueID, panel = op1[1](self,op1), op2[1](self,op2)
+
+                        -- if Panel is invalid, do nothing
+                        if not E2VguiCore.IsPanelInitialised(panel) then return nil end
+
                         local players = {self.player}
                         if self.entity.e2_vgui_core_default_players != nil and self.entity.e2_vgui_core_default_players[self.entity:EntIndex()] != nil then
                             players = self.entity.e2_vgui_core_default_players[self.entity:EntIndex()]
@@ -53,6 +57,8 @@ E2VguiCore.registerCallback("loaded_elements",function()
             local posX = op2[1](self,op2)
             local posY = op3[1](self,op3)
 
+            if not panel then return end -- may be nil
+
             E2VguiCore.registerAttributeChange(panel,"posX", posX)
             E2VguiCore.registerAttributeChange(panel,"posY", posY)
         end
@@ -66,6 +72,8 @@ E2VguiCore.registerCallback("loaded_elements",function()
 
             local panel = op1[1](self,op1)
             local pos = op2[1](self,op2)
+
+            if not panel then return end -- may be nil
 
             E2VguiCore.registerAttributeChange(panel,"posX", pos[1])
             E2VguiCore.registerAttributeChange(panel,"posY", pos[2])
@@ -83,8 +91,8 @@ E2VguiCore.registerCallback("loaded_elements",function()
             local ply = op2[1](self,op2)
 
             return {
-                E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),panel,"posX") or 0,
-                E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),panel,"posY") or 0
+                panel and E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),panel,"posX") or 0,
+                panel and E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),panel,"posY") or 0
             }
         end
         ,5)
@@ -100,6 +108,8 @@ E2VguiCore.registerCallback("loaded_elements",function()
             local width = op2[1](self,op2)
             local height = op3[1](self,op3)
 
+            if not panel then return end -- may be nil
+
             E2VguiCore.registerAttributeChange(panel,"width", width)
             E2VguiCore.registerAttributeChange(panel,"height", height)
         end
@@ -113,6 +123,8 @@ E2VguiCore.registerCallback("loaded_elements",function()
 
             local panel = op1[1](self,op1)
             local size = op2[1](self,op2)
+
+            if not panel then return end -- may be nil
 
             E2VguiCore.registerAttributeChange(panel,"width", size[1])
             E2VguiCore.registerAttributeChange(panel,"height", size[2])
@@ -128,8 +140,8 @@ E2VguiCore.registerCallback("loaded_elements",function()
             local ply = op2[1](self,op2)
 
             return {
-                E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),panel,"width") or 0,
-                E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),panel,"height") or 0
+                panel and E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),panel,"width") or 0,
+                panel and E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),panel,"height") or 0
             }
         end
         ,5)
@@ -142,6 +154,8 @@ E2VguiCore.registerCallback("loaded_elements",function()
 
             local panel = op1[1](self,op1)
             local width = op2[1](self,op2)
+
+            if not panel then return end -- may be nil
 
             E2VguiCore.registerAttributeChange(panel,"width", width)
         end
@@ -156,7 +170,7 @@ E2VguiCore.registerCallback("loaded_elements",function()
             local panel = op1[1](self,op1)
             local ply = op2[1](self,op2)
 
-            return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),panel,"width") or 0
+            return panel and E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),panel,"width") or 0
         end
         ,5)
 
@@ -168,6 +182,8 @@ E2VguiCore.registerCallback("loaded_elements",function()
 
             local panel = op1[1](self,op1)
             local height = op2[1](self,op2)
+
+            if not panel then return end -- may be nil
 
             E2VguiCore.registerAttributeChange(panel,"height", height)
         end
@@ -182,7 +198,53 @@ E2VguiCore.registerCallback("loaded_elements",function()
             local panel = op1[1](self,op1)
             local ply = op2[1](self,op2)
 
-            return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),panel,"height") or 0
+            return panel and E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),panel,"height") or 0
+        end
+        ,5)
+
+
+        --add setSize(NN) function for every panel other then frame
+        registerFunction( "setMinSize", id..":nn", "", function(self,args)
+            local op1 = args[2]
+            local op2 = args[3]
+            local op3 = args[4]
+
+            local panel = op1[1](self,op1)
+            local width = op2[1](self,op2)
+            local height = op3[1](self,op3)
+
+            if not panel then return end -- may be nil
+
+            E2VguiCore.registerAttributeChange(panel,"minSize", {width, height})
+        end
+        ,5)
+
+
+        --add setSize(XV2) function for every panel other then frame
+        registerFunction( "setMinSize", id..":xv2", "", function(self,args)
+            local op1 = args[2]
+            local op2 = args[3]
+
+            local panel = op1[1](self,op1)
+            local size = op2[1](self,op2)
+
+            if not panel then return end -- may be nil
+
+            E2VguiCore.registerAttributeChange(panel,"minSize", size)
+        end
+        ,5)
+
+
+        --add getSize(E) function for every panel other then frame
+        registerFunction( "getMinSize", id..":e", "xv2", function(self,args)
+            local op1 = args[2]
+            local op2 = args[3]
+            local panel = op1[1](self,op1)
+            local ply = op2[1](self,op2)
+
+            if not panel then return end -- may be nil
+
+            return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),panel,"minSize") or {0, 0}
         end
         ,5)
 
@@ -194,6 +256,8 @@ E2VguiCore.registerCallback("loaded_elements",function()
 
             local panel = op1[1](self,op1)
             local vis = op2[1](self,op2)
+
+            if not panel then return end -- may be nil
 
             E2VguiCore.registerAttributeChange(panel,"visible", vis > 0)
         end
@@ -207,7 +271,7 @@ E2VguiCore.registerCallback("loaded_elements",function()
             local panel = op1[1](self,op1)
             local ply = op2[1](self,op2)
 
-            return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),panel,"visible") and 1 or 0
+            return panel and E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),panel,"visible") and 1 or 0
         end
         ,5)
 
@@ -221,10 +285,73 @@ E2VguiCore.registerCallback("loaded_elements",function()
             local vis = op2[1](self,op2)
             local ply = op3[1](self,op3)
 
+            if not panel then return end -- may be nil
+
             if IsValid(ply) and ply:IsPlayer() then
                 E2VguiCore.registerAttributeChange(panel,"visible", vis > 0)
                 E2VguiCore.ModifyPanel(self.player, self.entity, panel, {ply}, false)
             end
+        end
+        ,5)
+
+
+
+        --add alignLeft(N) function for every panel
+        registerFunction( "alignLeft", id..":n", "", function(self,args)
+            local op1 = args[2]
+            local op2 = args[3]
+
+            local panel = op1[1](self,op1)
+            local offset = op2[1](self,op2)
+
+            if not panel then return end -- may be nil
+
+            E2VguiCore.registerAttributeChange(panel,"alignLeft", offset)
+        end
+        ,5)
+
+
+        --add alignRight(N) function for every panel
+        registerFunction( "alignRight", id..":n", "", function(self,args)
+            local op1 = args[2]
+            local op2 = args[3]
+
+            local panel = op1[1](self,op1)
+            local offset = op2[1](self,op2)
+
+            if not panel then return end -- may be nil
+
+            E2VguiCore.registerAttributeChange(panel,"alignRight", offset)
+        end
+        ,5)
+
+
+        --add alignTop(N) function for every panel
+        registerFunction( "alignTop", id..":n", "", function(self,args)
+            local op1 = args[2]
+            local op2 = args[3]
+
+            local panel = op1[1](self,op1)
+            local offset = op2[1](self,op2)
+
+            if not panel then return end -- may be nil
+
+            E2VguiCore.registerAttributeChange(panel,"alignTop", offset)
+        end
+        ,5)
+
+
+        --add alignBottom(N) function for every panel
+        registerFunction( "alignBottom", id..":n", "", function(self,args)
+            local op1 = args[2]
+            local op2 = args[3]
+
+            local panel = op1[1](self,op1)
+            local offset = op2[1](self,op2)
+
+            if not panel then return end -- may be nil
+
+            E2VguiCore.registerAttributeChange(panel,"alignBottom", offset)
         end
         ,5)
 
@@ -237,6 +364,8 @@ E2VguiCore.registerCallback("loaded_elements",function()
 
             local panel = op1[1](self,op1)
             local dock = op2[1](self,op2)
+
+            if not panel then return end -- may be nil
 
             E2VguiCore.registerAttributeChange(panel,"dock", dock)
         end
@@ -256,6 +385,8 @@ E2VguiCore.registerCallback("loaded_elements",function()
             local marginRight   = op4[1](self,op4)
             local marginBottom  = op5[1](self,op5)
 
+            if not panel then return end -- may be nil
+
             E2VguiCore.registerAttributeChange(panel,"dockMargin", {marginLeft,marginTop,marginRight,marginBottom})
         end
         ,5)
@@ -274,7 +405,35 @@ E2VguiCore.registerCallback("loaded_elements",function()
             local paddingRight   = op4[1](self,op4)
             local paddingBottom  = op5[1](self,op5)
 
+            if not panel then return end -- may be nil
+
             E2VguiCore.registerAttributeChange(panel,"dockPadding", {paddingLeft,paddingTop,paddingRight,paddingBottom})
+        end
+        ,5)
+
+        --add setNoClipping() function for every panel
+        registerFunction( "setNoClipping", id..":n", "", function(self,args)
+            local op1 = args[2]
+            local op2 = args[3]
+
+            local panel = op1[1](self,op1)
+            local noClipping = op2[1](self,op2)
+
+            if not panel then return end
+
+            E2VguiCore.registerAttributeChange(panel, "noClipping", noClipping > 0)
+        end
+        ,5)
+
+        --add getNoClipping() function for every panel
+        registerFunction( "getNoClipping", id..":e", "n", function(self,args)
+            local op1 = args[2]
+            local op2 = args[3]
+
+            local panel = op1[1](self,op1)
+            local ply = op2[1](self,op2)
+
+            return panel and E2VguiCore.GetPanelAttribute(ply, self.entity:EntIndex(), panel, "noClipping") and 1 or 0
         end
         ,5)
 
@@ -283,6 +442,8 @@ E2VguiCore.registerCallback("loaded_elements",function()
         registerFunction( "create", id..":", "", function(self,args)
             local op1 = args[2]
             local panel = op1[1](self,op1)
+
+            if not panel then return end -- may be nil
 
             E2VguiCore.CreatePanel(self,panel)
         end
@@ -297,6 +458,8 @@ E2VguiCore.registerCallback("loaded_elements",function()
             local panel = op1[1](self,op1)
             local players = op2[1](self,op2)
 
+            if not panel then return end -- may be nil
+
             E2VguiCore.CreatePanel(self,panel,players)
         end
         ,5)
@@ -306,6 +469,8 @@ E2VguiCore.registerCallback("loaded_elements",function()
         registerFunction( "modify", id..":", "", function(self,args)
             local op1 = args[2]
             local panel = op1[1](self,op1)
+
+            if not panel then return end -- may be nil
 
             E2VguiCore.ModifyPanel(self.player, self.entity, panel)
         end
@@ -320,6 +485,8 @@ E2VguiCore.registerCallback("loaded_elements",function()
             local panel = op1[1](self,op1)
             local players = op2[1](self,op2)
 
+            if not panel then return end -- may be nil
+
             E2VguiCore.ModifyPanel(self.player, self.entity, panel, players)
         end
         ,5)
@@ -333,6 +500,8 @@ E2VguiCore.registerCallback("loaded_elements",function()
             local panel = op1[1](self,op1)
             local ply = op2[1](self,op2)
 
+            if not panel then return end -- may be nil
+
             if IsValid(ply) and ply:IsPlayer() then
                 E2VguiCore.RemovePanel(self.entity:EntIndex(),panel["paneldata"]["uniqueID"],ply)
             end
@@ -344,6 +513,8 @@ E2VguiCore.registerCallback("loaded_elements",function()
         registerFunction( "closeAll", id..":", "", function(self,args)
             local op1 = args[2]
             local panel = op1[1](self,op1)
+
+            if not panel then return end -- may be nil
 
             for _,ply in pairs(panel["players"]) do
                 E2VguiCore.RemovePanel(self.entity:EntIndex(),panel["paneldata"]["uniqueID"],ply)
@@ -359,6 +530,8 @@ E2VguiCore.registerCallback("loaded_elements",function()
 
             local panel = op1[1](self,op1)
             local ply = op2[1](self,op2)
+
+            if not panel then return end -- may be nil
 
             if IsValid(ply) and ply:IsPlayer() then
                 --check for redundant players will be done in CreatePanel or ModifyPanel
@@ -376,6 +549,8 @@ E2VguiCore.registerCallback("loaded_elements",function()
 
             local panel = op1[1](self,op1)
             local ply = op2[1](self,op2)
+
+            if not panel then return end -- may be nil
 
             if IsValid(ply) and ply:IsPlayer() then
                 for k,v in pairs(panel["players"]) do
@@ -397,6 +572,8 @@ E2VguiCore.registerCallback("loaded_elements",function()
             local panel = op1[1](self,op1)
             local ply = op2[1](self,op2)
 
+            if not panel then return end -- may be nil
+
             if IsValid(ply) and ply:IsPlayer() then
                 for key,pnlPly in pairs(panel["players"]) do
                     if pnlPly == ply then
@@ -414,6 +591,8 @@ E2VguiCore.registerCallback("loaded_elements",function()
             local op1 = args[2]
             local panel = op1[1](self,op1)
 
+            if not panel then return end -- may be nil
+
             for _,ply in pairs(panel["players"]) do
                 E2VguiCore.RemovePanel(self.entity:EntIndex(),panel["paneldata"]["uniqueID"],ply)
             end
@@ -426,7 +605,7 @@ E2VguiCore.registerCallback("loaded_elements",function()
         registerFunction( "getPlayers", id..":", "r", function(self,args)
             local op1 = args[2]
             local panel = op1[1](self,op1)
-            return panel.players
+            return panel and panel.players or {}
         end
         ,5)
 
@@ -436,7 +615,16 @@ E2VguiCore.registerCallback("loaded_elements",function()
             local op2 = args[3]
             local panel = op1[1](self,op1)
             local players = op2[1](self,op2)
+            if not panel then return end -- may be nil
             panel.players = players --gets filtered inside CreatePanel() or ModifyPanel()
+        end
+        ,5)
+
+        --add isValid() function for every panel
+        registerFunction( "isValid", id..":", "n", function(self,args)
+            local op1 = args[2]
+            local panel = op1[1](self,op1)
+            return E2VguiCore.IsPanelInitialised(panel) and 1 or 0
         end
         ,5)
 

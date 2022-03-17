@@ -79,6 +79,9 @@ E2Helper.Descriptions["dtextentry(nn)"] = "Creates a new textentry with the give
 E2Helper.Descriptions["setText(xdt:s)"] = "Sets the text of the textentry."
 E2Helper.Descriptions["getText(xdt:e)"] = "Returns the text of the textentry."
 
+E2Helper.Descriptions["setNumeric(xdt:n)"] = "Sets whether the TextEntry is numeric or not. If the TextEntry is numeric, then the user will not be able to type anything except the following characters: 1234567890.-"
+E2Helper.Descriptions["getNumeric(xdt:e)"] = "Returns whether the TextEntry is numeric."
+
 --default functions
 E2Helper.Descriptions["setPos(xdt:nn)"] = "Sets the position."
 E2Helper.Descriptions["setPos(xdt:xv2)"] = "Sets the position."
@@ -96,6 +99,8 @@ E2Helper.Descriptions["isVisible(xdt:e)"] = "Returns whether or not the the elem
 E2Helper.Descriptions["dock(xdt:n)"] = "Sets the docking mode. See _DOCK_* constants."
 E2Helper.Descriptions["dockMargin(xdt:nnnn)"] = "Sets the margin when docked."
 E2Helper.Descriptions["dockPadding(xdt:nnnn)"] = "Sets the padding when docked."
+E2Helper.Descriptions["setNoClipping(xdt:n)"] = "Sets whether the element is clipped by its ancestors or not. A value of 1 noclip means that the element is not clipped by its ancestors, and a value of 0 clip means that it is."
+E2Helper.Descriptions["getNoClipping(xdt:e)"] = "Gets whether the element is clipped by its ancestors or not. A value of 1 noclip means that the element is not clipped by its ancestors, and a value of 0 clip means that it is."
 E2Helper.Descriptions["create(xdt:)"] = "Creates the element for every player in the player list."
 E2Helper.Descriptions["create(xdt:r)"] = "Creates the element for every player in the provided list"
 E2Helper.Descriptions["modify(xdt:)"] = "Applies all changes made to the element for every player in the player's list.\nDoes not create the element again if it got removed!."
@@ -108,3 +113,8 @@ E2Helper.Descriptions["remove(xdt:e)"] = "Removes this element only on the speci
 E2Helper.Descriptions["removeAll(xdt:)"] = "Removes this element from all players in the player list and clears the element's player list."
 E2Helper.Descriptions["getPlayers(xdt:)"] = "Retrieve the current player list of this element."
 E2Helper.Descriptions["setPlayers(xdt:r)"] = "Sets the player list for this element."
+E2Helper.Descriptions["isValid(xdt:)"] = "Returns whether or not the element is valid. Elements that were not created by the element's constructor, such as persist variables that have not been assigned to, and table lookups that are not present, are not valid and do not perform any action when modified."
+E2Helper.Descriptions["alignTop(xdt:n)"] = "Aligns the panel with the specified offset to it's parent (or screen if it has no parent)."
+E2Helper.Descriptions["alignBottom(xdt:n)"] = "Aligns the panel with the specified offset to it's parent (or screen if it has no parent)."
+E2Helper.Descriptions["alignLeft(xdt:n)"] = "Aligns the panel with the specified offset to it's parent (or screen if it has no parent)."
+E2Helper.Descriptions["alignRight(xdt:n)"] = "Aligns the panel with the specified offset to it's parent (or screen if it has no parent)."
