@@ -95,6 +95,7 @@ net.Receive("E2Vgui.ClosePanels",function()
             pnl:Remove()
             E2VguiPanels["panels"][e2Index][id] = nil
         end
+        E2VguiPanels["panels"][e2Index] = nil
     elseif mode == 0 then
         local e2Index = net.ReadInt(32)
         local panelsIDs = net.ReadTable()

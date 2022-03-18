@@ -111,8 +111,8 @@ end
 ---------------------------------------------------------------------------]]
 e2function dmodelpanel dmodelpanel(number uniqueID)
     local players = {self.player}
-    if self.entity.e2_vgui_core_default_players != nil and self.entity.e2_vgui_core_default_players[self.entity:EntIndex()] != nil then
-        players = self.entity.e2_vgui_core_default_players[self.entity:EntIndex()]
+    if self.entity.e2_vgui_core_default_players != nil and self.entity.e2_vgui_core_default_players[self.entity.e2_vgui_core_session_id] != nil then
+        players = self.entity.e2_vgui_core_default_players[self.entity.e2_vgui_core_session_id]
     end
     return {
         ["players"] =  players,
@@ -123,8 +123,8 @@ end
 
 e2function dmodelpanel dmodelpanel(number uniqueID,number parentID)
     local players = {self.player}
-    if self.entity.e2_vgui_core_default_players != nil and self.entity.e2_vgui_core_default_players[self.entity:EntIndex()] != nil then
-        players = self.entity.e2_vgui_core_default_players[self.entity:EntIndex()]
+    if self.entity.e2_vgui_core_default_players != nil and self.entity.e2_vgui_core_default_players[self.entity.e2_vgui_core_session_id] != nil then
+        players = self.entity.e2_vgui_core_default_players[self.entity.e2_vgui_core_session_id]
     end
     return {
         ["players"] =  players,
@@ -218,7 +218,7 @@ end
 
 do--[[getter]]--
     e2function vector dmodelpanel:getColor(entity ply)
-        local col =  E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"color")
+        local col =  E2VguiCore.GetPanelAttribute(ply,self.entity.e2_vgui_core_session_id,this,"color")
         if col == nil then
             return {0,0,0}
         end
@@ -226,7 +226,7 @@ do--[[getter]]--
     end
 
     e2function vector4 dmodelpanel:getColor4(entity ply)
-        local col =  E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"color")
+        local col =  E2VguiCore.GetPanelAttribute(ply,self.entity.e2_vgui_core_session_id,this,"color")
         if col == nil then
             return {0,0,0,255}
         end
@@ -234,7 +234,7 @@ do--[[getter]]--
     end
 
     e2function string dmodelpanel:getModel(entity ply)
-        return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"model") or ""
+        return E2VguiCore.GetPanelAttribute(ply,self.entity.e2_vgui_core_session_id,this,"model") or ""
     end
 -- getter
 end

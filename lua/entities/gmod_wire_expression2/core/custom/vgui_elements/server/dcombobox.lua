@@ -109,8 +109,8 @@ end
 ---------------------------------------------------------------------------]]
 e2function dcombobox dcombobox(number uniqueID)
     local players = {self.player}
-    if self.entity.e2_vgui_core_default_players != nil and self.entity.e2_vgui_core_default_players[self.entity:EntIndex()] != nil then
-        players = self.entity.e2_vgui_core_default_players[self.entity:EntIndex()]
+    if self.entity.e2_vgui_core_default_players != nil and self.entity.e2_vgui_core_default_players[self.entity.e2_vgui_core_session_id] != nil then
+        players = self.entity.e2_vgui_core_default_players[self.entity.e2_vgui_core_session_id]
     end
     return {
         ["players"] =  players,
@@ -121,8 +121,8 @@ end
 
 e2function dcombobox dcombobox(number uniqueID,number parentID)
     local players = {self.player}
-    if self.entity.e2_vgui_core_default_players != nil and self.entity.e2_vgui_core_default_players[self.entity:EntIndex()] != nil then
-        players = self.entity.e2_vgui_core_default_players[self.entity:EntIndex()]
+    if self.entity.e2_vgui_core_default_players != nil and self.entity.e2_vgui_core_default_players[self.entity.e2_vgui_core_session_id] != nil then
+        players = self.entity.e2_vgui_core_default_players[self.entity.e2_vgui_core_session_id]
     end
     return {
         ["players"] =  players,
@@ -208,15 +208,15 @@ end
 
 do--[[getter]]--
     e2function string dcombobox:getValue(entity ply)
-        return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"value") or ""
+        return E2VguiCore.GetPanelAttribute(ply,self.entity.e2_vgui_core_session_id,this,"value") or ""
     end
 
     e2function string dcombobox:getValueID(entity ply)
-        return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"valueid") or ""
+        return E2VguiCore.GetPanelAttribute(ply,self.entity.e2_vgui_core_session_id,this,"valueid") or ""
     end
 
     e2function string dcombobox:getData(entity ply)
-        return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"data") or ""
+        return E2VguiCore.GetPanelAttribute(ply,self.entity.e2_vgui_core_session_id,this,"data") or ""
     end
 -- getter
 end

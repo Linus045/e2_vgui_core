@@ -107,8 +107,8 @@ __e2setcost(5)
 
 e2function dspawnicon dspawnicon(number uniqueID)
     local players = {self.player}
-    if self.entity.e2_vgui_core_default_players != nil and self.entity.e2_vgui_core_default_players[self.entity:EntIndex()] != nil then
-        players = self.entity.e2_vgui_core_default_players[self.entity:EntIndex()]
+    if self.entity.e2_vgui_core_default_players != nil and self.entity.e2_vgui_core_default_players[self.entity.e2_vgui_core_session_id] != nil then
+        players = self.entity.e2_vgui_core_default_players[self.entity.e2_vgui_core_session_id]
     end
     return {
         ["players"] =  players,
@@ -119,8 +119,8 @@ end
 
 e2function dspawnicon dspawnicon(number uniqueID,number parentID)
     local players = {self.player}
-    if self.entity.e2_vgui_core_default_players != nil and self.entity.e2_vgui_core_default_players[self.entity:EntIndex()] != nil then
-        players = self.entity.e2_vgui_core_default_players[self.entity:EntIndex()]
+    if self.entity.e2_vgui_core_default_players != nil and self.entity.e2_vgui_core_default_players[self.entity.e2_vgui_core_session_id] != nil then
+        players = self.entity.e2_vgui_core_default_players[self.entity.e2_vgui_core_session_id]
     end
     return {
         ["players"] =  players,
@@ -147,9 +147,9 @@ e2function void dspawnicon:setModel(string model)
                                 getter
 ------------------------------------------------------------------]]--
     e2function number dspawnicon:getEnabled(entity ply)
-        return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"enabled") and 1 or 0
+        return E2VguiCore.GetPanelAttribute(ply,self.entity.e2_vgui_core_session_id,this,"enabled") and 1 or 0
     end
 
     e2function string dspawnicon:getModel(entity ply)
-        return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"model") or ""
+        return E2VguiCore.GetPanelAttribute(ply,self.entity.e2_vgui_core_session_id,this,"model") or ""
     end

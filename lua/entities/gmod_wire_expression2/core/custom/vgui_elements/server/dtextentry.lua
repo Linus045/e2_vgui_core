@@ -107,8 +107,8 @@ end
 
 e2function dtextentry dtextentry(number uniqueID)
     local players = {self.player}
-    if self.entity.e2_vgui_core_default_players != nil and self.entity.e2_vgui_core_default_players[self.entity:EntIndex()] != nil then
-        players = self.entity.e2_vgui_core_default_players[self.entity:EntIndex()]
+    if self.entity.e2_vgui_core_default_players != nil and self.entity.e2_vgui_core_default_players[self.entity.e2_vgui_core_session_id] != nil then
+        players = self.entity.e2_vgui_core_default_players[self.entity.e2_vgui_core_session_id]
     end
     return {
         ["players"] =  players,
@@ -119,8 +119,8 @@ end
 
 e2function dtextentry dtextentry(number uniqueID,number parentID)
     local players = {self.player}
-    if self.entity.e2_vgui_core_default_players != nil and self.entity.e2_vgui_core_default_players[self.entity:EntIndex()] != nil then
-        players = self.entity.e2_vgui_core_default_players[self.entity:EntIndex()]
+    if self.entity.e2_vgui_core_default_players != nil and self.entity.e2_vgui_core_default_players[self.entity.e2_vgui_core_session_id] != nil then
+        players = self.entity.e2_vgui_core_default_players[self.entity.e2_vgui_core_session_id]
     end
     return {
         ["players"] =  players,
@@ -142,11 +142,11 @@ end
 
 do--[[getter]]--
     e2function string dtextentry:getText(entity ply)
-        return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"text") or ""
+        return E2VguiCore.GetPanelAttribute(ply,self.entity.e2_vgui_core_session_id,this,"text") or ""
     end
 
     e2function number dtextentry:getNumeric(entity ply)
-        return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"numeric") and 1 or 0
+        return E2VguiCore.GetPanelAttribute(ply,self.entity.e2_vgui_core_session_id,this,"numeric") and 1 or 0
     end
 -- getter
 end

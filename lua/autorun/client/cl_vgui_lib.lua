@@ -203,26 +203,25 @@ end
 
 --Maybe optimise this by creating a 'children' table for each panel ?
 function E2VguiLib.GetChildPanelIDs(uniqueID,e2EntityID,pnlList)
-    local tbl = pnlList or {uniqueID}
+    local tbl = pnlList or {[uniqueID] = true}
     local pnl = E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
-    if pnl != nil then
-        if pnl:HasChildren() then
-            for k,v in pairs(pnl:GetChildren()) do
-                --if the pnl has childs get their child panels as well
-                if v:HasChildren() and table.HasValue(tbl,v.uniqueID) then
-                    local panels = E2VguiLib.GetChildPanelIDs(uniqueID,e2EntityID,tbl)
-                    table.Add(tbl,panels)
-                end
-                --Add the ID to the list
-                if v.uniqueID != nil then
-                    table.insert(tbl,v.uniqueID)
-                    --remove the OnRemove() function to prevent redundant calling and spamming with net-messages
-                    v.OnRemove = function() return end
-                end
+    if pnl != nil and pnl:HasChildren() then
+        for k,v in pairs(pnl:GetChildren()) do
+            --Add the ID to the list
+            if v.uniqueID != nil then
+                tbl[v.uniqueID] = true
+                --remove the OnRemove() function to prevent redundant calling and spamming with net-messages
+                v.OnRemove = function() return end
+            end
+
+            --if the pnl has childs get their child panels as well
+            if v:HasChildren() then
+                local panels = E2VguiLib.GetChildPanelIDs(v.uniqueID,e2EntityID,tbl)
+                table.Merge(tbl, panels)
             end
         end
     end
-    return tbl
+    return table.GetKeys(tbl)
 end
 
 
@@ -349,13 +348,14 @@ end
 --used to remove the panel clientside and automatically informs the server
 --e.g. when you close a Dframe with the close button
 function E2VguiLib.RemovePanelWithChilds(panel,e2EntityID)
-    local name = panel["uniqueID"]
-    local pnlData = panel["pnlData"]
-    local panels = E2VguiLib.GetChildPanelIDs(name,e2EntityID)
+    local uniqueID = panel["uniqueID"]
+    local panels = E2VguiLib.GetChildPanelIDs(uniqueID,e2EntityID)
 
     for k,v in pairs(panels) do
         --remove the panel on clientside table
-        E2VguiPanels["panels"][e2EntityID][v] = nil
+        if E2VguiPanels["panels"][e2EntityID] ~= nil then
+            E2VguiPanels["panels"][e2EntityID][v] = nil
+        end
     end
 
     --notify the server of removal

@@ -109,8 +109,8 @@ end
 
 e2function dpropertysheet dpropertysheet(number uniqueID)
     local players = {self.player}
-    if self.entity.e2_vgui_core_default_players != nil and self.entity.e2_vgui_core_default_players[self.entity:EntIndex()] != nil then
-        players = self.entity.e2_vgui_core_default_players[self.entity:EntIndex()]
+    if self.entity.e2_vgui_core_default_players != nil and self.entity.e2_vgui_core_default_players[self.entity.e2_vgui_core_session_id] != nil then
+        players = self.entity.e2_vgui_core_default_players[self.entity.e2_vgui_core_session_id]
     end
     return {
         ["players"] =  players,
@@ -121,8 +121,8 @@ end
 
 e2function dpropertysheet dpropertysheet(number uniqueID,number parentID)
     local players = {self.player}
-    if self.entity.e2_vgui_core_default_players != nil and self.entity.e2_vgui_core_default_players[self.entity:EntIndex()] != nil then
-        players = self.entity.e2_vgui_core_default_players[self.entity:EntIndex()]
+    if self.entity.e2_vgui_core_default_players != nil and self.entity.e2_vgui_core_default_players[self.entity.e2_vgui_core_session_id] != nil then
+        players = self.entity.e2_vgui_core_default_players[self.entity.e2_vgui_core_session_id]
     end
     return {
         ["players"] =  players,
@@ -153,7 +153,7 @@ do--[[setter]]--
     end
 
     e2function void dpropertysheet:addSheet(string name,xdp panel,string icon)
-        E2VguiCore.registerAttributeChange(this,"addsheet",{["name"] = name, ["panelID"] = panel["paneldata"]["uniqueID"], ["icon"] = icon, ["e2EntityID"] = self.entity:EntIndex() })
+        E2VguiCore.registerAttributeChange(this,"addsheet",{["name"] = name, ["panelID"] = panel["paneldata"]["uniqueID"], ["icon"] = icon, ["e2EntityID"] = self.entity.e2_vgui_core_session_id })
     end
 
     e2function void dpropertysheet:closeTab(string name)
@@ -164,7 +164,7 @@ end
 
 do--[[getter]]--
     e2function vector dpropertysheet:getColor(entity ply)
-        local col =  E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"color")
+        local col =  E2VguiCore.GetPanelAttribute(ply,self.entity.e2_vgui_core_session_id,this,"color")
         if col == nil then
             return {0,0,0}
         end
@@ -172,7 +172,7 @@ do--[[getter]]--
     end
 
     e2function vector4 dpropertysheet:getColor4(entity ply)
-        local col =  E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"color")
+        local col =  E2VguiCore.GetPanelAttribute(ply,self.entity.e2_vgui_core_session_id,this,"color")
         if col == nil then
             return {0,0,0,255}
         end
