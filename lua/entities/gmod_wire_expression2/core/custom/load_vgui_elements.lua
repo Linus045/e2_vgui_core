@@ -18,15 +18,15 @@ end
 -- parses typename/typeid associations from a file and stores info about the file for later use by e2_include_finalize/e2_include_pass2
 local function e2_include(name)
     local path, filename = string.match(name, "^(.-/?)([^/]*)$")
-        local luaname = "entities/gmod_wire_expression2/core/" .. name
+    local luaname = "entities/gmod_wire_expression2/core/" .. name
     local contents = file.Read(luaname, "LUA") or ""
-    e2_extpp_pass1(contents)
+    E2Lib.ExtPP.Pass1(contents)
     table.insert(included_files, { name, luaname, contents })
 end
 
 -- parses and executes an extension
 local function e2_include_pass2(name, luaname, contents)
-    local ok, ret = pcall(e2_extpp_pass2, contents)
+    local ok, ret = pcall(E2Lib.ExtPP.Pass2, contents)
     if not ok then
         WireLib.ErrorNoHalt(luaname .. ret .. "\n")
         return
