@@ -29,7 +29,7 @@ E2VguiLib = {
         deleteOnClose = function(panel,value) panel:SetDeleteOnClose(value) end,
         makepopup = function(panel,value) if value == true then panel:MakePopup() end end,
         mouseinput = function(panel,value) panel:SetMouseInputEnabled(value) end,
-        keyboardinput = function(panel,value) panel:SetKeyBoardInputEnabled(value) end,
+        keyboardinput = function(panel,value) panel:SetKeyboardInputEnabled(value) end,
         showCloseButton = function(panel,value) panel:ShowCloseButton(value) end,
         dark = function(panel,value) panel:SetDark(value) end,
         decimals = function(panel,value) panel:SetDecimals(value) end,
