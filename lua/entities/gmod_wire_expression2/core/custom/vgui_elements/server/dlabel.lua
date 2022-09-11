@@ -193,9 +193,9 @@ do--[[getter]]--
 	e2function vector dlabel:getColor(entity ply)
 		local col =  E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"color")
 		if col == nil then
-			return {0,0,0}
+			return Vector(0, 0, 0)
 		end
-		return {col.r,col.g,col.b}
+		return Vector(col.r,col.g,col.b)
 	end
 
 	e2function vector4 dlabel:getColor4(entity ply)
