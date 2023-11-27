@@ -119,18 +119,16 @@ do--[[setter]]--
         E2VguiCore.registerAttributeChange(this,"addColumn", {["column"] = column, ["columnWidth"] = width, ["position"] = position})
     end
 
-    if SERVER then
-        e2function void dlistview:addLine(...args)
-            local line = {}
-            for k,v in pairs(args) do
-                if type(v) == "string" or type(v) == "number" then --only allow strings and numbers
-                    line[#line+1] = v
-                else
-                    line[#line+1] = ""
-                end
+    e2function void dlistview:addLine(...args)
+        local line = {}
+        for k,v in pairs(args) do
+            if type(v) == "string" or type(v) == "number" then --only allow strings and numbers
+                line[#line+1] = v
+            else
+                line[#line+1] = ""
             end
-            E2VguiCore.registerAttributeChange(this,"addLine", {unpack(line)})
         end
+        E2VguiCore.registerAttributeChange(this,"addLine", {unpack(line)})
     end
 
     e2function void dlistview:setMultiSelect(number multiselect)
