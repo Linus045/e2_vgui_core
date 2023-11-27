@@ -26,7 +26,7 @@ end
 
 -- parses and executes an extension
 local function e2_include_pass2(name, luaname, contents)
-    local ok, ret = pcall(E2Lib.ExtPP.Pass2, contents)
+    local ok, ret = pcall(E2Lib.ExtPP.Pass2, contents, luaname)
     if not ok then
         WireLib.ErrorNoHalt(luaname .. ret .. "\n")
         return
