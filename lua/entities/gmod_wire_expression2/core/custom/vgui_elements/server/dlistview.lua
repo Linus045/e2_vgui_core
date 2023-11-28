@@ -52,11 +52,6 @@ e2function number operator_is(xdv pnldata)
     return E2VguiCore.IsPanelInitialised(pnldata) and  1 or 0
 end
 
--- if (!B)
-e2function number operator!(xdv pnldata)
-    return E2VguiCore.IsPanelInitialised(pnldata) and  0 or 1
-end
-
 --- B == B --check if the names match
 --TODO: Check if the entire pnl data is equal (each attribute of the panel)
 e2function number operator==(xdv ldata, xdv rdata)
@@ -75,28 +70,6 @@ end
 e2function number operator==(n index,xdv rdata)
     if not E2VguiCore.IsPanelInitialised(rdata) then return 0 end
     return rdata["paneldata"]["uniqueID"] == index and 1 or 0
-end
-
-
---- B != B
---TODO: Check if the entire pnl data is equal (each attribute of the panel)
-e2function number operator!=(xdv ldata, xdv rdata)
-    if not E2VguiCore.IsPanelInitialised(ldata) then return 1 end
-    if not E2VguiCore.IsPanelInitialised(rdata) then return 1 end
-    return ldata["paneldata"]["uniqueID"] == rdata["paneldata"]["uniqueID"] and 0 or 1
-end
-
-
---- B != number --check if the uniqueID matches
-e2function number operator!=(xdv ldata, n index)
-    if not E2VguiCore.IsPanelInitialised(ldata) then return 0 end
-    return ldata["paneldata"]["uniqueID"] == index and 0 or 1
-end
-
---- number != B --check if the uniqueID matches
-e2function number operator!=(n index,xdv rdata)
-    if not E2VguiCore.IsPanelInitialised(rdata) then return 0 end
-    return rdata["paneldata"]["uniqueID"] == index and 0 or 1
 end
 
 --[[-------------------------------------------------------------------------
@@ -146,9 +119,9 @@ do--[[setter]]--
         E2VguiCore.registerAttributeChange(this,"addColumn", {["column"] = column, ["columnWidth"] = width, ["position"] = position})
     end
 
-    e2function void dlistview:addLine(...)
+    e2function void dlistview:addLine(...args)
         local line = {}
-        for k,v in pairs({...}) do
+        for k,v in pairs(args) do
             if type(v) == "string" or type(v) == "number" then --only allow strings and numbers
                 line[#line+1] = v
             else
