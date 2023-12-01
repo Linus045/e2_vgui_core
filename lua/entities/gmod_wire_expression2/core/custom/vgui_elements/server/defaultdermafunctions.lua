@@ -491,6 +491,18 @@ E2VguiCore.registerCallback("loaded_elements",function()
         end
         ,5)
 
+        --add id() function for every panel
+        registerFunction( "id", id..":", "n", function(self,args)
+            local op1 = args[2]
+            local op3 = args[4]
+
+            local panel = op1[1](self,op1)
+
+            if not panel then return 0 end -- may be nil
+
+            return panel["paneldata"]["uniqueID"]
+        end
+        ,5)
 
         --add closePlayer(E) function for every panel
         registerFunction( "closePlayer", id..":e", "", function(self,args)

@@ -54,11 +54,6 @@ e2function number operator_is(xdp pnldata)
     return E2VguiCore.IsPanelInitialised(pnldata) and  1 or 0
 end
 
--- if (!B)
-e2function number operator!(xdp pnldata)
-    return E2VguiCore.IsPanelInitialised(pnldata) and  0 or 1
-end
-
 --- B == B --check if the names match
 --TODO:
 e2function number operator==(xdp ldata, xdp rdata)
@@ -78,28 +73,6 @@ end
 e2function number operator==(n index,xdp rdata)
     if not E2VguiCore.IsPanelInitialised(rdata) then return 0 end
     return rdata["paneldata"]["uniqueID"] == index and 1 or 0
-end
-
-
---- B != B
---TODO:
-e2function number operator!=(xdp ldata, xdp rdata)
-    if not E2VguiCore.IsPanelInitialised(ldata) then return 1 end
-    if not E2VguiCore.IsPanelInitialised(rdata) then return 1 end
-    return ldata["paneldata"]["uniqueID"] == rdata["paneldata"]["uniqueID"] and 0 or 1
-end
-
-
---- B != number --check if the uniqueID matches
-e2function number operator!=(xdp ldata, n index)
-    if not E2VguiCore.IsPanelInitialised(ldata) then return 0 end
-    return ldata["paneldata"]["uniqueID"] == index and 0 or 1
-end
-
---- number != B --check if the uniqueID matches
-e2function number operator!=(n index,xdp rdata)
-    if not E2VguiCore.IsPanelInitialised(rdata) then return 0 end
-    return rdata["paneldata"]["uniqueID"] == index and 0 or 1
 end
 
 --[[-------------------------------------------------------------------------
@@ -162,9 +135,9 @@ do--[[getter]]--
     e2function vector dpanel:getColor(entity ply)
         local col =  E2VguiCore.GetPanelAttribute(ply,self.entity.e2_vgui_core_session_id,this,"color")
         if col == nil then
-            return {0,0,0}
+            return Vector(0, 0, 0)
         end
-        return {col.r,col.g,col.b}
+        return Vector(col.r, col.g, col.b)
     end
 
     e2function vector4 dpanel:getColor4(entity ply)
