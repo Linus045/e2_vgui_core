@@ -13,24 +13,20 @@ E2Lib.registerConstant("BOX_TOP", 4) --TOP
 E2Lib.registerConstant("BOX_BOTTOM", 5) --BOTTOM
 __e2setcost(5)
 
-[deprecated="Use the vguiClk event instead for examples see the github wiki" ]
 e2function number vguiCanSend()
     local available = E2VguiCore.CanUpdateVgui(self.player)
     return (available==true) and 1 or 0
 end
 
-[deprecated="Use the vguiClk event instead for examples see the github wiki" ]
 e2function void vguiCloseAll()
     E2VguiCore.RemoveAllPanelsOfE2(self.entity:EntIndex())
 end
 
-[deprecated="Use the vguiClk event instead for examples see the github wiki" ]
 e2function void vguiCloseOnPlayer(entity ply)
     if ply == nil or not ply:IsPlayer() then return end
     E2VguiCore.RemovePanelsOnPlayer(self.entity:EntIndex(),ply)
 end
 
-[deprecated="Use the vguiClk event instead for examples see the github wiki" ]
 e2function void vguiDefaultPlayers(array players)
     if #players > #player.GetAll() then return end
     if self.entity.e2_vgui_core_default_players == nil then
