@@ -17,20 +17,19 @@ net.Receive("E2Vgui.CreatePanel",function()
     local createSuccessful = false
     local pnlType = net.ReadString()
     local uniqueID = net.ReadInt(32)
-    local e2EntityID = net.ReadInt(32)
+    local e2_vgui_core_session_id = net.ReadInt(32)
     local pnlData = net.ReadTable()
     local changes = net.ReadTable()
     if E2VguiPanels["vgui_elements"]["functions"][pnlType] != nil and E2VguiPanels["vgui_elements"]["functions"][pnlType]["createFunc"] != nil then
-
-        if E2VguiPanels["panels"][e2EntityID] == nil then
-            E2VguiPanels["panels"][e2EntityID] = {}
+        if E2VguiPanels["panels"][e2_vgui_core_session_id] == nil then
+            E2VguiPanels["panels"][e2_vgui_core_session_id] = {}
         end
 
-        if E2VguiPanels["panels"][e2EntityID][uniqueID] == nil then
+        if E2VguiPanels["panels"][e2_vgui_core_session_id][uniqueID] == nil then
             local panelParentID = pnlData["parentID"]
-            if panelParentID == nil or (panelParentID != nil and E2VguiPanels["panels"][e2EntityID][panelParentID]) then
+            if panelParentID == nil or (panelParentID != nil and E2VguiPanels["panels"][e2_vgui_core_session_id][panelParentID]) then
                 local createFunc = E2VguiPanels["vgui_elements"]["functions"][pnlType]["createFunc"]
-                createSuccessful = createFunc(uniqueID,pnlData,e2EntityID,changes)
+                createSuccessful = createFunc(uniqueID,pnlData,e2_vgui_core_session_id,changes)
             end
         else
             --panel already exists. How to deal that on serverside ? maybe overwrite/modify it ?
@@ -40,7 +39,7 @@ net.Receive("E2Vgui.CreatePanel",function()
 
     net.Start("E2Vgui.ConfirmCreation")
         net.WriteInt(uniqueID,32)
-        net.WriteInt(e2EntityID,32)
+        net.WriteInt(e2_vgui_core_session_id,32)
         net.WriteBool(createSuccessful)
         net.WriteTable(pnlData)
     net.SendToServer()
@@ -53,17 +52,17 @@ net.Receive("E2Vgui.ModifyPanel",function()
     local createSuccessful = nil
     local pnlType = net.ReadString()
     local uniqueID = net.ReadInt(32)
-    local e2EntityID = net.ReadInt(32)
+    local e2_vgui_core_session_id = net.ReadInt(32)
     local changes = net.ReadTable()
 
     local pnlData = {}
     if E2VguiPanels["vgui_elements"]["functions"][pnlType] != nil and E2VguiPanels["vgui_elements"]["functions"][pnlType]["modifyFunc"] != nil then
 
-        if E2VguiPanels["panels"][e2EntityID] != nil and E2VguiPanels["panels"][e2EntityID][uniqueID] != nil then
-            pnlData = E2VguiPanels["panels"][e2EntityID][uniqueID]["pnlData"]
+        if E2VguiPanels["panels"][e2_vgui_core_session_id] != nil and E2VguiPanels["panels"][e2_vgui_core_session_id][uniqueID] != nil then
+            pnlData = E2VguiPanels["panels"][e2_vgui_core_session_id][uniqueID]["pnlData"]
 
             local modifyFunc = E2VguiPanels["vgui_elements"]["functions"][pnlType]["modifyFunc"]
-            modifiedSuccess = modifyFunc(uniqueID,e2EntityID,changes)
+            modifiedSuccess = modifyFunc(uniqueID,e2_vgui_core_session_id,changes)
 --[[ Don't recreate the panel when the player closed it
         elseif not ["panels"][e2EntityID][uniqueID] then
             local createFunc = E2VguiPanels["vgui_elements"]["functions"][pnlType]["createFunc"]
@@ -75,7 +74,7 @@ net.Receive("E2Vgui.ModifyPanel",function()
     if modifiedSuccess ~= nil then
         net.Start("E2Vgui.ConfirmModification")
             net.WriteInt(uniqueID,32)
-            net.WriteInt(e2EntityID,32)
+            net.WriteInt(e2_vgui_core_session_id,32)
             net.WriteBool(modifiedSuccess)
             net.WriteTable(pnlData)
         net.SendToServer()

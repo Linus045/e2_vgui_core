@@ -1,6 +1,6 @@
 E2VguiPanels["vgui_elements"]["functions"]["dlistview"] = {}
-E2VguiPanels["vgui_elements"]["functions"]["dlistview"]["createFunc"] = function(uniqueID, pnlData, e2EntityID,changes)
-    local parent = E2VguiLib.GetPanelByID(pnlData["parentID"],e2EntityID)
+E2VguiPanels["vgui_elements"]["functions"]["dlistview"]["createFunc"] = function(uniqueID, pnlData, e2_vgui_core_session_id,changes)
+    local parent = E2VguiLib.GetPanelByID(pnlData["parentID"],e2_vgui_core_session_id)
     local panel = vgui.Create("DListView",parent)
     pnlData["addColumn"] = nil --otherwise it will get added twice
     pnlData["addLine"] = nil --otherwise it will get added twice
@@ -10,7 +10,7 @@ E2VguiPanels["vgui_elements"]["functions"]["dlistview"]["createFunc"] = function
 
     --notify server of removal and also update client table
     function panel:OnRemove()
-        E2VguiLib.RemovePanelWithChilds(self,e2EntityID)
+        E2VguiLib.RemovePanelWithChilds(self,e2_vgui_core_session_id)
     end
 
     function panel:OnRowSelected(lineID,linePnl)
@@ -28,7 +28,7 @@ E2VguiPanels["vgui_elements"]["functions"]["dlistview"]["createFunc"] = function
                         end
                     end
                     net.Start("E2Vgui.TriggerE2")
-                    net.WriteInt(e2EntityID,32)
+                    net.WriteInt(e2_vgui_core_session_id,32)
                     net.WriteInt(uniqueID,32)
                     net.WriteString("DListView")
                     net.WriteTable({
@@ -49,19 +49,19 @@ E2VguiPanels["vgui_elements"]["functions"]["dlistview"]["createFunc"] = function
     end
     panel["uniqueID"] = uniqueID
     panel["pnlData"] = pnlData
-    E2VguiLib.RegisterNewPanel(e2EntityID ,uniqueID, panel)
-    E2VguiLib.UpdatePosAndSizeServer(e2EntityID,uniqueID,panel)
+    E2VguiLib.RegisterNewPanel(e2_vgui_core_session_id ,uniqueID, panel)
+    E2VguiLib.UpdatePosAndSizeServer(e2_vgui_core_session_id,uniqueID,panel)
     return true
 end
 
 
-E2VguiPanels["vgui_elements"]["functions"]["dlistview"]["modifyFunc"] = function(uniqueID, e2EntityID, changes)
-    local panel = E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
+E2VguiPanels["vgui_elements"]["functions"]["dlistview"]["modifyFunc"] = function(uniqueID, e2_vgui_core_session_id, changes)
+    local panel = E2VguiLib.GetPanelByID(uniqueID,e2_vgui_core_session_id)
     if panel == nil or not IsValid(panel)  then return end
 
     local data = E2VguiLib.applyAttributes(panel,changes)
     table.Merge(panel["pnlData"],data)
-    E2VguiLib.UpdatePosAndSizeServer(e2EntityID,uniqueID,panel)
+    E2VguiLib.UpdatePosAndSizeServer(e2_vgui_core_session_id,uniqueID,panel)
     return true
 end
 
