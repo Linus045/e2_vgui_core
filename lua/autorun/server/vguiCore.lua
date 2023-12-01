@@ -1088,7 +1088,7 @@ function E2VguiCore.UpdateServerValuesFromTable(ply,e2EntityID,uniqueID,tableDat
     end
 end
 
-function E2VguiCore.TriggerE2(e2EntityID,uniqueID, triggerPly, tableData, alsoTriggerE2)
+function E2VguiCore.TriggerE2(e2EntityID,uniqueID, triggerPly, tableData)
     if E2VguiCore.Trigger[e2EntityID] == nil then
         E2VguiCore.Trigger[e2EntityID] = {}
     end
@@ -1101,8 +1101,12 @@ function E2VguiCore.TriggerE2(e2EntityID,uniqueID, triggerPly, tableData, alsoTr
     local value = value and tostring(value) or ""
 
     E2VguiCore.UpdateServerValuesFromTable(triggerPly,e2EntityID,uniqueID,tableData)
-    E2Lib.triggerEvent("vguiClk", { triggerPly, uniqueID, E2VguiCore.convertToE2Table(tableData) })
-    
+    local ignoredE2s = table.Copy(E2Lib.Env.Events["vguiClk"].listening)
+    -- Remove the e2 that triggered from the ignore list so we only call the event for it
+    -- a E2Lib.triggerEventOnly() method would be better
+    ignoredE2s[Entity(e2EntityID)] = nil
+    E2Lib.triggerEventOmit("vguiClk", { triggerPly, uniqueID, E2VguiCore.convertToE2Table(tableData) }, ignoredE2s)
+
     if E2VguiCore.Trigger[e2EntityID].RunOnDerma ~= nil and E2VguiCore.Trigger[e2EntityID].RunOnDerma ~= false then        
         E2VguiCore.Trigger[e2EntityID].triggeredByClient = triggerPly
         E2VguiCore.Trigger[e2EntityID].triggerValues = E2VguiCore.convertLuaTableToArray(tableData)
