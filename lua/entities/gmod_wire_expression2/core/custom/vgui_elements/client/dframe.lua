@@ -101,9 +101,9 @@ E2Helper.Descriptions["getMinHeight(xdf:e)"] = "Returns the frame's minimum heig
 E2Helper.Descriptions["getShowCloseButton(xdf:e)"] = "Returns if the close button is visible."
 E2Helper.Descriptions["getDeleteOnClose(xdf:e)"] = "Returns if the frame gets removed on close."
 
-E2Helper.Descriptions["makePopup(xdf:)"] = "Makes the frame pop up after using DFrame:create(). See enableMouseInput() and enableKeyboardInput()."
-E2Helper.Descriptions["enableMouseInput(xdf:n)"] = "Enables the mouse input after using DFrame:create()."
-E2Helper.Descriptions["enableKeyboardInput(xdf:n)"] = "Enables the keyboard input after using DFrame:create()."
+E2Helper.Descriptions["makePopup(xdf:)"] = "Makes the frame pop up after using DFrame:create() so you an interact with it. Also see enableMouseInput() and enableKeyboardInput()."
+E2Helper.Descriptions["enableMouseInput(xdf:n)"] = "Sets whether the panel should grab mouse focus or not."
+E2Helper.Descriptions["enableKeyboardInput(xdf:n)"] = "Sets whether the panel should grab keyboard focus or not."
 E2Helper.Descriptions["linkToVehicle(xdf:e)"] = "Links the frame to a vehicle entity. When linked, the frame will automatically open and close (uses setVisible() internally) when entering or leaving the vehicle.\n setDeleteOnClose(0) is recommended."
 E2Helper.Descriptions["removeLinkFromVehicle(xdf:)"] = "Removes the link the vehicle entity."
 
@@ -130,6 +130,7 @@ E2Helper.Descriptions["create(xdf:)"] = "Creates the element for every player in
 E2Helper.Descriptions["create(xdf:r)"] = "Creates the element for every player in the provided list"
 E2Helper.Descriptions["modify(xdf:)"] = "Applies all changes made to the element for every player in the player's list.\nDoes not create the element again if it got removed!."
 E2Helper.Descriptions["modify(xdf:r)"] = "Applies all changes made to the element for every player in the provided list.\nDoes not create the element again if it got removed!."
+E2Helper.Descriptions["id(xdf:)"] = "Returns the panel's id that was assigned on creation. Returns 0 if panel is invalid (create() was not yet called)."
 E2Helper.Descriptions["closePlayer(xdf:e)"] = "Closes the element on the specified player but keeps the player inside the element's player list. (Also see remove(E))"
 E2Helper.Descriptions["closeAll(xdf:)"] = "Closes the element on all players in the player's list. Keeps the players inside the element's player list. (Also see removeAll())"
 E2Helper.Descriptions["addPlayer(xdf:e)"] = "Adds a player to the element's player list.\nThese players will see the object when it's created or modified (see create()/modify())."

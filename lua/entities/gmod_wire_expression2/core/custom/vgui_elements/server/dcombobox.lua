@@ -189,7 +189,7 @@ do--[[getter]]--
     end
 
     e2function string dcombobox:getData(entity ply)
-        return E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"data") or ""
+        return tostring(E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"data")) or ""
     end
 -- getter
 end

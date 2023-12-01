@@ -80,6 +80,7 @@ E2Helper.Descriptions["create(xbl:)"] = "Creates the element for every player in
 E2Helper.Descriptions["create(xbl:r)"] = "Creates the element for every player in the provided list"
 E2Helper.Descriptions["modify(xbl:)"] = "Applies all changes made to the element for every player in the player's list.\nDoes not create the element again if it got removed!."
 E2Helper.Descriptions["modify(xbl:r)"] = "Applies all changes made to the element for every player in the provided list.\nDoes not create the element again if it got removed!."
+E2Helper.Descriptions["id(xdl:)"] = "Returns the panel's id that was assigned on creation. Returns 0 if panel is invalid (create() was not yet called)."
 E2Helper.Descriptions["closePlayer(xbl:e)"] = "Closes the element on the specified player but keeps the player inside the element's player list. (Also see remove(E))"
 E2Helper.Descriptions["closeAll(xbl:)"] = "Closes the element on all players in the player's list. Keeps the players inside the element's player list. (Also see removeAll())"
 E2Helper.Descriptions["addPlayer(xbl:e)"] = "Adds a player to the element's player list.\nThese players will see the object when it's created or modified (see create()/modify())."

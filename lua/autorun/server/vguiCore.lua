@@ -1088,31 +1088,40 @@ function E2VguiCore.UpdateServerValuesFromTable(ply,e2EntityID,uniqueID,tableDat
     end
 end
 
-function E2VguiCore.TriggerE2(e2EntityID,uniqueID, triggerPly, tableData, alsoTriggerE2)
+function E2VguiCore.TriggerE2(e2EntityID,uniqueID, triggerPly, tableData)
     if E2VguiCore.Trigger[e2EntityID] == nil then
         E2VguiCore.Trigger[e2EntityID] = {}
     end
-    if E2VguiCore.Trigger[e2EntityID].RunOnDerma == nil or E2VguiCore.Trigger[e2EntityID].RunOnDerma == false then return end
+
     if triggerPly == nil or not triggerPly:IsPlayer() then return end
     local e2Entity = ents.GetByIndex(e2EntityID)
     if not IsValid(e2Entity) then return end
     if e2Entity:GetClass() != "gmod_wire_expression2" then return end
 
     local value = value and tostring(value) or ""
-    E2VguiCore.Trigger[e2EntityID].triggeredByClient = triggerPly
-    E2VguiCore.Trigger[e2EntityID].triggerValues = E2VguiCore.convertLuaTableToArray(tableData)
-    E2VguiCore.Trigger[e2EntityID].triggerValuesTable = E2VguiCore.convertToE2Table(tableData)
-    E2VguiCore.Trigger[e2EntityID].triggerUniqueID = uniqueID
-    E2VguiCore.Trigger[e2EntityID].run = true
 
     E2VguiCore.UpdateServerValuesFromTable(triggerPly,e2EntityID,uniqueID,tableData)
-    e2Entity:Execute()
+    local ignoredE2s = table.Copy(E2Lib.Env.Events["vguiClk"].listening)
+    -- Remove the e2 that triggered from the ignore list so we only call the event for it
+    -- a E2Lib.triggerEventOnly() method would be better
+    ignoredE2s[Entity(e2EntityID)] = nil
+    E2Lib.triggerEventOmit("vguiClk", { triggerPly, uniqueID, E2VguiCore.convertToE2Table(tableData) }, ignoredE2s)
 
-    E2VguiCore.Trigger[e2EntityID].triggeredByClient = NULL
-    E2VguiCore.Trigger[e2EntityID].triggerValues = {}
-    E2VguiCore.Trigger[e2EntityID].triggerValuesTable = {n={},ntypes={},s={},stypes={},size=0}
-    E2VguiCore.Trigger[e2EntityID].triggerUniqueID = -1
-    E2VguiCore.Trigger[e2EntityID].run = false
+    if E2VguiCore.Trigger[e2EntityID].RunOnDerma ~= nil and E2VguiCore.Trigger[e2EntityID].RunOnDerma ~= false then        
+        E2VguiCore.Trigger[e2EntityID].triggeredByClient = triggerPly
+        E2VguiCore.Trigger[e2EntityID].triggerValues = E2VguiCore.convertLuaTableToArray(tableData)
+        E2VguiCore.Trigger[e2EntityID].triggerValuesTable = E2VguiCore.convertToE2Table(tableData)
+        E2VguiCore.Trigger[e2EntityID].triggerUniqueID = uniqueID
+        E2VguiCore.Trigger[e2EntityID].run = true
+
+        e2Entity:Execute()
+
+        E2VguiCore.Trigger[e2EntityID].triggeredByClient = NULL
+        E2VguiCore.Trigger[e2EntityID].triggerValues = {}
+        E2VguiCore.Trigger[e2EntityID].triggerValuesTable = {n={},ntypes={},s={},stypes={},size=0}
+        E2VguiCore.Trigger[e2EntityID].triggerUniqueID = -1
+        E2VguiCore.Trigger[e2EntityID].run = false
+    end
 end
 
 --Only updates the server values and executes the e2
