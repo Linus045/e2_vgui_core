@@ -107,7 +107,10 @@ E2VguiLib = {
         alignRight = function(panel, value) panel:AlignRight(value) end,
         alignTop = function(panel, value) panel:AlignTop(value) end,
         alignBottom = function(panel, value) panel:AlignBottom(value) end,
-        dock = function(panel,value) panel:Dock(value) end,
+        dock = function(panel,value) 
+            panel:Dock(value)
+            panel:InvalidateParent(true)
+        end,
         dockMargin = function(panel,values) panel:DockMargin(values[1],values[2],values[3],values[4]) end,
         dockPadding = function(panel,values) panel:DockPadding(values[1],values[2],values[3],values[4]) end,
         noClipping = function(panel,value) panel:NoClipping(value) end,
@@ -136,7 +139,12 @@ E2VguiLib = {
         keepAspect = function(panel, value) panel:SetKeepAspect(value) end,
         stretchToFit = function(panel, value) panel:SetStretchToFit(value) end,
         sizeToContents = function(panel, value) panel:SizeToContents() end,
-        numeric = function(panel, value) panel:SetNumeric(value) end
+        numeric = function(panel, value) panel:SetNumeric(value) end,
+        divider_setDividerWidth = function(panel, value) panel:SetDividerWidth( value ) end,
+        divider_setLeftMin = function(panel, value) panel:SetLeftMin( value ) end,
+        divider_setRightMin = function(panel, value) panel:SetRightMin(value) end,
+        divider_setLeftWidth = function(panel, value) panel:SetLeftWidth(value) end,
+        stretchToParent = function(panel, value) panel:StretchToParent(value[1],value[2],value[3],value[4]) end
     }
 }
 
