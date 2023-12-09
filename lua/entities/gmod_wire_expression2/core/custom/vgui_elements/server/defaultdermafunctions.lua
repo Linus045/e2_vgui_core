@@ -437,6 +437,37 @@ E2VguiCore.registerCallback("loaded_elements",function()
         end
         ,5)
 
+        --add dockMargin(NNNN) function for every panel
+        registerFunction( "stretchToParent", id..":nnnn", "", function(self,args)
+            local op1 = args[2]
+            local op2 = args[3]
+            local op3 = args[4]
+            local op4 = args[5]
+            local op5 = args[6]
+
+            local panel = op1[1](self,op1)
+
+            local offsetLeft = op2[1](self,op2)
+            -- interprete -1 as nil
+            if offsetLeft == -1 then offsetLeft = nil end
+
+            local offsetTop = op3[1](self,op3)
+            -- interprete -1 as nil
+            if offsetTop == -1 then offsetTop = nil end
+
+            local offsetRight = op4[1](self,op4)
+            -- interprete -1 as nil
+            if offsetRight == -1 then offsetRight = nil end
+
+            local offsetBottom = op5[1](self,op5)
+            -- interprete -1 as nil
+            if offsetBottom == -1 then offsetBottom = nil end
+
+            if not panel then return end -- may be nil
+
+            E2VguiCore.registerAttributeChange(panel,"stretchToParent", {offsetLeft,offsetTop,offsetRight,offsetBottom})
+        end
+        ,5)
 
         --add create() function for every panel
         registerFunction( "create", id..":", "", function(self,args)
