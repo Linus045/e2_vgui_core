@@ -2,7 +2,7 @@
 
 This extension allows the player to create Garry's Mod's Derma panels (such as Dframe, DButton, etc).
 An Example video can be found here:
-  https://drive.google.com/open?id=1RoRG5JfgSwHs0h79e4-bAEXfjTQcaUOV
+  https://drive.google.com/open?id=1MZWlPZ2Kw71UmFu7NSF8Rhu5U_8jZSMH
   
 ### Check out the wiki for more information
   https://github.com/Linus045/e2_vgui_core/wiki
