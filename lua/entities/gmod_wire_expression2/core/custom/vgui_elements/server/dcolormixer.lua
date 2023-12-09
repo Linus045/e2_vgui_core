@@ -84,8 +84,8 @@ end
 
 e2function dcolormixer dcolormixer(number uniqueID)
     local players = {self.player}
-    if self.entity.e2_vgui_core_default_players != nil and self.entity.e2_vgui_core_default_players[self.entity:EntIndex()] != nil then
-        players = self.entity.e2_vgui_core_default_players[self.entity:EntIndex()]
+    if self.entity.e2_vgui_core_default_players != nil and self.entity.e2_vgui_core_default_players[self.entity.e2_vgui_core_session_id] != nil then
+        players = self.entity.e2_vgui_core_default_players[self.entity.e2_vgui_core_session_id]
     end
     return {
         ["players"] =  players,
@@ -96,8 +96,8 @@ end
 
 e2function dcolormixer dcolormixer(number uniqueID,number parentID)
     local players = {self.player}
-    if self.entity.e2_vgui_core_default_players != nil and self.entity.e2_vgui_core_default_players[self.entity:EntIndex()] != nil then
-        players = self.entity.e2_vgui_core_default_players[self.entity:EntIndex()]
+    if self.entity.e2_vgui_core_default_players != nil and self.entity.e2_vgui_core_default_players[self.entity.e2_vgui_core_session_id] != nil then
+        players = self.entity.e2_vgui_core_default_players[self.entity.e2_vgui_core_session_id]
     end
     return {
         ["players"] =  players,
@@ -148,7 +148,7 @@ end
 
 do--[[getter]]--
     e2function vector dcolormixer:getColor(entity ply)
-        local col =  E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"color")
+        local col =  E2VguiCore.GetPanelAttribute(ply,self.entity.e2_vgui_core_session_id,this,"color")
         if col == nil then
             return Vector(0, 0, 0)
         end
@@ -156,7 +156,7 @@ do--[[getter]]--
     end
 
     e2function vector4 dcolormixer:getColor4(entity ply)
-        local col =  E2VguiCore.GetPanelAttribute(ply,self.entity:EntIndex(),this,"color")
+        local col =  E2VguiCore.GetPanelAttribute(ply,self.entity.e2_vgui_core_session_id,this,"color")
         if col == nil then
             return {0,0,0,255}
         end

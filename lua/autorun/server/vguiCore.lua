@@ -6,7 +6,8 @@ E2VguiCore = {
     ["Trigger"] = {},
     ["Buddies"] = {},
     ["BlockedPlayers"] = {},
-    ["LinkedVehicles"] = {}
+    ["LinkedVehicles"] = {},
+    ["sessionIDToE2Entity"] = {}
 }
 
 util.AddNetworkString("E2Vgui.CreatePanel")
@@ -306,7 +307,7 @@ function E2VguiCore.CreatePanel(e2self, panel, players)
     if table.Count(panel.paneldata) == 0 then return end
 
 
-    local e2EntityID = e2self.entity:EntIndex()
+    local e2_vgui_core_session_id = e2self.entity.e2_vgui_core_session_id
     local players = players or panel["players"]
     local paneldata = panel["paneldata"]
     local changes = panel["changes"]
@@ -340,21 +341,21 @@ function E2VguiCore.CreatePanel(e2self, panel, players)
     local notCreatedYet = {}
     --update server table with new values
     for k,ply in pairs(players) do
-        if ply.e2_vgui_core == nil or ply.e2_vgui_core[e2EntityID] == nil
-            or ply.e2_vgui_core[e2EntityID][uniqueID] == nil then
+        if ply.e2_vgui_core == nil or ply.e2_vgui_core[e2_vgui_core_session_id] == nil
+            or ply.e2_vgui_core[e2_vgui_core_session_id][uniqueID] == nil then
             notCreatedYet[#notCreatedYet+1] = ply
         end
         ply.e2_vgui_core = ply.e2_vgui_core or {}
-        ply.e2_vgui_core[e2EntityID] = ply.e2_vgui_core[e2EntityID] or {}
+        ply.e2_vgui_core[e2_vgui_core_session_id] = ply.e2_vgui_core[e2_vgui_core_session_id] or {}
         --table.copy here because otherwise it sets the same table for every player
         -- but we want every player to have a individual table
-        ply.e2_vgui_core[e2EntityID][uniqueID] = table.Copy(panel)
+        ply.e2_vgui_core[e2_vgui_core_session_id][uniqueID] = table.Copy(panel)
     end
 
     net.Start("E2Vgui.CreatePanel")
         net.WriteString(pnlType)
         net.WriteInt(uniqueID,32)
-        net.WriteInt(e2EntityID,32)
+        net.WriteInt(e2_vgui_core_session_id,32)
         net.WriteTable(paneldata)
         net.WriteTable(changes)
     net.Send(notCreatedYet)
@@ -379,7 +380,7 @@ function E2VguiCore.ModifyPanel(e2Owner, e2Entity, panel, players, updateChildsT
     if #panel.players == 0 and players == nil then return end
     if table.Count(panel.paneldata) == 0 then return end
 
-    local e2EntityID = e2Entity:EntIndex()
+    local e2_vgui_core_session_id = e2Entity.e2_vgui_core_session_id
     local players = players or panel["players"]
     local paneldata = panel["paneldata"]
     local changes = panel["changes"]
@@ -424,17 +425,17 @@ function E2VguiCore.ModifyPanel(e2Owner, e2Entity, panel, players, updateChildsT
     --update server table with new values
     for k,ply in pairs(players) do
         if ply.e2_vgui_core == nil then continue end --the player closed the panel already, no need to update
-        if ply.e2_vgui_core[e2EntityID] == nil then continue end
+        if ply.e2_vgui_core[e2_vgui_core_session_id] == nil then continue end
         --table.copy here because otherwise it sets the same table for every player
         -- but we want every player to have a individual table
-        ply.e2_vgui_core[e2EntityID][uniqueID] = table.Copy(panel)
+        ply.e2_vgui_core[e2_vgui_core_session_id][uniqueID] = table.Copy(panel)
         table.insert(stillOpen,ply)
     end
 
     net.Start("E2Vgui.ModifyPanel")
         net.WriteString(pnlType)
         net.WriteInt(uniqueID,32)
-        net.WriteInt(e2EntityID,32)
+        net.WriteInt(e2_vgui_core_session_id,32)
         net.WriteTable(changes)
     net.Send(stillOpen)
 
@@ -494,8 +495,8 @@ Return: table with all children panels
 function E2VguiCore.GetChildren(e2Entity,panel)
     local children = {}
     for _,ply in pairs(panel["players"]) do
-        if ply.e2_vgui_core != nil and ply.e2_vgui_core[e2Entity:EntIndex()] != nil then
-            for _,value in pairs(ply.e2_vgui_core[e2Entity:EntIndex()]) do
+        if ply.e2_vgui_core != nil and ply.e2_vgui_core[e2Entity.e2_vgui_core_session_id] != nil then
+            for _,value in pairs(ply.e2_vgui_core[e2Entity.e2_vgui_core_session_id]) do
                 if value["paneldata"] and value["paneldata"]["parentID"] == panel["paneldata"]["uniqueID"] then
                     table.insert(children,value)
                 end
@@ -569,6 +570,8 @@ Args:
 Return: nil
 ---------------------------------------------------------------------------]]
 function E2VguiCore.executeCallback(callbackID,...)
+    if E2VguiCore.callbacks[callbackID] == nil then return end
+
     for _,func in pairs(E2VguiCore.callbacks[callbackID]) do
         func(...)
     end
@@ -622,16 +625,16 @@ end
 Desc:   Returns a panel table
 Args:
     ply:    the player you want to get the panel from
-    e2e2EntityID: the entity id of the e2 the panel belongs to
+    e2_vgui_core_session_id: session index
     uniqueID: the uniqueID of the panel
 Return: <>
 ---------------------------------------------------------------------------]]
-function E2VguiCore.GetPanelByID(ply,e2EntityID, uniqueID)
+function E2VguiCore.GetPanelByID(ply,e2_vgui_core_session_id, uniqueID)
     if ply == nil or not ply:IsPlayer() then return end
     if ply.e2_vgui_core == nil then return end
-    if ply.e2_vgui_core[e2EntityID] == nil then return  end
-    if ply.e2_vgui_core[e2EntityID][uniqueID] == nil then return end
-    return ply.e2_vgui_core[e2EntityID][uniqueID]
+    if ply.e2_vgui_core[e2_vgui_core_session_id] == nil then return  end
+    if ply.e2_vgui_core[e2_vgui_core_session_id][uniqueID] == nil then return end
+    return ply.e2_vgui_core[e2_vgui_core_session_id][uniqueID]
 end
 
 --[[-------------------------------------------------------------------------
@@ -639,13 +642,13 @@ end
 Desc:   tries to retrieve the value of a attribute from a panel
 Args:
     ply:    the player to which the panel belongs
-    e2EntityID: the entity id of the e2 the panel belongs to
+    e2_vgui_core_session_id: session index
 Return: the attribute value or nil
 ---------------------------------------------------------------------------]]
-function E2VguiCore.GetPanelAttribute(ply,e2EntityID,pnlVar,attributeName)
+function E2VguiCore.GetPanelAttribute(ply,e2_vgui_core_session_id,pnlVar,attributeName)
     if not E2VguiCore.IsPanelInitialised(pnlVar) then return nil end
 
-    local pnl = E2VguiCore.GetPanelByID(ply,e2EntityID, pnlVar["paneldata"]["uniqueID"])
+    local pnl = E2VguiCore.GetPanelByID(ply,e2_vgui_core_session_id, pnlVar["paneldata"]["uniqueID"])
     if pnl != nil then
         return pnl["paneldata"][attributeName]
     end
@@ -798,6 +801,7 @@ function E2VguiCore.linkToVehicle(e2self, panel, vehicle)
     if not IsValid(vehicle) then return end
     if not vehicle:IsVehicle() then return end
     if not vehicle:IsValidVehicle() then return end
+    -- here we do wanna use the EntIndex of the entity because the linking is serverside
     local e2Index = e2self.entity:EntIndex()
     if E2VguiCore.LinkedVehicles[e2Index] == nil then
         E2VguiCore.LinkedVehicles[e2Index] = {}
@@ -812,6 +816,7 @@ function E2VguiCore.removeLinkFromVehicle(e2self, panel)
     if e2self == nil then return end
     if panel == nil then return end
 
+    -- here we do wanna use the EntIndex of the entity because the linking is serverside
     local e2Index = e2self.entity:EntIndex()
     if E2VguiCore.LinkedVehicles[e2Index] then
         E2VguiCore.LinkedVehicles[e2Index][panel.paneldata.uniqueID] = nil
@@ -824,10 +829,10 @@ function E2VguiCore.PlayerEnteredVehicle(player, vehicle, role)
             local linkedVehicle = linkedEntry.vehicle
             local e2Owner = linkedEntry.e2Owner
             if linkedVehicle == vehicle then
-                local panel = E2VguiCore.GetPanelByID(player,e2EntityID,panelID)
-                if panel != nil then
-                    local e2Entity = ents.GetByIndex(e2EntityID)
-                    if IsValid(e2Entity) then
+                local e2Entity = ents.GetByIndex(e2EntityID)
+                if IsValid(e2Entity) then
+                    local panel = E2VguiCore.GetPanelByID(player,e2Entity.e2_vgui_core_session_id,panelID)
+                    if panel != nil then
                         E2VguiCore.registerAttributeChange(panel,"visible", true)
                         E2VguiCore.ModifyPanel(e2Owner, e2Entity, panel, {player}, false)
                     end
@@ -844,10 +849,10 @@ function E2VguiCore.PlayerLeaveVehicle(player, vehicle)
             local linkedVehicle = linkedEntry.vehicle
             local e2Owner = linkedEntry.e2Owner
             if linkedVehicle == vehicle then
-                local panel = E2VguiCore.GetPanelByID(player,e2EntityID,panelID)
-                if panel != nil then
-                    local e2Entity = ents.GetByIndex(e2EntityID)
-                    if IsValid(e2Entity) then
+                local e2Entity = ents.GetByIndex(e2EntityID)
+                if IsValid(e2Entity) then
+                    local panel = E2VguiCore.GetPanelByID(player,e2Entity.e2_vgui_core_session_id,panelID)
+                    if panel != nil then
                         E2VguiCore.registerAttributeChange(panel,"visible", false)
                         E2VguiCore.ModifyPanel(e2Owner, e2Entity, panel, {player}, false)
                     end
@@ -865,18 +870,20 @@ end
                 E2VguiCore.RemovePanelOnPlayerServer
 Desc: This is used to remove panels from the serverside if they fail to create on a client (Check net.Receive("E2Vgui.ConfirmCreation",...) )
 Args:
-    e2EntityID: index of e2 entity
+    e2_vgui_core_session_id: session index
     uniqueID:   ID of the panel
     ply:        the player of the panel
 Return: nil
 ---------------------------------------------------------------------------]]
-function E2VguiCore.RemovePanelOnPlayerServer(e2EntityID,uniqueID,ply)
-    if e2EntityID == nil or uniqueID == nil or ply == nil or not ply:IsPlayer() then return end
+function E2VguiCore.RemovePanelOnPlayerServer(e2_vgui_core_session_id,uniqueID,ply)
+    if e2_vgui_core_session_id == nil or uniqueID == nil or ply == nil or not ply:IsPlayer() then return end
     if ply.e2_vgui_core == nil then return end
-    if ply.e2_vgui_core[e2EntityID] != nil then
-        ply.e2_vgui_core[e2EntityID][uniqueID] = nil
-        if table.Count(ply.e2_vgui_core[e2EntityID]) ==  0 then
-            ply.e2_vgui_core[e2EntityID] = nil
+    if ply.e2_vgui_core[e2_vgui_core_session_id] != nil then
+        if ply.e2_vgui_core[e2_vgui_core_session_id][uniqueID] ~= nil then
+            ply.e2_vgui_core[e2_vgui_core_session_id][uniqueID] = nil
+        end
+        if table.Count(ply.e2_vgui_core[e2_vgui_core_session_id]) ==  0 then
+            ply.e2_vgui_core[e2_vgui_core_session_id] = nil
         end
     end
 end
@@ -888,63 +895,54 @@ Desc: This is used to delete all panels on every client of a specific e2
 Args:
     e2EntityID: the e2 index
 ---------------------------------------------------------------------------]]
-function E2VguiCore.RemoveAllPanelsOfE2(e2EntityID)
-    if e2EntityID == nil then return end
+function E2VguiCore.RemoveAllPanelsOfE2(e2_vgui_core_session_id)
+    if e2_vgui_core_session_id == nil then return end
         net.Start("E2Vgui.ClosePanels")
             net.WriteInt(-1,3)
-            net.WriteInt(e2EntityID,32)
+            net.WriteInt(e2_vgui_core_session_id,32)
         net.Broadcast()
         for k,v in pairs(player.GetAll()) do
             if v.e2_vgui_core ~= nil then
-            v.e2_vgui_core[e2EntityID] = nil
+                v.e2_vgui_core[e2_vgui_core_session_id] = nil
             end
         end
 end
 
 
-function E2VguiCore.RemovePanelsOnPlayer(e2EntityID,ply)
-    if e2EntityID == nil or ply == nil or not ply:IsPlayer() then return end
-    if ply.e2_vgui_core[e2EntityID] == nil then return end
+function E2VguiCore.RemovePanelsOnPlayer(e2_vgui_core_session_id,ply)
+    if e2_vgui_core_session_id == nil or ply == nil or not ply:IsPlayer() then return end
+    if ply.e2_vgui_core[e2_vgui_core_session_id] == nil then return end
 
     local panels = {uniqueID}
     net.Start("E2Vgui.ClosePanels")
         net.WriteInt(-1,3)
-        net.WriteInt(e2EntityID,32)
+        net.WriteInt(e2_vgui_core_session_id,32)
     net.Send(ply)
 
-    ply.e2_vgui_core[e2EntityID] = nil
+    ply.e2_vgui_core[e2_vgui_core_session_id] = nil
 end
 
 
-function E2VguiCore.RemovePanel(e2EntityID,uniqueID,ply)
-    if e2EntityID == nil or uniqueID == nil or ply == nil or not ply:IsPlayer() then return end
-    if ply.e2_vgui_core[e2EntityID] == nil then return end
+function E2VguiCore.RemovePanel(e2_vgui_core_session_id,uniqueID,ply)
+    if e2_vgui_core_session_id == nil or uniqueID == nil or ply == nil or not ply:IsPlayer() then return end
+    if ply.e2_vgui_core[e2_vgui_core_session_id] == nil then return end
 
     local panels = {uniqueID}
     net.Start("E2Vgui.ClosePanels")
         net.WriteInt(0,3)
-        net.WriteInt(e2EntityID,32)
+        net.WriteInt(e2_vgui_core_session_id,32)
         net.WriteTable(panels)
     net.Send(ply)
 
-    ply.e2_vgui_core[e2EntityID][uniqueID] = nil
-    if table.Count(ply.e2_vgui_core[e2EntityID]) ==  0 then
-        ply.e2_vgui_core[e2EntityID] = nil
+    ply.e2_vgui_core[e2_vgui_core_session_id][uniqueID] = nil
+    if table.Count(ply.e2_vgui_core[e2_vgui_core_session_id]) ==  0 then
+        ply.e2_vgui_core[e2_vgui_core_session_id] = nil
     end
 end
 
 --[[-------------------------------------------------------------------------
                             HOOKS
 ---------------------------------------------------------------------------]]
-hook.Add("EntityRemoved","E2VguiCheckDeletion",function(entity)
-    if entity:GetClass() == "gmod_wire_expression2" then
-        E2VguiCore.RemoveAllPanelsOfE2(entity:EntIndex())
-        if entity:GetOwner().e2_vgui_core_default_players != nil then
-            entity:GetOwner().e2_vgui_core_default_players[entity:EntIndex()] = nil
-        end
-    end
-end)
-
 --Requests every client to resend their buddy list to the server
 hook.Add("PlayerInitialSpawn", "E2VguiRegisterBuddyOnPlayerJoin", function(clientName, clientIp)
     net.Start("E2Vgui.RequestBuddies")
@@ -958,6 +956,46 @@ end)
 hook.Add("PlayerLeaveVehicle", "E2VguiCloseVguiOnLeaveVehicle", function(player, vehicle)
     E2VguiCore.PlayerLeaveVehicle(player, vehicle)
 end)
+
+E2VguiCore.registerCallback("finished_loading", function()
+    -- Register callback after (re-)loading wire cores (initial loading and reloading via wire_expression2_reload)
+    registerCallback("destruct", function(self)
+        E2VguiCore.RemoveAllPanelsOfE2(self.entity.e2_vgui_core_session_id)
+        E2VguiCore.sessionIDToE2Entity[self.entity.e2_vgui_core_session_id] = nil
+        E2VguiCore.LinkedVehicles[self.entity:EntIndex()] = nil
+        E2VguiCore.Trigger[self.entity.e2_vgui_core_session_id] = nil
+
+        if self.entity.e2_vgui_core_default_players != nil then
+            self.entity.e2_vgui_core_default_players[self.entity.e2_vgui_core_session_id] = nil
+        end
+    end)
+    registerCallback("construct", function(self)
+        -- give each e2 a random session id (was originally e2EntityID)
+        -- this identifier prevents problems when reloading the same e2 (because it used the same identifier for the panels)
+        -- when reloading we tell all clients to remove the old panels (see e2 "destruct" callback above)
+        -- and then generate a new session_id (here in the e2 "construct" event) which is used to identify panels for the reloaded e2
+        -- any events from the old e2 code (panel removal/closing, button clicks, etc.) will be ignored for the new e2 session
+        local e2_vgui_core_session_id = -1
+        local try = 0
+        repeat 
+            e2_vgui_core_session_id = math.floor(math.Rand(0, 1000000))
+            try = try + 1
+            -- unlikely but still better than crashing the game with an infinite loop
+            if try > 100 then
+                e2_vgui_core_session_id = -1
+                break
+            end
+        until E2VguiCore.sessionIDToE2Entity[e2_vgui_core_session_id] == nil
+
+        if e2_vgui_core_session_id == -1 then
+            error("[E2VguiCore] Unable to assign new e2_vgui_core_session_id")
+            return
+        end
+
+        self.entity.e2_vgui_core_session_id = e2_vgui_core_session_id
+        E2VguiCore.sessionIDToE2Entity[e2_vgui_core_session_id] = self.entity
+    end)
+end)
 --[[-------------------------------------------------------------------------
                         NETMESSAGES
 ---------------------------------------------------------------------------]]
@@ -968,40 +1006,40 @@ net.Receive("E2Vgui.NotifyPanelRemove",function(len, ply)
         return
     elseif mode == -1 then
         local uniqueID = net.ReadInt(32)
-        local e2EntityID = net.ReadInt(32)
+        local e2_vgui_core_session_id = net.ReadInt(32)
         local paneldata = net.ReadTable()
-        E2VguiCore.RemovePanelOnPlayerServer(e2EntityID,uniqueID,ply)
+        E2VguiCore.RemovePanelOnPlayerServer(e2_vgui_core_session_id,uniqueID,ply)
     elseif mode == 0 then
-        local e2EntityID = net.ReadInt(32)
+        local e2_vgui_core_session_id = net.ReadInt(32)
         local panels = net.ReadTable()
         for k,panelID in pairs(panels) do
-            local panel = E2VguiCore.GetPanelByID(ply,e2EntityID,panelID)
+            local panel = E2VguiCore.GetPanelByID(ply,e2_vgui_core_session_id,panelID)
             if panel != nil then
                 local uniqueID = panel["paneldata"]["uniqueID"]
-                E2VguiCore.RemovePanelOnPlayerServer(e2EntityID,uniqueID,ply)
+                E2VguiCore.RemovePanelOnPlayerServer(e2_vgui_core_session_id,uniqueID,ply)
             end
         end
     elseif mode == 1 then
-        ply.e2_vgui_core = {}
+        ply.e2_vgui_core = nil
     end
 end)
 
 net.Receive("E2Vgui.ConfirmCreation",function(len,ply)
     local uniqueID = net.ReadInt(32)
-    local e2EntityID = net.ReadInt(32)
+    local e2_vgui_core_session_id = net.ReadInt(32)
     local success = net.ReadBool()
     local paneldata = net.ReadTable()
     if success then
         --do nothing since we already created the panel on the server
     else
         --remove the panel from the server again since its not valid on that player
-        E2VguiCore.RemovePanelOnPlayerServer(e2EntityID,uniqueID,ply)
+        E2VguiCore.RemovePanelOnPlayerServer(e2_vgui_core_session_id,uniqueID,ply)
     end
 end)
 
 net.Receive("E2Vgui.ConfirmModification",function(len,ply)
     local uniqueID = net.ReadInt(32)
-    local e2EntityID = net.ReadInt(32)
+    local e2_vgui_core_session_id = net.ReadInt(32)
     local success = net.ReadBool()
     local paneldata = net.ReadTable()
     if success then
@@ -1079,66 +1117,70 @@ function E2VguiCore.BlockPlayers(ply, blockedPlayers)
     end
 end
 
-function E2VguiCore.UpdateServerValuesFromTable(ply,e2EntityID,uniqueID,tableData)
+function E2VguiCore.UpdateServerValuesFromTable(ply,e2_vgui_core_session_id,uniqueID,tableData)
     --Set the attribute values on the server correct
-    local pnl = E2VguiCore.GetPanelByID(ply,e2EntityID, uniqueID)
+    local pnl = E2VguiCore.GetPanelByID(ply,e2_vgui_core_session_id, uniqueID)
     if pnl == nil then return end
     for attributeName,value in pairs(tableData) do
         pnl["paneldata"][attributeName] = value
     end
 end
 
-function E2VguiCore.TriggerE2(e2EntityID,uniqueID, triggerPly, tableData)
-    if E2VguiCore.Trigger[e2EntityID] == nil then
-        E2VguiCore.Trigger[e2EntityID] = {}
+function E2VguiCore.TriggerE2(e2_vgui_core_session_id,uniqueID, triggerPly, tableData)
+    if E2VguiCore.Trigger[e2_vgui_core_session_id] == nil then
+        E2VguiCore.Trigger[e2_vgui_core_session_id] = {}
     end
 
     if triggerPly == nil or not triggerPly:IsPlayer() then return end
-    local e2Entity = ents.GetByIndex(e2EntityID)
+    local e2Entity = E2VguiCore.GetE2EntityBySessionID(e2_vgui_core_session_id)
     if not IsValid(e2Entity) then return end
     if e2Entity:GetClass() != "gmod_wire_expression2" then return end
 
     local value = value and tostring(value) or ""
 
-    E2VguiCore.UpdateServerValuesFromTable(triggerPly,e2EntityID,uniqueID,tableData)
+    E2VguiCore.UpdateServerValuesFromTable(triggerPly,e2_vgui_core_session_id,uniqueID,tableData)
     local ignoredE2s = table.Copy(E2Lib.Env.Events["vguiClk"].listening)
     -- Remove the e2 that triggered from the ignore list so we only call the event for it
     -- a E2Lib.triggerEventOnly() method would be better
-    ignoredE2s[Entity(e2EntityID)] = nil
+    ignoredE2s[e2Entity] = nil
     E2Lib.triggerEventOmit("vguiClk", { triggerPly, uniqueID, E2VguiCore.convertToE2Table(tableData) }, ignoredE2s)
 
-    if E2VguiCore.Trigger[e2EntityID].RunOnDerma ~= nil and E2VguiCore.Trigger[e2EntityID].RunOnDerma ~= false then        
-        E2VguiCore.Trigger[e2EntityID].triggeredByClient = triggerPly
-        E2VguiCore.Trigger[e2EntityID].triggerValues = E2VguiCore.convertLuaTableToArray(tableData)
-        E2VguiCore.Trigger[e2EntityID].triggerValuesTable = E2VguiCore.convertToE2Table(tableData)
-        E2VguiCore.Trigger[e2EntityID].triggerUniqueID = uniqueID
-        E2VguiCore.Trigger[e2EntityID].run = true
+    if E2VguiCore.Trigger[e2_vgui_core_session_id].RunOnDerma ~= nil and E2VguiCore.Trigger[e2_vgui_core_session_id].RunOnDerma ~= false then        
+        E2VguiCore.Trigger[e2_vgui_core_session_id].triggeredByClient = triggerPly
+        E2VguiCore.Trigger[e2_vgui_core_session_id].triggerValues = E2VguiCore.convertLuaTableToArray(tableData)
+        E2VguiCore.Trigger[e2_vgui_core_session_id].triggerValuesTable = E2VguiCore.convertToE2Table(tableData)
+        E2VguiCore.Trigger[e2_vgui_core_session_id].triggerUniqueID = uniqueID
+        E2VguiCore.Trigger[e2_vgui_core_session_id].run = true
 
         e2Entity:Execute()
 
-        E2VguiCore.Trigger[e2EntityID].triggeredByClient = NULL
-        E2VguiCore.Trigger[e2EntityID].triggerValues = {}
-        E2VguiCore.Trigger[e2EntityID].triggerValuesTable = {n={},ntypes={},s={},stypes={},size=0}
-        E2VguiCore.Trigger[e2EntityID].triggerUniqueID = -1
-        E2VguiCore.Trigger[e2EntityID].run = false
+        E2VguiCore.Trigger[e2_vgui_core_session_id].triggeredByClient = NULL
+        E2VguiCore.Trigger[e2_vgui_core_session_id].triggerValues = {}
+        E2VguiCore.Trigger[e2_vgui_core_session_id].triggerValuesTable = {n={},ntypes={},s={},stypes={},size=0}
+        E2VguiCore.Trigger[e2_vgui_core_session_id].triggerUniqueID = -1
+        E2VguiCore.Trigger[e2_vgui_core_session_id].run = false
     end
+end
+
+function E2VguiCore.GetE2EntityBySessionID(e2_vgui_core_session_id)
+    return E2VguiCore.sessionIDToE2Entity[e2_vgui_core_session_id]
 end
 
 --Only updates the server values and executes the e2
 net.Receive("E2Vgui.TriggerE2",function(len,ply)
-    local e2EntityID = net.ReadInt(32)
+    local e2_vgui_core_session_id = net.ReadInt(32)
     local uniqueID = net.ReadInt(32)
     local panelType = net.ReadString()
     local tableData = net.ReadTable()
-    E2VguiCore.TriggerE2(e2EntityID,uniqueID, ply, tableData)
+    E2VguiCore.TriggerE2(e2_vgui_core_session_id,uniqueID, ply, tableData)
 end)
 
 --Only updates the server values without executing the e2
 net.Receive("E2Vgui.UpdateServerValues",function(len,ply)
-    local e2EntityID = net.ReadInt(32)
+    local e2_vgui_core_session_id = net.ReadInt(32)
     local uniqueID = net.ReadInt(32)
     local tableData = net.ReadTable()
-    E2VguiCore.UpdateServerValuesFromTable(ply,e2EntityID,uniqueID,tableData)
+    E2VguiCore.UpdateServerValuesFromTable(ply,e2_vgui_core_session_id,uniqueID,tableData)
 end)
 
 net.Receive("E2Vgui.AddRemoveBuddy",function( len,ply )

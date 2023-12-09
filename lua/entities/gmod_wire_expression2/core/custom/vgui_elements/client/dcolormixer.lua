@@ -1,13 +1,13 @@
 E2VguiPanels["vgui_elements"]["functions"]["dcolormixer"] = {}
-E2VguiPanels["vgui_elements"]["functions"]["dcolormixer"]["createFunc"] = function(uniqueID, pnlData, e2EntityID,changes)
-    local parent = E2VguiLib.GetPanelByID(pnlData["parentID"],e2EntityID)
+E2VguiPanels["vgui_elements"]["functions"]["dcolormixer"]["createFunc"] = function(uniqueID, pnlData, e2_vgui_core_session_id,changes)
+    local parent = E2VguiLib.GetPanelByID(pnlData["parentID"],e2_vgui_core_session_id)
     local panel = vgui.Create("DColorMixer",parent)
     E2VguiLib.applyAttributes(panel,pnlData,true)
     local data = E2VguiLib.applyAttributes(panel,changes)
     table.Merge(pnlData,data)
     --notify server of removal and also update client table
     function panel:OnRemove()
-        E2VguiLib.RemovePanelWithChilds(self,e2EntityID)
+        E2VguiLib.RemovePanelWithChilds(self,e2_vgui_core_session_id)
     end
     panel["changed"] = true
 
@@ -17,7 +17,7 @@ E2VguiPanels["vgui_elements"]["functions"]["dcolormixer"]["createFunc"] = functi
                 local uniqueID = self["uniqueID"]
                 if uniqueID != nil then
                     net.Start("E2Vgui.TriggerE2")
-                        net.WriteInt(e2EntityID,32)
+                        net.WriteInt(e2_vgui_core_session_id,32)
                         net.WriteInt(uniqueID,32)
                         net.WriteString("DColorMixer")
                         local c = self:GetColor()
@@ -38,14 +38,14 @@ E2VguiPanels["vgui_elements"]["functions"]["dcolormixer"]["createFunc"] = functi
 
     panel["uniqueID"] = uniqueID
     panel["pnlData"] = pnlData
-    E2VguiLib.RegisterNewPanel(e2EntityID ,uniqueID, panel)
-    E2VguiLib.UpdatePosAndSizeServer(e2EntityID,uniqueID,panel)
+    E2VguiLib.RegisterNewPanel(e2_vgui_core_session_id ,uniqueID, panel)
+    E2VguiLib.UpdatePosAndSizeServer(e2_vgui_core_session_id,uniqueID,panel)
     return true
 end
 
 
-E2VguiPanels["vgui_elements"]["functions"]["dcolormixer"]["modifyFunc"] = function(uniqueID, e2EntityID, changes)
-    local panel = E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
+E2VguiPanels["vgui_elements"]["functions"]["dcolormixer"]["modifyFunc"] = function(uniqueID, e2_vgui_core_session_id, changes)
+    local panel = E2VguiLib.GetPanelByID(uniqueID,e2_vgui_core_session_id)
     if panel == nil or not IsValid(panel)  then return end
 
     local data = E2VguiLib.applyAttributes(panel,changes)
@@ -57,7 +57,7 @@ E2VguiPanels["vgui_elements"]["functions"]["dcolormixer"]["modifyFunc"] = functi
             surface.DrawRect(0,0,w,h)
         end
     end
-    E2VguiLib.UpdatePosAndSizeServer(e2EntityID,uniqueID,panel)
+    E2VguiLib.UpdatePosAndSizeServer(e2_vgui_core_session_id,uniqueID,panel)
     return true
 end
 
