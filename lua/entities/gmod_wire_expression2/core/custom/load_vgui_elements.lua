@@ -92,6 +92,10 @@ e2_include_init()
 -- Load serverside files here, they need additional parsing
 -- see top of this file
 E2VguiCore.registerCallback("before_loading_elements",function()
+    -- remove hooks to prevent calling them twice (this could happen if wire_expression2_reload 
+    -- is called since the hook is added in defaultdermafunctions.lua)
+    -- Do not use this hook for other purposes since they will get removed once wire_expression2_reload is called
+    -- use "finished_loading" instead
     E2VguiCore.callbacks["loaded_elements"] = {}
 end)
 
@@ -113,5 +117,6 @@ print("\\###########################################################/")
 
 e2_include_finalize()
 E2VguiCore.executeCallback("loaded_elements")
+E2VguiCore.executeCallback("finished_loading")
 --wire_expression2_CallHook("postinit")
 --wire_expression2_PostLoadExtensions()

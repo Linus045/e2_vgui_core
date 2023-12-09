@@ -1,6 +1,6 @@
 E2VguiPanels["vgui_elements"]["functions"]["dlabel"] = {}
-E2VguiPanels["vgui_elements"]["functions"]["dlabel"]["createFunc"] = function(uniqueID, pnlData, e2EntityID,changes)
-    local parent = E2VguiLib.GetPanelByID(pnlData["parentID"],e2EntityID)
+E2VguiPanels["vgui_elements"]["functions"]["dlabel"]["createFunc"] = function(uniqueID, pnlData, e2_vgui_core_session_id,changes)
+    local parent = E2VguiLib.GetPanelByID(pnlData["parentID"],e2_vgui_core_session_id)
     local panel = vgui.Create("DLabel",parent)
     E2VguiLib.applyAttributes(panel,pnlData,true)
     local data = E2VguiLib.applyAttributes(panel,changes)
@@ -8,24 +8,24 @@ E2VguiPanels["vgui_elements"]["functions"]["dlabel"]["createFunc"] = function(un
 
     --notify server of removal and also update client table
     function panel:OnRemove()
-        E2VguiLib.RemovePanelWithChilds(self,e2EntityID)
+        E2VguiLib.RemovePanelWithChilds(self,e2_vgui_core_session_id)
     end
     panel["uniqueID"] = uniqueID
     panel["pnlData"] = pnlData
-    E2VguiLib.RegisterNewPanel(e2EntityID ,uniqueID, panel)
-    E2VguiLib.UpdatePosAndSizeServer(e2EntityID,uniqueID,panel)
+    E2VguiLib.RegisterNewPanel(e2_vgui_core_session_id ,uniqueID, panel)
+    E2VguiLib.UpdatePosAndSizeServer(e2_vgui_core_session_id,uniqueID,panel)
     return true
 end
 
 
-E2VguiPanels["vgui_elements"]["functions"]["dlabel"]["modifyFunc"] = function(uniqueID, e2EntityID, changes)
-    local panel = E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
+E2VguiPanels["vgui_elements"]["functions"]["dlabel"]["modifyFunc"] = function(uniqueID, e2_vgui_core_session_id, changes)
+    local panel = E2VguiLib.GetPanelByID(uniqueID,e2_vgui_core_session_id)
     if panel == nil or not IsValid(panel)  then return end
 
     local data = E2VguiLib.applyAttributes(panel,changes)
     table.Merge(panel["pnlData"],data)
 
-    E2VguiLib.UpdatePosAndSizeServer(e2EntityID,uniqueID,panel)
+    E2VguiLib.UpdatePosAndSizeServer(e2_vgui_core_session_id,uniqueID,panel)
     return true
 end
 

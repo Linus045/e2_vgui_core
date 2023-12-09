@@ -69,7 +69,7 @@ E2VguiLib = {
         textwrap = function(panel,value) panel:SetWrap(value) end,
         autoStrechVertical = function(panel,value) panel:SetAutoStretchVertical(value) end,
         addsheet = function(panel,values)
-            local sheet_pnl = E2VguiLib.GetPanelByID(values["panelID"],values["e2EntityID"])
+            local sheet_pnl = E2VguiLib.GetPanelByID(values["panelID"],values["e2_vgui_core_session_id"])
             if(not ispanel(sheet_pnl)) then return end
             if values["icon"] == "" then values["icon"] = nil end
             panel:AddSheet(values["name"],sheet_pnl,values["icon"])
@@ -142,18 +142,18 @@ E2VguiLib = {
 
 
 --used to register a new created panel
-function E2VguiLib.RegisterNewPanel(e2EntityID ,uniqueID, pnl)
-    E2VguiPanels.panels[e2EntityID][uniqueID] = pnl
-    pnl["pnlData"]["e2EntityID"] = e2EntityID
+function E2VguiLib.RegisterNewPanel(e2_vgui_core_session_id ,uniqueID, pnl)
+    E2VguiPanels.panels[e2_vgui_core_session_id][uniqueID] = pnl
+    pnl["pnlData"]["e2_vgui_core_session_id"] = e2_vgui_core_session_id
     --  TODO:Add hooks later ?
     --  hook.Run("E2VguiLib.RegisterNewPanel",LocalPlayer(),e2EntityID,pnl)
 end
 
 
 --function to retrieve a panel of a specified e2
-function E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
-    if E2VguiPanels["panels"][e2EntityID] == nil then return end
-    local pnl = E2VguiPanels["panels"][e2EntityID][uniqueID]
+function E2VguiLib.GetPanelByID(uniqueID,e2_vgui_core_session_id)
+    if E2VguiPanels["panels"][e2_vgui_core_session_id] == nil then return end
+    local pnl = E2VguiPanels["panels"][e2_vgui_core_session_id][uniqueID]
     return pnl
 end
 
@@ -185,9 +185,9 @@ function E2VguiLib.applyAttributes(panel,attributes,otherFormat)
 end
 
 --this updates the pos and size values of the panel that is stored on the server
-function E2VguiLib.UpdatePosAndSizeServer(e2EntityID,uniqueID,panel)
+function E2VguiLib.UpdatePosAndSizeServer(e2_vgui_core_session_id,uniqueID,panel)
     net.Start("E2Vgui.UpdateServerValues")
-    net.WriteInt(e2EntityID,32)
+    net.WriteInt(e2_vgui_core_session_id,32)
     net.WriteInt(uniqueID,32)
     local posX,posY = panel:GetPos()
     local width,height = panel:GetSize()
@@ -202,27 +202,26 @@ end
 
 
 --Maybe optimise this by creating a 'children' table for each panel ?
-function E2VguiLib.GetChildPanelIDs(uniqueID,e2EntityID,pnlList)
-    local tbl = pnlList or {uniqueID}
-    local pnl = E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
-    if pnl != nil then
-        if pnl:HasChildren() then
-            for k,v in pairs(pnl:GetChildren()) do
-                --if the pnl has childs get their child panels as well
-                if v:HasChildren() and table.HasValue(tbl,v.uniqueID) then
-                    local panels = E2VguiLib.GetChildPanelIDs(uniqueID,e2EntityID,tbl)
-                    table.Add(tbl,panels)
-                end
-                --Add the ID to the list
-                if v.uniqueID != nil then
-                    table.insert(tbl,v.uniqueID)
-                    --remove the OnRemove() function to prevent redundant calling and spamming with net-messages
-                    v.OnRemove = function() return end
-                end
+function E2VguiLib.GetChildPanelIDs(uniqueID,e2_vgui_core_session_id,pnlList)
+    local tbl = pnlList or {[uniqueID] = true}
+    local pnl = E2VguiLib.GetPanelByID(uniqueID,e2_vgui_core_session_id)
+    if pnl != nil and pnl:HasChildren() then
+        for k,v in pairs(pnl:GetChildren()) do
+            --Add the ID to the list
+            if v.uniqueID != nil then
+                tbl[v.uniqueID] = true
+                --remove the OnRemove() function to prevent redundant calling and spamming with net-messages
+                v.OnRemove = function() return end
+            end
+
+            --if the pnl has childs get their child panels as well
+            if v:HasChildren() then
+                local panels = E2VguiLib.GetChildPanelIDs(v.uniqueID,e2_vgui_core_session_id,tbl)
+                table.Merge(tbl, panels)
             end
         end
     end
-    return tbl
+    return table.GetKeys(tbl)
 end
 
 
@@ -348,21 +347,22 @@ end
 
 --used to remove the panel clientside and automatically informs the server
 --e.g. when you close a Dframe with the close button
-function E2VguiLib.RemovePanelWithChilds(panel,e2EntityID)
-    local name = panel["uniqueID"]
-    local pnlData = panel["pnlData"]
-    local panels = E2VguiLib.GetChildPanelIDs(name,e2EntityID)
+function E2VguiLib.RemovePanelWithChilds(panel,e2_vgui_core_session_id)
+    local uniqueID = panel["uniqueID"]
+    local panels = E2VguiLib.GetChildPanelIDs(uniqueID,e2_vgui_core_session_id)
 
     for k,v in pairs(panels) do
         --remove the panel on clientside table
-        E2VguiPanels["panels"][e2EntityID][v] = nil
+        if E2VguiPanels["panels"][e2_vgui_core_session_id] ~= nil then
+            E2VguiPanels["panels"][e2_vgui_core_session_id][v] = nil
+        end
     end
 
     --notify the server of removal
     net.Start("E2Vgui.NotifyPanelRemove")
         -- -2 : none -1: single / 0 : multiple / 1 : all
         net.WriteInt(0,3)
-        net.WriteInt(e2EntityID,32)
+        net.WriteInt(e2_vgui_core_session_id,32)
         net.WriteTable(panels)
     net.SendToServer()
 end

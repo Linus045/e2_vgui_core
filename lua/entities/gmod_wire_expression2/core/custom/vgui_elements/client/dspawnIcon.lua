@@ -1,6 +1,6 @@
 E2VguiPanels["vgui_elements"]["functions"]["dspawnicon"] = {}
-E2VguiPanels["vgui_elements"]["functions"]["dspawnicon"]["createFunc"] = function(uniqueID, pnlData, e2EntityID,changes)
-    local parent = E2VguiLib.GetPanelByID(pnlData["parentID"],e2EntityID)
+E2VguiPanels["vgui_elements"]["functions"]["dspawnicon"]["createFunc"] = function(uniqueID, pnlData, e2_vgui_core_session_id,changes)
+    local parent = E2VguiLib.GetPanelByID(pnlData["parentID"],e2_vgui_core_session_id)
     local panel = vgui.Create("SpawnIcon",parent)
     E2VguiLib.applyAttributes(panel,pnlData,true)
     local data = E2VguiLib.applyAttributes(panel,changes)
@@ -8,14 +8,14 @@ E2VguiPanels["vgui_elements"]["functions"]["dspawnicon"]["createFunc"] = functio
 
     --notify server of removal and also update client table
     function panel:OnRemove()
-        E2VguiLib.RemovePanelWithChilds(self,e2EntityID)
+        E2VguiLib.RemovePanelWithChilds(self,e2_vgui_core_session_id)
     end
 
     function panel:DoClick()
         local uniqueID = self["uniqueID"]
         if uniqueID != nil then
             net.Start("E2Vgui.TriggerE2")
-                net.WriteInt(e2EntityID,32)
+                net.WriteInt(e2_vgui_core_session_id,32)
                 net.WriteInt(uniqueID,32)
                 net.WriteString("dspawnicon")
                 net.WriteTable({
@@ -26,20 +26,20 @@ E2VguiPanels["vgui_elements"]["functions"]["dspawnicon"]["createFunc"] = functio
     end
     panel["uniqueID"] = uniqueID
     panel["pnlData"] = pnlData
-    E2VguiLib.RegisterNewPanel(e2EntityID ,uniqueID, panel)
-    E2VguiLib.UpdatePosAndSizeServer(e2EntityID,uniqueID,panel)
+    E2VguiLib.RegisterNewPanel(e2_vgui_core_session_id ,uniqueID, panel)
+    E2VguiLib.UpdatePosAndSizeServer(e2_vgui_core_session_id,uniqueID,panel)
     return true
 end
 
 
-E2VguiPanels["vgui_elements"]["functions"]["dspawnicon"]["modifyFunc"] = function(uniqueID, e2EntityID, changes)
-    local panel = E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
+E2VguiPanels["vgui_elements"]["functions"]["dspawnicon"]["modifyFunc"] = function(uniqueID, e2_vgui_core_session_id, changes)
+    local panel = E2VguiLib.GetPanelByID(uniqueID,e2_vgui_core_session_id)
     if panel == nil or not IsValid(panel)  then return end
 
     local data = E2VguiLib.applyAttributes(panel,changes)
     table.Merge(panel["pnlData"],data)
 
-    E2VguiLib.UpdatePosAndSizeServer(e2EntityID,uniqueID,panel)
+    E2VguiLib.UpdatePosAndSizeServer(e2_vgui_core_session_id,uniqueID,panel)
     return true
 end
 

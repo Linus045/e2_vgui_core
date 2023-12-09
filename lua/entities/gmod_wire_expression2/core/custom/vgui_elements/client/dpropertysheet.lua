@@ -1,6 +1,6 @@
 E2VguiPanels["vgui_elements"]["functions"]["dpropertysheet"] = {}
-E2VguiPanels["vgui_elements"]["functions"]["dpropertysheet"]["createFunc"] = function(uniqueID, pnlData, e2EntityID,changes)
-	local parent = E2VguiLib.GetPanelByID(pnlData["parentID"],e2EntityID)
+E2VguiPanels["vgui_elements"]["functions"]["dpropertysheet"]["createFunc"] = function(uniqueID, pnlData, e2_vgui_core_session_id,changes)
+	local parent = E2VguiLib.GetPanelByID(pnlData["parentID"],e2_vgui_core_session_id)
 	local panel = vgui.Create("DPropertySheet",parent)
 	--remove copy here otherwise we add the last panel twice (because its also in the changes table)
 	pnlData["addsheet"] = nil
@@ -9,25 +9,25 @@ E2VguiPanels["vgui_elements"]["functions"]["dpropertysheet"]["createFunc"] = fun
 	table.Merge(pnlData,data)
 	--notify server of removal and also update client table
 	function panel:OnRemove()
-		E2VguiLib.RemovePanelWithChilds(self,e2EntityID)
+		E2VguiLib.RemovePanelWithChilds(self,e2_vgui_core_session_id)
 	end
 	--TODO: Add color hook to make it colorable
 	panel["uniqueID"] = uniqueID
 	panel["pnlData"] = pnlData
-	E2VguiLib.RegisterNewPanel(e2EntityID ,uniqueID, panel)
-	E2VguiLib.UpdatePosAndSizeServer(e2EntityID,uniqueID,panel)
+	E2VguiLib.RegisterNewPanel(e2_vgui_core_session_id ,uniqueID, panel)
+	E2VguiLib.UpdatePosAndSizeServer(e2_vgui_core_session_id,uniqueID,panel)
 	return true
 end
 
 
-E2VguiPanels["vgui_elements"]["functions"]["dpropertysheet"]["modifyFunc"] = function(uniqueID, e2EntityID, changes)
-	local panel = E2VguiLib.GetPanelByID(uniqueID,e2EntityID)
+E2VguiPanels["vgui_elements"]["functions"]["dpropertysheet"]["modifyFunc"] = function(uniqueID, e2_vgui_core_session_id, changes)
+	local panel = E2VguiLib.GetPanelByID(uniqueID,e2_vgui_core_session_id)
 	if panel == nil or not IsValid(panel)  then return end
 
 	local data = E2VguiLib.applyAttributes(panel,changes)
 	table.Merge(panel["pnlData"],data)
 
-	E2VguiLib.UpdatePosAndSizeServer(e2EntityID,uniqueID,panel)
+	E2VguiLib.UpdatePosAndSizeServer(e2_vgui_core_session_id,uniqueID,panel)
 	return true
 end
 
