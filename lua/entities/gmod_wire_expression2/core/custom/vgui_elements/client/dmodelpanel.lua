@@ -7,7 +7,7 @@ E2VguiPanels["vgui_elements"]["functions"]["dmodelpanel"]["createFunc"] = functi
         local uniqueID = self["uniqueID"]
         if uniqueID != nil then
             net.Start("E2Vgui.TriggerE2")
-                net.WriteInt(e2EntityID,32)
+                net.WriteInt(e2_vgui_core_session_id,32)
                 net.WriteInt(uniqueID,32)
                 net.WriteString("DModelPanel")
                 net.WriteTable({
