@@ -24,6 +24,7 @@ util.AddNetworkString("E2Vgui.RequestBuddies")
 util.AddNetworkString("E2Vgui.RegisterBlockedPlayersOnServer")
 util.AddNetworkString("E2Vgui.BlockUnblockPlayer")
 util.AddNetworkString("E2Vgui.ConVarUpdate")
+util.AddNetworkString("E2Vgui.TriggerHTMLFunction")
 
 local sbox_E2_Vgui_maxVgui              = CreateConVar("wire_vgui_maxPanels",100,{FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE},"Sets the max amount of panels you can create with E2")
 local sbox_E2_Vgui_maxVguiPerSecond     = CreateConVar("wire_vgui_maxPanelsPerSecond",20,{FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE},"Sets the max amount of panels you can create/modify/update with E2 (All these send netmessages and too many would crash the client [Client overflow])")
@@ -1192,4 +1193,28 @@ net.Receive("E2Vgui.AddRemoveBuddy",function( len,ply )
         E2VguiCore.UnbuddyClient(ply,target)
         --TODO: Delete panels that belonged to this buddy
     end
+end)
+
+net.Receive("E2Vgui.TriggerHTMLFunction", function(len, ply)
+    local e2EntityID = net.ReadInt(32)
+    local uniqueID = net.ReadInt(32)
+    local functionName = net.ReadString()
+    local returnType = net.ReadString()
+
+    local value = nil
+    if returnType == "string" then
+        value = net.ReadString()
+    elseif returnType == "number" then
+        value = net.ReadFloat()
+    end
+
+    local returnValue = E2VguiCore.convertToE2Table({
+        ["value"] = value
+    })
+    
+    local ignoredE2s = table.Copy(E2Lib.Env.Events["vguiHTMLFunction"].listening)
+    -- Remove the e2 that triggered from the ignore list so we only call the event for it
+    -- a E2Lib.triggerEventOnly() method would be better
+    ignoredE2s[Entity(e2EntityID)] = nil
+    E2Lib.triggerEventOmit("vguiHTMLFunction", { ply, uniqueID, functionName, returnValue }, ignoredE2s)
 end)

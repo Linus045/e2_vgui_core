@@ -144,7 +144,41 @@ E2VguiLib = {
         divider_setLeftMin = function(panel, value) panel:SetLeftMin( value ) end,
         divider_setRightMin = function(panel, value) panel:SetRightMin(value) end,
         divider_setLeftWidth = function(panel, value) panel:SetLeftWidth(value) end,
-        stretchToParent = function(panel, value) panel:StretchToParent(value[1],value[2],value[3],value[4]) end
+        stretchToParent = function(panel, value) panel:StretchToParent(value[1],value[2],value[3],value[4]) end,
+        url = function(panel, value) panel:OpenURL(value) end,
+        html = function(panel, value) panel:SetHTML(value) end,
+        runJavascript = function(panel, value)
+            panel:RunJavascript(value)
+        end,
+        htmlfunction = function(panel, value)
+            local e2EntityID = value["e2EntityID"]
+            local panelID = value["panelID"]
+            local library = value["library"]
+            local functionName = value["functionName"]
+            local returnValueInJS = value["returnValueInJS"]
+
+            panel:AddFunction(library, functionName, function(returnValue)
+                return "stuff"
+                -- if panelID != nil then
+                --     net.Start("E2Vgui.TriggerHTMLFunction")
+                --         net.WriteInt(e2EntityID,32)
+                --         net.WriteInt(panelID,32)
+                --         net.WriteString(functionName)
+
+                --         local returnType = type(returnValue) 
+                --         if returnType == "string" then
+                --             net.WriteString(returnType)
+                --             net.WriteString(returnValue)
+                --         elseif returnType == "number" then
+                --             net.WriteString(returnType)
+                --             net.WriteFloat(returnValue)
+                --         end
+                --     net.SendToServer()
+                -- end
+
+                -- return "test"
+            end) 
+        end
     }
 }
 

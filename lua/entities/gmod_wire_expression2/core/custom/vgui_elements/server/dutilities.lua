@@ -92,3 +92,11 @@ E2Lib.registerEvent("vguiClk", {
 	{ "ID", "n" },
 	{ "Values", "t" }
 })
+
+-- Ply: entity, Id: number, FunctionName: string, ReturnValue: table
+E2Lib.registerEvent("vguiHTMLFunction", {
+	{ "Player", "e" },
+	{ "ID", "n" },
+	{ "FunctionName", "s" },
+    { "ReturnValue", "t" }
+})
