@@ -3,6 +3,19 @@ E2VguiPanels["vgui_elements"]["functions"]["dmodelpanel"]["createFunc"] = functi
     local parent = E2VguiLib.GetPanelByID(pnlData["parentID"],e2EntityID)
     local panel = vgui.Create("DModelPanel",parent)
 
+    function panel:DoClick()
+        local uniqueID = self["uniqueID"]
+        if uniqueID != nil then
+            net.Start("E2Vgui.TriggerE2")
+                net.WriteInt(e2EntityID,32)
+                net.WriteInt(uniqueID,32)
+                net.WriteString("DModelPanel")
+                net.WriteTable({
+                    model = self:GetModel()
+                })
+            net.SendToServer()
+        end
+    end
 
     --if autoAdjust is enabled, override the function before we call setModel() in applyAttributes()
     if pnlData["autoadjust"] == true then
