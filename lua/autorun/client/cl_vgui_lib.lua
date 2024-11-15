@@ -157,26 +157,18 @@ E2VguiLib = {
             local functionName = value["functionName"]
             local returnValueInJS = value["returnValueInJS"]
 
-            panel:AddFunction(library, functionName, function(returnValue)
-                return "stuff"
-                -- if panelID != nil then
-                --     net.Start("E2Vgui.TriggerHTMLFunction")
-                --         net.WriteInt(e2EntityID,32)
-                --         net.WriteInt(panelID,32)
-                --         net.WriteString(functionName)
+            panel:AddFunction(library, functionName, function(...)
+                if panelID != nil then
+                    net.Start("E2Vgui.TriggerHTMLFunction")
+                        net.WriteInt(e2EntityID,32)
+                        net.WriteInt(panelID,32)
+                        net.WriteString(functionName)
 
-                --         local returnType = type(returnValue) 
-                --         if returnType == "string" then
-                --             net.WriteString(returnType)
-                --             net.WriteString(returnValue)
-                --         elseif returnType == "number" then
-                --             net.WriteString(returnType)
-                --             net.WriteFloat(returnValue)
-                --         end
-                --     net.SendToServer()
-                -- end
-
-                -- return "test"
+                        -- TODO: Setup limitations for this, otherwise this could cause problems e.g. to many values
+                        local args = table.Pack(...)
+                        net.WriteTable(args)
+                        net.SendToServer()
+                end
             end) 
         end
     }

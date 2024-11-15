@@ -1199,18 +1199,8 @@ net.Receive("E2Vgui.TriggerHTMLFunction", function(len, ply)
     local e2EntityID = net.ReadInt(32)
     local uniqueID = net.ReadInt(32)
     local functionName = net.ReadString()
-    local returnType = net.ReadString()
-
-    local value = nil
-    if returnType == "string" then
-        value = net.ReadString()
-    elseif returnType == "number" then
-        value = net.ReadFloat()
-    end
-
-    local returnValue = E2VguiCore.convertToE2Table({
-        ["value"] = value
-    })
+    local value = net.ReadTable()
+    local returnValue = E2VguiCore.convertToE2Table(value)
     
     local ignoredE2s = table.Copy(E2Lib.Env.Events["vguiHTMLFunction"].listening)
     -- Remove the e2 that triggered from the ignore list so we only call the event for it
