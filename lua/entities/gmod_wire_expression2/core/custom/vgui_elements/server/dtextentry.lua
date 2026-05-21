@@ -11,7 +11,7 @@ E2VguiCore.AddDefaultPanelTable("dtextentry",function(uniqueID,parentPnlID)
         ["posY"] = 0,
         ["width"] = 120,
         ["height"] = 22,
-        ["text"] = "DTextEntry",
+        ["text"] = "",
         ["visible"] = true
     }
     return tbl
