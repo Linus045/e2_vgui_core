@@ -110,7 +110,11 @@ do--[[setter]]--
     e2function void dtextentry:setNumeric(number numeric)
         E2VguiCore.registerAttributeChange(this,"numeric", numeric)
     end
--- setter
+
+    e2function void dtextentry:setPlaceholderText(string placeholder)
+        E2VguiCore.registerAttributeChange(this,"placeholder", placeholder)
+    end
+    -- setter
 end
 
 do--[[getter]]--
@@ -121,5 +125,9 @@ do--[[getter]]--
     e2function number dtextentry:getNumeric(entity ply)
         return E2VguiCore.GetPanelAttribute(ply,self.entity.e2_vgui_core_session_id,this,"numeric") and 1 or 0
     end
--- getter
+
+    e2function string dtextentry:getPlaceholderText(entity ply)
+        return E2VguiCore.GetPanelAttribute(ply,self.entity.e2_vgui_core_session_id,this,"placeholder") or ""
+    end
+    -- getter
 end

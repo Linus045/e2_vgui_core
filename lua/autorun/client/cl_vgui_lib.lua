@@ -13,6 +13,7 @@ E2VguiLib = {
     ["BlockedPlayers"] = {}, --list of blocked players (they are not allowed to create panels for this player)
     ["panelFunctions"] = { --functions for every attribute
         text = function(panel,value) panel:SetText(value) end,
+        placeholder = function(panel,value) panel:SetPlaceholderText(value) end,
         width = function(panel,value) panel:SetWidth(value) end,
         height = function(panel,value) panel:SetHeight(value) end,
         minSize = function(panel, values) panel:SetMinimumSize(unpack(values)) end,
