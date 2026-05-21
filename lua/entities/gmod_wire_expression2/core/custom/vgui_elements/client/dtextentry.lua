@@ -82,6 +82,9 @@ E2Helper.Descriptions["getText(xdt:e)"] = "Returns the text of the textentry."
 E2Helper.Descriptions["setNumeric(xdt:n)"] = "Sets whether the TextEntry is numeric or not. If the TextEntry is numeric, then the user will not be able to type anything except the following characters: 1234567890.-"
 E2Helper.Descriptions["getNumeric(xdt:e)"] = "Returns whether the TextEntry is numeric."
 
+E2Helper.Descriptions["setPlaceholderText(xdt:s)"] = "Sets the placeholder text of the textentry."
+E2Helper.Descriptions["getPlaceholderText(xdt:e)"] = "Returns the placeholder text of the textentry."
+
 --default functions
 E2Helper.Descriptions["setPos(xdt:nn)"] = "Sets the position."
 E2Helper.Descriptions["setPos(xdt:xv2)"] = "Sets the position."
